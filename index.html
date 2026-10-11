@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLMs for Dummies</title>
+<style>
+:root{--bg:#fffaf0;--card:#fff;--ink:#2b2a33;--mute:#6b6a75;--a:#ff7a59;--b:#4a7cff;--c:#2fb67c;--line:#eadfca}
+@media(prefers-color-scheme:dark){:root{--bg:#17161c;--card:#22212a;--ink:#f1eee8;--mute:#a9a6b3;--line:#383643}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:0 16px 80px}
+section{padding:72px 0 16px}
+h1{font-size:clamp(2.2rem,7vw,3.8rem);line-height:1.1;margin:0 0 12px}
+h2{font-size:clamp(1.6rem,4.5vw,2.2rem);margin:0 0 6px}
+.tag{display:inline-block;background:var(--a);color:#fff;border-radius:99px;padding:2px 12px;font-size:.8rem;font-weight:700;letter-spacing:.05em}
+.real{color:var(--b);font-weight:700}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;margin:18px 0}
+.note{color:var(--mute);font-size:.9rem}
+button{font:inherit;font-weight:700;background:var(--b);color:#fff;border:0;border-radius:12px;padding:8px 18px;cursor:pointer}
+button.alt{background:var(--c)}button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+input[type=text]{font:inherit;width:100%;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}*{animation:none!important}}
+
+/* hero */
+.hero{text-align:center;padding-top:56px}
+.float{display:flex;justify-content:center;gap:10px;margin:24px 0;flex-wrap:wrap}
+.float span{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:6px 14px;font-weight:700;animation:bob 3s ease-in-out infinite}
+.float span:nth-child(2n){animation-delay:.6s}.float span:nth-child(3n){animation-delay:1.2s}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.scroll{animation:bob 1.6s infinite;font-size:2rem;color:var(--mute)}
+
+/* tokens */
+.bricks{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;min-height:70px}
+.brick{border-radius:8px;padding:4px 10px;text-align:center;color:#222;font-weight:700;animation:pop .35s backwards;border-bottom:4px solid rgba(0,0,0,.2)}
+.brick small{display:block;font:600 .75rem monospace;opacity:.7}
+.brick b{white-space:pre}
+@keyframes pop{from{transform:scale(0) rotate(-8deg)}}
+
+/* dials */
+.grid{display:grid;grid-template-columns:auto repeat(3,1fr);gap:6px 10px;align-items:center;font-size:.9rem}
+.grid input[type=range]{width:100%}
+.grid .h{font-weight:700;text-align:center}
+.grid output{font:600 .75rem monospace;color:var(--mute);display:block;text-align:center}
+.toggles{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.toggles label{background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:4px 12px;cursor:pointer}
+.bar{display:flex;align-items:center;gap:10px;margin:6px 0}
+.bar .t{height:22px;border-radius:6px;background:var(--c);transition:width .3s;min-width:2px}
+.bar span:first-child{width:80px}
+
+/* pipeline + agent */
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.pill{padding:4px 12px;border-radius:99px;background:var(--bg);border:2px solid var(--line);font-size:.85rem;transition:.3s}
+.pill.on{background:var(--a);color:#fff;border-color:var(--a);transform:scale(1.1)}
+.screen{font:1.3rem/1.4 Georgia,serif;min-height:3.2rem;padding:10px 14px;background:var(--bg);border-radius:12px}
+.screen em{color:var(--a);font-style:normal;font-weight:700;animation:pop .4s}
+.actors{display:flex;justify-content:space-around;text-align:center;margin:10px 0}
+.actor{font-size:.85rem;padding:10px;border-radius:16px;border:3px solid transparent;transition:.3s;width:30%}
+.actor i{display:block;font-size:2.6rem;font-style:normal}
+.actor.on{border-color:var(--a);background:var(--bg);transform:scale(1.07)}
+.log{list-style:none;padding:0;margin:10px 0;font-size:.95rem}
+.log li{padding:6px 12px;margin:4px 0;border-left:5px solid var(--b);background:var(--bg);border-radius:0 10px 10px 0;animation:pop .35s}
+.log li.m{border-color:var(--a)}.log li.t{border-color:var(--c)}
+
+section[id]{scroll-margin-top:64px}
+@media(max-width:560px){section[id]{scroll-margin-top:130px}}
+.viewbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;border-bottom:2px solid var(--line)}
+.viewbar button,.chips button{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.viewbar button[aria-pressed=true]{background:var(--b);color:#fff;border-color:var(--b)}
+.chat{padding:0;overflow:hidden}
+.chat header{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:2px solid var(--line);font-weight:700}
+#chatbody{position:relative}
+#chatbody>.ipin{top:10px;right:20px}
+#msgs{height:320px;overflow-y:auto;padding:14px 52px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:85%;padding:8px 14px;border-radius:16px;animation:pop .3s;white-space:pre-wrap}
+.msg.u{align-self:flex-end;background:var(--b);color:#fff}
+.msg.b{align-self:flex-start;background:var(--bg);border:2px solid var(--line)}
+.msg.tool{align-self:flex-start;border:2px dashed var(--c);color:var(--c);font:600 .85rem monospace}
+.cur::after{content:'▍';animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 10px}
+.chips button{font-size:.9rem;font-weight:600}
+.chat form{display:flex;gap:8px;padding:12px 14px;border-top:2px solid var(--line)}
+.hl{outline:4px solid var(--a);outline-offset:-4px;border-radius:12px;animation:glow 1s 3}
+@keyframes glow{50%{outline-color:transparent}}
+#tip pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:12px;font-size:.85rem}
+#tip .bricks{min-height:0}
+#c-bot,#cform,.msg{position:relative}
+#cform{padding-right:46px}
+#cform button{white-space:nowrap}
+.ipin{position:absolute;top:-9px;right:-9px;width:24px;height:24px;padding:0;border-radius:50%;background:var(--a);color:#fff;font:italic 700 .9rem Georgia,serif;display:grid;place-items:center;animation:ring 2s infinite;z-index:2}
+/* invisible 44px hit areas for touch */
+.ipin::after,#tip .x::after{content:'';position:absolute;inset:-10px}
+#tip .x::after{inset:-8px}
+#tip .go button{padding:11px 18px}
+#c-bot .ipin,#cform .ipin{top:50%;right:12px;margin-top:-12px}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,122,89,.7)}70%,100%{box-shadow:0 0 0 10px rgba(255,122,89,0)}}
+html{scrollbar-gutter:stable}
+#hole,#tip,#arrow{transition:opacity .18s}
+#hole.pre,#tip.pre,#arrow.pre{opacity:0;pointer-events:none}
+#shade{position:fixed;inset:0;z-index:40;touch-action:none}
+#hole{position:fixed;z-index:41;border-radius:16px;box-shadow:0 0 0 150vmax rgba(10,8,20,.65);pointer-events:none}
+#tip{position:fixed;z-index:42;width:max-content;min-width:min(340px,calc(100vw - 32px));max-width:min(560px,calc(100vw - 32px));overscroll-behavior:contain;background:var(--card);color:var(--ink);border:2px solid var(--a);border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:auto;font-size:.95rem;line-height:1.5}
+#c-avatar{position:relative;font-size:1.6rem}
+#c-bot #c-avatar .ipin{top:-10px;right:-16px;margin:0}
+.terms{border:2px dashed var(--line);border-radius:16px;padding:12px 18px;margin:18px 0}
+.terms>b{font-size:.8rem;letter-spacing:.06em;color:var(--mute)}
+.terms dl{font-size:.95rem;margin:6px 0 0}
+.flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;text-align:center;margin:14px 0}
+.flow div{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 14px}
+.flow i{font-size:2rem;font-style:normal;display:block}
+.flow span{font-size:1.4rem;color:var(--mute)}
+#tip .flow{margin:8px 0;font-size:.85rem}#tip .flow i{font-size:1.5rem}
+#tip .go{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.msg.sys .ipin{top:50%;right:8px;margin-top:-12px}
+.msg.sys{align-self:stretch;max-width:100%;border:2px dashed var(--line);color:var(--mute);font-size:.85rem;font-style:italic;background:transparent;padding-right:42px}
+#tip h3{margin:0 28px 6px 0}
+#tip .x{position:absolute;top:8px;right:8px;width:28px;height:28px;padding:0;border-radius:50%;background:var(--bg);color:var(--ink)}
+#arrow{position:fixed;z-index:43;width:16px;height:16px;background:var(--card);transform:rotate(45deg);pointer-events:none}
+#arrow.up{border-left:2px solid var(--a);border-top:2px solid var(--a)}
+#arrow.dn{border-right:2px solid var(--a);border-bottom:2px solid var(--a)}
+div.msg.think{align-self:flex-start;border:2px dashed #9b6bff;color:var(--mute);font-style:italic}
+div.think summary{cursor:pointer;font-style:normal;font-weight:700;color:#9b6bff}
+.ctx{display:flex;gap:2px;height:34px;border-radius:8px;overflow:hidden;margin:8px 0}
+.ctx div{min-width:6px}
+.leg span{display:inline-block;margin-right:12px;font-size:.85rem}
+a.back{display:inline-block;font-size:.9rem;margin-bottom:6px;color:var(--b);font-weight:700}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}
+dt{font-weight:700;color:var(--b)}dd{margin:0}
+@media(max-width:560px){dl{grid-template-columns:1fr}.actor{font-size:.7rem}}
+</style>
+</head>
+<body>
+<main>
+
+<section class="hero">
+  <span class="tag">NO JARGON, PROMISE</span>
+  <h1>How does an AI<br>actually work?</h1>
+  <p>An LLM (<span class="real">Large Language Model</span>) is a machine that is amazingly good at one game: <b>guessing what comes next.</b></p>
+  <div class="float" aria-hidden="true"><span>The</span><span>cat</span><span>sat</span><span>on</span><span>the</span><span>…?</span></div>
+  <p class="note">Everything here is clickable. Pick how you want to explore: 👇</p>
+  <div class="scroll" aria-hidden="true">⌄</div>
+</section>
+
+<div class="viewbar" id="viewbar">
+  <button data-view="chat" aria-pressed="true">💬 Follow a chat</button>
+  <button data-view="parts" aria-pressed="false">🧩 Explore by part</button>
+</div>
+
+<div id="v-chat">
+<section>
+  <span class="tag">START HERE</span>
+  <h2>You've used one. Let's peek inside. 💬</h2>
+  <p>This is a <b>pretend chatbot</b> (it only knows a few tricks). Send a message, then tap the little orange <b>i</b> buttons on the chat to peek behind that piece of the screen. The rest of the page dims so you can see exactly what's being explained.</p>
+  <div class="card chat">
+    <header id="c-bot"><span id="c-avatar">🤖</span> Chatbot <small class="note">(pretend)</small></header>
+    <div id="chatbody"><div id="msgs" aria-live="polite"></div></div>
+    <div class="chips" id="chips"></div>
+    <form id="cform"><input type="text" id="cin" placeholder="Message the chatbot…" aria-label="Message" autocomplete="off"><button id="csend">Send ➤</button></form>
+  </div>
+</section>
+</div>
+
+<div id="v-parts" hidden>
+
+<!-- 1 APP -->
+<section class="reveal" id="s-app">
+  <a href="#" class="back" data-spot="app">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 1</span>
+  <h2>The chat window = the harness 🧰</h2>
+  <p>The window you type into is <b>not</b> the AI. It's an ordinary app wrapped around the AI. The technical name for that wrapper is the <span class="real">harness</span>, and the AI inside is called the <span class="real">model</span>.</p>
+  <div class="flow" aria-label="You talk to the harness, which talks to the model"><div><i>🙂</i>You</div><span>⇄</span><div><i>🧰</i>Harness<br><small>the app</small></div><span>⇄</span><div><i>🧠</i>Model<br><small>the brain</small></div></div>
+  <p>The model is surprisingly limited: text in, text out, and it forgets everything the moment it replies. The harness fills in every gap:</p>
+  <ul>
+    <li>It shows the chat and the text box.</li>
+    <li>It keeps the conversation and re-sends it every turn. That's the chatbot's "memory".</li>
+    <li>It adds hidden instructions you never see, like "be friendly and short".</li>
+    <li>It sends everything to the model and shows the reply as it arrives.</li>
+    <li>It runs tools (like a weather lookup) when the model asks.</li>
+  </ul>
+  <p>So a "chatbot" is really <b>harness + model</b>. The next parts zoom into each piece you see on screen.</p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Harness</dt><dd>The app wrapped around the model: the screen, the memory, the tool-running. Everything except the brain.</dd><dt>Model</dt><dd>The AI itself: the program that turns text in into text out.</dd><dt>System prompt</dt><dd>The hidden instructions the harness adds to every conversation.</dd><dt>Chatbot</dt><dd>The product you use: a harness plus a model.</dd></dl></div>
+</section>
+
+<!-- 2 TEXT BOX -->
+<section class="reveal" id="s-text">
+  <a href="#" class="back" data-spot="send">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 2</span>
+  <h2>The text box = tokens 🧱</h2>
+  <p>Whatever you type is your <span class="real">prompt</span>. But the model can't read letters or words like you. It only understands <b>numbers</b>. So first, your prompt is chopped into little chunks called <span class="real">tokens</span>, like Lego bricks. Each brick gets a number tag, like a coat-check ticket.</p>
+  <div class="card">
+    <label for="txt"><b>Type anything:</b></label>
+    <input type="text" id="txt" value="Unbelievably friendly dragons love pizza!">
+    <div class="bricks" id="bricks" aria-live="polite"></div>
+    <p class="note">The numbers here are made up for show. Real ones differ per model, but the idea is identical. Real models know roughly 50,000–200,000 different bricks.</p>
+  </div>
+  <p><b>Important:</b> a token number is just a <i>name tag</i>. It says <i>which</i> brick, not what it means. <b>Tokens are what goes into the model. The weights (next part) are the model itself.</b></p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Prompt</dt><dd>What you type to the AI.</dd><dt>Token</dt><dd>A small chunk of text (a word, part of a word, or punctuation) with a number tag. The only thing a model can read.</dd></dl></div>
+</section>
+
+<!-- 3 BRAIN -->
+<section class="reveal" id="s-brain">
+  <a href="#" class="back" data-spot="model">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 3</span>
+  <h2>The brain behind the screen = the model 🎛️</h2>
+  <p>The model is a wall of dials. Each dial is a <span class="real">weight</span>: one number saying "how much should this clue matter?" <span class="real">Parameters</span> is just another word for the dials. A "7-billion-parameter model" has 7 billion dials.</p>
+  <p>Here's a tiny machine with just <b>9 dials</b> that guesses an animal from a clue. Two very different things happen to a machine like this, so try them one at a time:</p>
+  <div class="card">
+    <div class="toggles" id="modes"><label><input type="radio" name="mode" value="use" checked> ▶ <b>Use it</b> <small>(what happens when you send a prompt)</small></label><label><input type="radio" name="mode" value="train"> 🏋️ <b>Train it</b> <small>(how the dials got their settings)</small></label></div>
+    <p id="modeHelp"></p>
+    <b>Pick a clue:</b>
+    <div class="toggles" id="clues"></div>
+    <p id="goal" aria-live="polite" style="font-weight:700"></p>
+    <div class="grid" id="dials"></div>
+    <h3 style="margin:14px 0 0">The machine's guess:</h3>
+    <div id="guess"></div>
+    <p id="trainCtl" hidden>
+      <button id="train" class="alt">🏋️ Let it train itself</button>
+      <button id="scramble">🔀 Randomise the dials again</button>
+    </p>
+    <p class="note" id="trainNote"></p>
+  </div>
+  <div class="card">
+    <b>How does this tiny machine relate to a real LLM?</b>
+    <dl style="margin-top:8px">
+      <dt>The clue you pick</dt><dd>= your <b>prompt</b>. The tokens going in.</dd>
+      <dt>The dials</dt><dd>= the <b>weights</b>. They decide how the input turns into an answer.</dd>
+      <dt>The bars</dt><dd>= the <b>output</b>: a score for every possible answer. For a real LLM the "animals" are every possible <i>next token</i>.</dd>
+      <dt>Turning the dials / Train it</dt><dd>= <b>training</b>. Done once, by the AI company, long before you type anything.</dd>
+      <dt>Picking a clue and reading the guess</dt><dd>= <b>using the model</b>, which happens every time you send a prompt. The dials stay frozen while it does this.</dd>
+    </dl>
+  </div>
+  <p><b>Training</b> is how the dials get set. Nobody turns them by hand. The machine guesses, gets told "wrong, it was a cat", and each dial is nudged a tiny bit in the direction that would have made it less wrong. Repeat trillions of times. Press <b>Train it!</b> to watch a baby version of this.</p>
+  <p>A real model works the same way, with <b>hundreds of billions</b> of dials instead of 9 and whole libraries of text instead of 3 examples. The finished "model" file is nothing but the final position of all the dials. That's where its "knowledge" lives.</p>
+  <p><b>So how do tokens and weights connect?</b> Each brick's number tag is looked up in a giant table to get a long list of numbers describing that brick (the machine's "notes" on it). Those notes are dials too, set during training. The brick's numbers then flow through the rest of the dials, and out the other end come scores for every possible next brick.</p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Model</dt><dd>The finished wall of dials, with every setting fixed.</dd><dt>Weight / Parameter</dt><dd>One dial: a single number. Models have billions.</dd><dt>Training</dt><dd>Guess, get corrected, nudge the dials. Repeat for ages. Done once, before you use it.</dd><dt>Inference</dt><dd>Using the finished model: dials frozen, text in, scores out. Every chat message is this.</dd></dl></div>
+</section>
+
+<!-- 4 REPLY -->
+<section class="reveal" id="s-reply">
+  <a href="#" class="back" data-spot="stream">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 4</span>
+  <h2>The reply typing out = guess, add, repeat 🔮</h2>
+  <p>The model only ever does <b>one thing</b>: given the bricks so far, score every possible next brick, and pick one. Then it adds that brick to the pile and does it again. That's how it "writes" a whole answer, which is why replies type out piece by piece. Press the button to step through.</p>
+  <div class="card">
+    <div class="pills" id="pills"></div>
+    <div class="screen" id="screen"></div>
+    <div id="cands" style="margin-top:10px"></div>
+    <p><button id="next">Next step ▶</button> <button id="restart" class="alt">↺ Restart</button></p>
+    <p class="note" id="stageNote"></p>
+  </div>
+  <p class="note">Why can the same question give different answers? The pick is a weighted dice roll, not always the top score. That "randomness" setting is called <span class="real">temperature</span>.</p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Generation</dt><dd>Writing a reply by repeating "guess the next token, add it" until done.</dd><dt>Temperature</dt><dd>How adventurous the dice roll is when picking the next token.</dd></dl></div>
+</section>
+
+<!-- 5 MEMORY -->
+<section class="reveal" id="s-memory">
+  <a href="#" class="back" data-spot="memory">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 5</span>
+  <h2>Its memory = the context window 📓</h2>
+  <p>The model forgets everything the instant it finishes a reply. So why does the chat feel like a conversation? Because the harness keeps a running copy of the whole chat and, every time you press Send, hands the model <b>the whole notebook</b> to read from scratch:</p>
+  <div class="card"><pre style="margin:0;white-space:pre-wrap;font-size:.85rem">[hidden instructions] You are a helpful assistant...
+You: Hi!
+Bot: Hello! How can I help?
+You: What's the capital of France?     ← your new message
+Bot: ▍                                  ← model guesses from ALL of the above</pre></div>
+  <p>There's a limit to how much fits in the notebook. That limit is the <span class="real">context window</span>. Once a chat gets longer than it, the oldest parts have to be dropped or summarised, which is why very long chats seem to "forget" the beginning.</p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Context window</dt><dd>Everything the model is shown each turn (instructions, chat so far, your new message), and the size limit on it.</dd></dl></div>
+</section>
+
+<!-- 6 THINKING -->
+<section class="reveal" id="s-think">
+  <a href="#" class="back" data-spot="think">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 6</span>
+  <h2>"Thinking…" = a private scratchpad 💭</h2>
+  <p>Some chatbots first write notes to themselves, and only then answer. These notes are made exactly like any reply, one token at a time, using the very same guessing loop. They're added to the notebook, so the final answer is written after re-reading them.</p>
+  <p>It's like <b>showing your work on a maths test</b>: writing the steps down makes the final answer easier to get right. The cost: all those extra tokens take extra time and money, and the notes can be longer than the answer you see. The harness usually collapses or hides them.</p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Thinking / reasoning</dt><dd>Tokens the model writes to itself as a scratchpad before its real answer. Same guessing, just aimed at notes.</dd></dl></div>
+</section>
+
+<!-- 7 TOOLS -->
+<section class="reveal" id="s-tools">
+  <a href="#" class="back" data-spot="tool">💬 Where do I see this in a chat?</a><br>
+  <span class="tag">PART 7</span>
+  <h2>"Using a tool…" = agents 🤲</h2>
+  <p>The model is only a text-guesser. It can't browse the web, open files or check the weather. It's like a very clever person locked in a room who can only pass notes under the door.</p>
+  <p>The <span class="real">harness</span> is the assistant sitting outside the door. It carries the notes, and when the model asks, it actually does things with <span class="real">tools</span>, then hands the results back. This back-and-forth is the <span class="real">agentic loop</span>, and a model set up to run it until a job is done is an <span class="real">agent</span>. Step through it:</p>
+  <div class="card">
+    <div class="actors">
+      <div class="actor" id="a-you"><i>🙂</i>You</div>
+      <div class="actor" id="a-harness"><i>🧰</i>Harness<br><small>the assistant</small></div>
+      <div class="actor" id="a-model"><i>🧠</i>Model<br><small>the brain</small></div>
+      <div class="actor" id="a-tool"><i>🌦️</i>Tool<br><small>weather app</small></div>
+    </div>
+    <div class="pills"><span class="pill" id="loopBadge">Loop: not started</span></div>
+    <ul class="log" id="log" aria-live="polite"></ul>
+    <p><button id="anext">Next step ▶</button> <button id="arestart" class="alt">↺ Restart</button></p>
+  </div>
+  <p><b>The loop stops</b> when the model answers without asking for a tool. Real agents (coding assistants, for instance) do this dozens of times: read a file, edit it, run tests, read the error, try again.</p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Tool</dt><dd>Something the model can ask the harness to do: search, calculate, read a file, check the weather.</dd><dt>Agentic loop</dt><dd>Ask the model, run its tool request, give back the result, ask again. Repeat until it answers.</dd><dt>Agent</dt><dd>A model plus a harness and tools, looping until the job is done.</dd></dl></div>
+</section>
+
+<p class="note">Simplified on purpose: real models use many layers of dials and special math (attention) to relate tokens to each other. The big picture above is true to how they work.</p>
+</div>
+
+</main>
+<script>
+const $ = id => document.getElementById(id);
+
+// scroll reveal
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), {threshold: .08});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ---------- tokens ----------
+// ponytail: fake tokenizer (words/punctuation, long words split in ~4-letter chunks); real ones are learned (BPE)
+function tokenize(s) {
+  const out = [];
+  (s.match(/\s?[A-Za-z]+|\s?\d+|\s?[^\sA-Za-z\d]/g) || []).forEach(w => {
+    if (w.trim().length <= 6) return out.push(w);
+    const lead = w.match(/^\s*/)[0], body = w.trim();
+    for (let i = 0; i < body.length; i += 4) out.push((i ? '' : lead) + body.slice(i, i + 4));
+  });
+  return out;
+}
+const idOf = t => { let h = 7; for (const c of t) h = (h * 31 + c.charCodeAt(0)) % 50000; return h; };
+function renderBricks(el, text) {
+  el.innerHTML = '';
+  tokenize(text.slice(0, 200)).forEach((t, i) => {
+    const d = document.createElement('div');
+    d.className = 'brick';
+    d.style.background = `hsl(${(i * 47) % 360} 85% 75%)`;
+    d.style.animationDelay = i * 40 + 'ms';
+    const b = document.createElement('b'); b.textContent = t.replace(/^ /, '·');
+    const s = document.createElement('small'); s.textContent = '#' + idOf(t);
+    d.append(b, s);
+    el.append(d);
+  });
+}
+const showBricks = () => renderBricks($('bricks'), $('txt').value);
+$('txt').addEventListener('input', showBricks); showBricks();
+
+// ---------- dials ----------
+const feats = ['Furry', 'Has wings', 'Has fins'], outs = [['🐱', 'Cat'], ['🐦', 'Bird'], ['🐟', 'Fish']];
+const GOOD = [[3, -1, -1], [-1, 3, -1], [-1, -1, 3]]; // pretend these are the already-trained dials
+let W = GOOD.map(r => r.slice()), X = [1, 0, 0], timer, mode = 'use';
+const help = {use: '🔒 The dials are locked. Your clue (the prompt) goes in, flows through the frozen dials, and scores come out. Nothing is learned or changed. This is what happens every time you chat with an AI.',
+  train: '🔓 The dials are unlocked and start random, so the machine is hopeless. Training means fixing the dials until the answers come out right. Turn them by hand, or let the machine nudge them itself. The AI company does this once, long before you ever use the model.'};
+$('clues').innerHTML = feats.map((f, i) => `<label><input type="radio" name="clue" data-i="${i}"${i === 0 ? ' checked' : ''}> ${f}</label>`).join('');
+$('dials').innerHTML = '<span></span>' + feats.map(f => `<span class="h">${f}</span>`).join('') +
+  outs.map((o, r) => `<span><b>${o[0]} ${o[1]}</b></span>` + feats.map((f, c) =>
+    `<div><input type="range" min="-4" max="4" step=".1" data-r="${r}" data-c="${c}" aria-label="${o[1]} dial for ${f}"><output></output></div>`).join('')).join('');
+const softmax = s => { const m = Math.max(...s), e = s.map(v => Math.exp(v - m)), t = e.reduce((a, b) => a + b); return e.map(v => v / t); };
+const predict = x => softmax(W.map(row => row.reduce((a, w, c) => a + w * x[c], 0)));
+function draw() {
+  document.querySelectorAll('#dials input').forEach(el => {
+    el.value = W[el.dataset.r][el.dataset.c];
+    el.nextElementSibling.textContent = (+el.value).toFixed(1);
+    el.parentElement.style.opacity = X[el.dataset.c] ? 1 : .3;
+    el.disabled = mode === 'use';
+  });
+  const p = predict(X), top = p.indexOf(Math.max(...p));
+  const on = [X.indexOf(1)];
+  $('modeHelp').textContent = help[mode];
+  $('trainCtl').hidden = mode === 'use';
+  $('goal').textContent = mode === 'use'
+    ? `Clue in: "${feats[on[0]]}" → highest score: ${outs[top][0]} ${outs[top][1]}.` + (top === on[0] ? '' : ' ❌ Wrong! These dials were never trained properly. Switch to "Train it" to fix them.')
+    : top === on[0] ? `✅ Correct! A "${feats[on[0]].toLowerCase()}" animal is a ${outs[on[0]][1]}. Pick another clue to check it, or switch to "Use it".`
+    : `🎯 Goal: make it say ${outs[on[0]][0]} ${outs[on[0]][1]}. Turn the ${outs[on[0]][1]} dial in the "${feats[on[0]]}" column up, or the others down.`;
+  $('guess').innerHTML = outs.map((o, i) => `<div class="bar"><span>${o[0]} ${o[1]}</span><span class="t" style="width:${p[i] * 60}%;${i === top ? '' : 'opacity:.45'}"></span><span>${Math.round(p[i] * 100)}%</span></div>`).join('');
+}
+$('clues').addEventListener('change', e => { X = [0, 0, 0]; X[e.target.dataset.i] = 1; draw(); });
+$('dials').addEventListener('input', e => { W[e.target.dataset.r][e.target.dataset.c] = +e.target.value; draw(); });
+$('modes').addEventListener('change', e => { mode = e.target.value; if (mode === 'train') $('scramble').click(); else { clearInterval(timer); $('trainNote').textContent = ''; draw(); } });
+$('scramble').onclick = () => { clearInterval(timer); const k = X.indexOf(1), rnd = () => W = W.map(() => [0, 0, 0].map(() => Math.round((Math.random() * 6 - 3) * 10) / 10));
+    do rnd(); while (predict(X).indexOf(Math.max(...predict(X))) === k); // re-roll if it happens to guess right
+    $('train').disabled = false; $('trainNote').textContent = 'Dials randomised. Can you fix them by hand?'; draw(); };
+$('train').onclick = () => {
+  $('train').disabled = true; let n = 0;
+  timer = setInterval(() => {
+    // cross-entropy gradient on 3 examples: furry->cat, wings->bird, fins->fish
+    for (let k = 0; k < 3; k++) {
+      const x = [0, 0, 0]; x[k] = 1;
+      const p = predict(x);
+      for (let r = 0; r < 3; r++) W[r][k] -= .25 * (p[r] - (r === k ? 1 : 0));
+    }
+    draw();
+    const conf = [0, 1, 2].map(k => { const x = [0, 0, 0]; x[k] = 1; return predict(x)[k]; }).reduce((a, b) => a + b) / 3;
+    $('trainNote').textContent = `Training… step ${++n}. Average confidence in the right answer: ${Math.round(conf * 100)}%`;
+    if (n >= 60) { clearInterval(timer); $('train').disabled = false; $('trainNote').textContent += ' ✅ Done! Now switch to "Use it": these dials are the finished model.'; }
+  }, 70);
+};
+draw();
+
+// ---------- generation stepper ----------
+const stages = ['1. Cut into bricks', '2. Look up the numbers', '3. Run through the dials', '4. Score every next brick', '5. Pick one', '6. Add it & repeat'];
+const notes = [
+  'The text is chopped into tokens.',
+  'Each brick\'s number tag is swapped for its list of "notes" (numbers).',
+  'Those numbers flow through billions of dials. This is the heavy work.',
+  'Out come scores for every possible next brick, shown as chances.',
+  'One is picked (usually a likely one, with a little dice-roll).',
+  'The pick joins the pile, and the whole thing runs again from the top.'];
+const rounds = [
+  {pick: ' blue', c: [[' blue', 62], [' clear', 14], [' grey', 11], [' falling', 3]]},
+  {pick: '.', c: [['.', 48], [' today', 22], [' and', 17], [',', 8]]},
+  {pick: '⏹ end', c: [['⏹ end', 70], [' The', 15], [' It', 9], [' Why', 2]]}];
+let r = 0, st = -1, text;
+function drawGen() {
+  $('pills').innerHTML = stages.map((s, i) => `<span class="pill${i === st ? ' on' : ''}">${s}</span>`).join('');
+  const ro = rounds[r];
+  $('screen').innerHTML = (text + (st === 5 ? `<em>${ro.pick === '⏹ end' ? '' : ro.pick}</em>` : '')).replace(/ /g, '&nbsp;') || '&nbsp;';
+  $('cands').innerHTML = st >= 3 ? ro.c.map(([t, p]) => `<div class="bar"><span>${t.replace(' ', '·')}</span><span class="t" style="width:${p * .8}%;${t === ro.pick && st >= 4 ? 'background:var(--a)' : ''}"></span><span>${p}%</span></div>`).join('') : '';
+  $('stageNote').textContent = st < 0 ? 'Prompt: "The sky is". Press Next.' : notes[st] + (st === 5 && ro.pick === '⏹ end' ? ' The machine picked "stop", so it is finished!' : '');
+  $('next').disabled = st === 5 && r === rounds.length - 1;
+}
+function genReset() { r = 0; st = -1; text = 'The sky is'; drawGen(); }
+$('next').onclick = () => {
+  if (st === 5) { text += rounds[r].pick; r++; st = 0; } else st++;
+  drawGen();
+};
+$('restart').onclick = genReset; genReset();
+
+// ---------- agent loop ----------
+const steps = [
+  ['you', 'harness', '', 'You ask: "Do I need an umbrella in Paris today?"'],
+  ['harness', 'harness', '', 'Harness opens a notebook, writes your question, and lists the tools it can run (like "weather").'],
+  ['model', 'model', 'Loop 1', 'Harness hands the whole notebook to the model. The model thinks: "I can\'t see outside. I\'ll ask for a tool." It writes: CALL weather("Paris")'],
+  ['harness', 'harness', 'Loop 1', 'Harness spots the request. The model can\'t run anything itself, so the harness does it.'],
+  ['tool', 'tool', 'Loop 1', 'The weather tool answers: "Rain, 12°C".'],
+  ['harness', 'harness', 'Loop 1', 'Harness writes the result in the notebook and sends the whole notebook back to the model.'],
+  ['model', 'model', 'Loop 2', 'Model reads it all again: "It\'s going to rain." No more tools needed, so it writes the final answer: "Yes, take an umbrella! Rain and 12°C."'],
+  ['you', 'you', 'Done ✅', 'No tool request means the loop ends. Harness shows you the answer.']];
+const cls = {model: 'm', tool: 't'};
+let as = 0;
+function adraw() {
+  $('log').innerHTML = steps.slice(0, as).map(s => `<li class="${cls[s[0]] || ''}"></li>`).join('');
+  [...$('log').children].forEach((li, i) => li.textContent = steps[i][3]);
+  const cur = steps[as - 1];
+  ['you', 'harness', 'model', 'tool'].forEach(a => $('a-' + a).classList.toggle('on', !!cur && cur[0] === a));
+  $('loopBadge').textContent = cur ? 'Loop: ' + (cur[2] || 'starting') : 'Loop: not started';
+  $('anext').disabled = as >= steps.length;
+}
+$('anext').onclick = () => { as++; adraw(); };
+$('arestart').onclick = () => { as = 0; adraw(); }; adraw();
+
+// ---------- chat view ----------
+const SYS = 'You are a helpful assistant. Be friendly and short.'; // the hidden instructions real apps add
+const hist = [];
+let busy = false;
+const FLOW = (...items) => '<div class="flow">' + items.map((x, i) => (i % 2 ? `<span>${x}</span>` : `<div>${x}</div>`)).join('') + '</div>';
+const spots = {
+  sys: {label: '🕶️ Hidden instructions (the "system prompt")', parts: [['s-app', 'The chat app: the harness']],
+    body: 'Before your first message, the chat app quietly adds instructions like this one. Real apps never show them (this demo does, so you can see it). The technical name is the system prompt, and the AI reads it first, every single time.',
+    extra: el => { el.innerHTML = FLOW('🕶️<br>Hidden<br>instructions', '+', '💬<br>Your<br>messages', '→', '🧠<br>The AI<br>reads both'); }},
+  app: {label: '🖥️ The chat app (the "harness")', parts: [['s-app', 'The chat app: the harness']],
+    body: 'This window isn\'t the AI. It\'s an ordinary app wrapped around the AI, and that wrapper is called the harness. It shows the chat, remembers it, adds hidden instructions, passes text to the AI (the model) and back, and runs tools for it.',
+    extra: el => { el.innerHTML = FLOW('🙂<br>You', '⇄', '🧰<br>This app<br>(the harness)', '⇄', '🧠<br>The AI<br>(the model)'); }},
+  model: {label: '🧠 The AI itself (the "model")', parts: [['s-brain', 'The brain: the model'], ['s-text', 'The text box: tokens']],
+    body: 'Behind the screen, the AI is a program called the model: a giant wall of dials, where each dial is called a weight. Text goes in as numbers, flows through the dials, and scores for what comes next come out. The dials were set in training and never change while you chat.',
+    extra: el => { el.innerHTML = FLOW('📝<br>Your text<br>(as numbers)', '→', '🎛️<br>Billions of<br>dials (weights)', '→', '📊<br>Scores for<br>what comes next'); }},
+  send: {label: '✉️ What you type (the "prompt")', parts: [['s-text', 'The text box: tokens']],
+    body: 'The AI only understands numbers. So what you send (called the prompt) is chopped into small pieces of text called tokens, each with a number tag. Your last message, as Lego-style bricks:',
+    extra: el => { const u = hist.filter(h => h.role === 'You').pop(); if (!u) return el.append('Send a message first, and its tokens will appear here.'); renderBricks(el.appendChild(Object.assign(document.createElement('div'), {className: 'bricks'})), u.text); }},
+  stream: {label: '⌨️ The reply appearing word by word', parts: [['s-reply', 'The reply: guess, add, repeat'], ['s-brain', 'The brain: the model']],
+    body: 'The AI writes one small piece of text (a token) at a time: guess the next piece, add it, repeat. What you see typing out is each guess arriving.',
+    extra: el => { el.innerHTML = FLOW('The sky', '→', '🔮<br>guess the<br>next piece', '→', 'The sky <b>is</b>', '↻'); }},
+  memory: {label: '🧠 "It remembers me"', parts: [['s-memory', 'Its memory: the context window']],
+    body: 'It doesn\'t really remember. Each time you press Send, the app re-sends the whole conversation (plus hidden instructions) and the AI reads it all again from scratch. Everything it\'s shown is called the context window, and it has a size limit. Exactly what it was handed last:',
+    extra: el => { const t = ['[hidden] ' + SYS, ...hist.filter((h, i) => h.role !== 'Thinking' || i > hist.map(x => x.role).lastIndexOf('You')).map(h => h.role + ': ' + h.text)].join('\n'); el.append(Object.assign(document.createElement('pre'), {textContent: t}), `≈ ${tokenize(t).length} tokens (small pieces of text) so far`); }},
+  think: {label: '💭 "Thinking…"', parts: [['s-think', 'Thinking'], ['s-reply', 'The reply: guess, add, repeat']],
+    body: 'Some chatbots write private notes (one token, a small piece of text, at a time) before answering. The notes join the conversation the AI is reading (its context window), so the answer is written after re-reading them. Apps usually hide them.',
+    extra: el => {
+      const ti = hist.map(h => h.role).lastIndexOf('Thinking');
+      if (ti < 0) return el.append('Send the "Which is bigger…" suggestion first, and a size breakdown of what the AI was shown will appear here.');
+      const yi = hist.map(h => h.role).lastIndexOf('You', ti), n = h => h ? tokenize(h.text).length : 0;
+      const seg = [['Hidden instructions + earlier chat', n({text: SYS}) + hist.slice(0, yi).reduce((a, h) => a + n(h), 0), '#c9c6d3'], ['Your message', n(hist[yi]), '#9db8ff'], ['Thinking', n(hist[ti]), '#c4a6ff'], ['Answer', n(hist[ti + 1]), '#ffb59e']];
+      const bar = Object.assign(document.createElement('div'), {className: 'ctx', ariaHidden: 'true'});
+      seg.forEach(([, c, col]) => { const d = document.createElement('div'); d.style.cssText = `flex:${c};background:${col}`; bar.append(d); });
+      const leg = Object.assign(document.createElement('div'), {className: 'leg'});
+      seg.forEach(([l, c, col]) => { const sp = document.createElement('span'), sq = document.createElement('b'); sq.textContent = '■ '; sq.style.color = col; sp.append(sq, `${l}: ${c} tokens`); leg.append(sp); });
+      el.append('Everything the AI was shown when writing its answer (measured in tokens):', bar, leg, 'The thinking can be bigger than the answer you see.');
+    }},
+  tool: {label: '🔧 "Using a tool…"', parts: [['s-tools', 'Tools and agents'], ['s-app', 'The chat app: the harness']],
+    body: 'The AI can only write text. To check the weather it writes a request instead; the chat app (the harness) runs the tool, adds the answer to the conversation, and asks the AI again. An AI doing this in a loop until the job is done is called an agent.',
+    extra: el => { el.innerHTML = FLOW('🧠<br>AI asks', '→', '🧰<br>App runs<br>the tool', '→', '🌦️<br>Result', '→', '🧠<br>AI answers'); }}};
+Object.assign(spots.stream, {hint: 'send any suggestion and look at the bot\'s reply.'});
+Object.assign(spots.think, {hint: 'send "Which is bigger, 9.11 or 9.9?"'});
+Object.assign(spots.tool, {hint: 'send "Do I need an umbrella in Paris?"'});
+const info = (el, k) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ipin'; b.dataset.k = k; b.textContent = 'i'; b.setAttribute('aria-label', 'What\'s this? ' + spots[k].label); el.append(b); };
+info($('chatbody'), 'memory'); info($('c-bot'), 'app'); info($('c-avatar'), 'model'); info($('cform'), 'send');
+
+// giant-tooltip: dim page, spotlight the target, arrow from tooltip to it
+const shade = Object.assign(document.createElement('div'), {id: 'shade', hidden: true}), hole = Object.assign(document.createElement('div'), {id: 'hole', hidden: true}),
+  arrow = Object.assign(document.createElement('div'), {id: 'arrow', hidden: true}), tip = Object.assign(document.createElement('div'), {id: 'tip', hidden: true});
+tip.setAttribute('role', 'dialog');
+document.body.append(shade, hole, tip, arrow);
+const PAD = 12, GAP = 20, EDGE = 12; // EDGE: min distance to the window edge, shared by the fit check and the height cap so they can't disagree
+let cur = null;
+function place() {
+  if (!cur || !cur.ready) return;
+  const b0 = cur.t.getBoundingClientRect(), dy = cur.finalY - scrollY, r = {left: b0.left, width: b0.width, height: b0.height, top: b0.top - dy, bottom: b0.bottom - dy}, P = PAD, G = GAP, vw = innerWidth, vh = innerHeight, w = tip.offsetWidth;
+  hole.style.cssText = `left:${r.left - P}px;top:${r.top - P}px;width:${r.width + 2 * P}px;height:${r.height + 2 * P}px`;
+  const below = vh - r.bottom - P - G - EDGE, above = r.top - P - G - EDGE, down = cur.dir ? cur.dir === 'down' : below >= tip.scrollHeight || below >= above;
+  tip.style.maxHeight = Math.max(120, down ? below : above) + 'px';
+  const h = tip.offsetHeight, top = down ? r.bottom + P + G : r.top - P - G - h, mr = document.querySelector('main').getBoundingClientRect(), lo = Math.max(16, mr.left), hi = Math.min(vw - 16, mr.right) - w, c = r.left + r.width / 2 - w / 2,
+    left = hi >= lo ? Math.min(Math.max(c, lo), hi) : Math.min(Math.max(16, c), vw - w - 16); // stay inside the content column when it fits
+  const br = (cur.btn || cur.t).getBoundingClientRect(), ax = Math.min(Math.max(br.left + br.width / 2, left + 24), left + w - 24);
+  tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  arrow.className = down ? 'up' : 'dn'; arrow.style.left = ax - 8 + 'px'; arrow.style.top = (down ? top - 8 : top + h - 8) + 'px';
+}
+// own eased scroller: the browser's smooth-scroll duration can't be tuned
+let anim;
+function scrollAnim(to, ms) {
+  cancelAnimationFrame(anim); const from = scrollY, d = to - from;
+  if (!d || matchMedia('(prefers-reduced-motion: reduce)').matches) { scrollTo({top: to, behavior: 'instant'}); return Promise.resolve(); }
+  return new Promise(res => { const t0 = performance.now(); (function f(now) { const q = Math.min(1, (now - t0) / ms); scrollTo({top: from + d * (1 - Math.pow(1 - q, 3)), behavior: 'instant'}); if (q < 1) anim = requestAnimationFrame(f); else res(); })(t0); });
+}
+function closeTip(noRestore) {
+  if (!cur) return;
+  const {btn: o, y0} = cur; cur = null;
+  [shade, hole, tip, arrow].forEach(e => e.hidden = true); document.documentElement.style.overflow = ''; $('viewbar').style.visibility = '';
+  if (noRestore) { cancelAnimationFrame(anim); document.body.style.paddingBottom = ''; }
+  else scrollAnim(y0, 220).then(() => { if (!cur) document.body.style.paddingBottom = ''; }); // keep the spare room until the scroll-back lands, or the browser would clamp it
+  o && o.isConnected && o.focus({preventScroll: true});
+}
+function openTip(k, btn) {
+  const y0 = cur ? cur.y0 : scrollY; closeTip(true);
+  [hole, tip, arrow].forEach(e => e.classList.add('pre')); // start transparent, before anything is shown or measured
+  const v = spots[k]; let hint = '';
+  btn = btn || [...document.querySelectorAll(`.ipin[data-k=${k}]`)].pop();
+  const t = btn ? btn.parentElement : $('chips');
+  if (!btn) hint = 'Nothing to point at yet. To see this in the chat, ' + v.hint;
+  tip.innerHTML = '';
+  const x = Object.assign(document.createElement('button'), {className: 'x', textContent: '✕', type: 'button'}); x.setAttribute('aria-label', 'Close');
+  const h = Object.assign(document.createElement('h3'), {textContent: v.label}), p = Object.assign(document.createElement('p'), {textContent: v.body}), ex = document.createElement('div');
+  v.extra && v.extra(ex);
+  const go = Object.assign(document.createElement('div'), {className: 'go'});
+  v.parts.forEach(([id, l]) => { const b = Object.assign(document.createElement('button'), {textContent: 'Learn: ' + l + ' →', type: 'button'}); b.onclick = () => { closeTip(true); goPart(id); }; go.append(b); });
+  tip.append(x, h, p, ex);
+  if (hint) tip.append(Object.assign(document.createElement('p'), {textContent: hint, className: 'note'}));
+  tip.append(go);
+  tip.setAttribute('aria-label', v.label);
+  document.body.style.paddingBottom = '50vh'; // spare room so targets at the page bottom can still be centred
+  const m = $('msgs'), mr = m.getBoundingClientRect(), tr0 = t.getBoundingClientRect(); // reveal it inside the chat's own scroller only (never the page: that's the eased scroll's job)
+  if (t !== m && m.contains(t)) m.scrollTop += tr0.top < mr.top ? tr0.top - mr.top - 8 : tr0.bottom > mr.bottom ? tr0.bottom - mr.bottom + 8 : 0;
+  [shade, tip].forEach(e => e.hidden = false); tip.style.maxHeight = 'none';
+  // pick above/below, then work out the scroll that centres target + tooltip as one group (clamped to what the page can scroll)
+  const r0 = t.getBoundingClientRect(), H = innerHeight, hh = r0.height + 2 * PAD, th = Math.min(tip.offsetHeight, Math.max(120, H - 32 - hh - GAP)),
+    top0 = r0.top - PAD, gt = Math.max(16, (H - (hh + GAP + th)) / 2), minD = -scrollY, maxD = document.documentElement.scrollHeight - H - scrollY,
+    clamp = d => Math.min(Math.max(d, minD), maxD), db = clamp(top0 - gt), da = clamp(top0 - (gt + th + GAP)),
+    err = (d, below) => { const ht = top0 - d, g0 = below ? ht : ht - GAP - th, g1 = below ? ht + hh + GAP + th : ht + hh; return Math.abs((g0 + g1) / 2 - H / 2) + (g0 < 8 || g1 > H - 8 ? 1000 : 0); },
+    nat = tip.offsetHeight + 1, fitsDown = top0 >= EDGE && top0 + hh + GAP + nat <= H - EDGE, fitsUp = top0 - GAP - nat >= EDGE && top0 + hh <= H - EDGE, // already room as-is?
+    stay = fitsDown || fitsUp, dir = stay ? (fitsDown ? 'down' : 'up') : err(db, true) <= err(da, false) + 1 ? 'down' : 'up';
+  cur = {t, btn, dir, y0, finalY: scrollY + (stay ? 0 : dir === 'down' ? db : da), ready: true}; // no scroll at all when it already fits
+  document.documentElement.style.overflow = 'hidden'; // freeze page scroll; only the tooltip scrolls
+  $('viewbar').style.visibility = 'hidden'; // the sticky bar would otherwise show through the spotlight
+  [hole, arrow].forEach(e => e.hidden = false); place(); x.focus({preventScroll: true});
+  const mine = cur, moving = Math.abs(mine.finalY - scrollY) > 1, MS = 260, fade = [hole, tip, arrow];
+  // ease-out cubic is ~87% done at 50% of the time, so fade the tooltip in from there: it lands as the scroll settles
+  setTimeout(() => mine === cur && fade.forEach(e => e.classList.remove('pre')), moving ? MS * 0.5 : 0);
+  scrollAnim(mine.finalY, MS); // overlay is already at its final spot; the target slides into it
+}
+shade.onclick = () => closeTip(); tip.addEventListener('click', e => e.target.classList.contains('x') && closeTip());
+document.addEventListener('keydown', e => e.key === 'Escape' && closeTip());
+addEventListener('resize', () => { if (cur) cur.dir = null; place(); }); addEventListener('scroll', place, true);
+
+function setView(v) {
+  $('v-chat').hidden = v !== 'chat'; $('v-parts').hidden = v !== 'parts';
+  document.querySelectorAll('#viewbar button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === v));
+}
+function goPart(id) { setView('parts'); $(id).scrollIntoView({behavior: 'smooth'}); }
+$('viewbar').addEventListener('click', e => e.target.dataset.view && setView(e.target.dataset.view));
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.back'); if (!a) return;
+  e.preventDefault(); setView('chat'); openTip(a.dataset.spot);
+});
+document.addEventListener('click', e => { const b = e.target.closest('.ipin'); b && openTip(b.dataset.k, b); });
+
+const say = (cls, text) => { const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; $('msgs').append(d); $('msgs').scrollTop = 1e6; return d; };
+function typeInto(d, text, ms, cb) {
+  const toks = tokenize(text); let i = 0; d.classList.add('cur');
+  const t = setInterval(() => {
+    d.textContent += toks[i++]; $('msgs').scrollTop = 1e6;
+    if (i < toks.length) return;
+    clearInterval(t); d.classList.remove('cur'); cb(toks.length);
+  }, ms);
+}
+function stream(text) {
+  const d = say('b', '');
+  typeInto(d, text, 70, () => { hist.push({role: 'Bot', text}); busy = false; $('csend').disabled = false; info(d, 'stream'); });
+}
+function think(thought, answer) {
+  const wrap = Object.assign(document.createElement('div'), {className: 'msg think'}), det = Object.assign(document.createElement('details'), {open: true}), sum = document.createElement('summary'), body = document.createElement('div');
+  sum.textContent = '💭 Thinking…'; det.append(sum, body); wrap.append(det); $('msgs').append(wrap); // the pin lives on the wrapper: a closed <details> doesn't render anything but its <summary>
+  typeInto(body, thought, 45, n => {
+    sum.textContent = `💭 Thought for ${n} tokens (tap to read)`; det.open = false; hist.push({role: 'Thinking', text: thought}); info(wrap, 'think');
+    setTimeout(() => stream(answer), 400);
+  });
+}
+function send(text) {
+  text = text.trim(); if (busy || !text) return;
+  busy = true; $('csend').disabled = true; $('cin').value = ''; say('u', text); hist.push({role: 'You', text});
+  const q = text.toLowerCase();
+  if (/bigger|larger|9\.11|9\.9/.test(q)) setTimeout(() => think('The question: which is bigger, 9.11 or 9.9? Careful. 11 is more than 9, but these are decimals, so I should not compare 11 and 9 directly. Compare the tenths place first: 9.11 has 1 tenth, 9.9 has 9 tenths. 9 tenths is more than 1 tenth. Double-check by writing 9.9 as 9.90: 90 hundredths against 11 hundredths. 90 is more than 11. So 9.9 is bigger.', '9.9 is bigger. Written as 9.90 versus 9.11, that is 90 hundredths against 11 hundredths.'), 400);
+  else if (/weather|umbrella|rain|paris/.test(q)) {
+    const d = say('tool', '🔧 Using tool: weather("Paris") …');
+    setTimeout(() => { d.textContent = '🔧 weather("Paris") → Rain, 12°C'; hist.push({role: 'Tool', text: d.textContent}); info(d, 'tool'); setTimeout(() => stream('Yes, take an umbrella! It is going to rain in Paris today, around 12°C.'), 600); }, 1300);
+  } else if (/sky|blue/.test(q)) setTimeout(() => stream('The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'), 500);
+  else if (/joke/.test(q)) setTimeout(() => stream('Why did the computer go to the doctor? It had a virus!'), 500);
+  else setTimeout(() => stream('I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'), 500);
+}
+$('cform').addEventListener('submit', e => { e.preventDefault(); send($('cin').value); });
+$('chips').innerHTML = ['Why is the sky blue?', 'Tell me a joke', 'Do I need an umbrella in Paris?', 'Which is bigger, 9.11 or 9.9?'].map(t => `<button type="button">${t}</button>`).join('');
+$('chips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
+info(say('sys', '👀 Normally hidden: ' + SYS), 'sys');
+say('b', 'Hi! Ask me something. 👋');
+</script>
+</body>
+</html>
