@@ -1129,7 +1129,7 @@ function send(text) {
 }
 const resetChat = () => { // start over: empty chat, empty notebook, and the narrated first-time tour comes back
   if (busy) return;
-  H.stop(); H.mem = []; H.queued = null; scene = null; seen.first = seen.tool = false; hist.length = 0; $('msgs').textContent = ''; greet(); resetPages([]);
+  H.stop(); H.mem = []; H.queued = null; scene = null; Object.keys(seen).forEach(k => seen[k] = false); hist.length = 0; $('msgs').textContent = ''; greet(); resetPages([]);
   $('hyoutxt').textContent = 'waiting…'; $('htok').textContent = '–'; $('htooltxt').textContent = 'idle'; $('engine').classList.add('idle'); $('cin').selectedIndex = 0; syncSend();
 };
 $('creset').onclick = $('hreset').onclick = resetChat;
@@ -1141,7 +1141,7 @@ $('cin').append(...MSGS.map(t => new Option(t, t))); $('cin').onchange = syncSen
 // ---- under the hood: a slow, narrated machine that replays each chat turn ----
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches, wrap = $('hoodwrap');
 let isOpen = false, speed = 1, dwell = 0, shownAt = 0; // speed 1 = slow and clear
-const seen = {first: false, tool: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
+const seen = {first: false, tool: false, think: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
 const lid = () => wrap.style.setProperty('--lidH', $('chatface').offsetHeight + 'px'); lid(); addEventListener('resize', lid);
 function hood(on, instant) {
   isOpen = on; lid(); const e = $('engine'), lidH = $('chatface').offsetHeight, anim = !instant && !RM && wrap.classList.contains('open') !== on, from = e.offsetHeight;
@@ -1280,7 +1280,9 @@ const H = {
         }
       }
       if (p.think) {
-        await loop(p.think, 'think', 'Thinking: ', 'It writes notes to itself first, one token at a time.');
+        if (!seen.think && tips()) { tell('hmodel', 'This question gets a thinking step: the model writes private notes to itself first, then the reply. Same process, just aimed at notes.'); await read(2200); } // always the first thing said about thinking, even on the very first question
+        if (tips()) seen.think = true;
+        await loop(p.think, 'think', 'Thinking: ', 'The notes are written one token at a time.');
         await loop(p.answer, 'b', 'Bot: ', 'Thinking is done. Now it writes the reply: the same process all over again, one token at a time.', true);
       } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
       model.classList.remove('work'); $('hcall').hidden = true; spot();
