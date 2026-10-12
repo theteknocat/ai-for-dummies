@@ -227,10 +227,12 @@ div.think summary{cursor:pointer;font-style:normal;font-weight:700;color:#9b6bff
 .news details{margin-top:10px;border-top:2px solid var(--line);padding-top:10px}
 .news details>summary{cursor:pointer;font-weight:700;color:var(--bt)}
 .news h4{margin:16px 0 4px;color:var(--at);font-size:1rem}
-.news ul{margin:6px 0 6px 1.2em;padding:0}
+.news ul{margin:6px 0 6px 2em;padding:0}
 .news .bottom{background:var(--bg);border-left:5px solid var(--c);padding:8px 14px;border-radius:0 12px 12px 0;margin:14px 0 6px}
 .news .src{font-size:.85rem;color:var(--mute);margin:8px 0 0}
 .news .src a{color:var(--bt)}
+.deeper{font-size:.9rem;color:var(--mute);margin:12px 0 0}.deeper a,.res a{color:var(--bt)}.res li{margin:8px 0}.res small{color:var(--mute)}
+footer.site{text-align:center;color:var(--mute);font-size:.9rem;padding:28px 16px 36px}footer.site a{color:var(--bt);font-weight:700}
 a.back{display:inline-block;font-size:.9rem;margin-bottom:6px;color:var(--bt);font-weight:700}
 dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}
 dt{font-weight:700;color:var(--bt)}dd{margin:0}
@@ -254,6 +256,7 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
   <a href="/explore" data-view="parts">🧩 Explore</a>
   <a href="/headlines" data-view="news">🗞️ Headlines</a>
   <a href="/faq" data-view="faq">❓ FAQ</a>
+  <a href="/resources" data-view="resources">📚 Resources</a>
 </div>
 
 <div id="v-chat">
@@ -323,6 +326,7 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
     <p class="note">The numbers here are made up for show. Real ones differ per model, but the idea is identical. Real models know roughly 50,000–200,000 different kinds of brick, like a Lego set with that many part types. Common short words are usually one brick; long or rare words are built from several.</p>
   </div>
   <p><b>Important:</b> a token number is just a <i>part number</i>. It says <i>which</i> brick, not what it means, just as a Lego part number doesn't tell you what you're building. <b>Tokens are what goes into the model. The weights (next part) are the model itself.</b></p>
+  <p class="deeper">🔭 <b>Go deeper:</b> <a href="https://ynarwal.github.io/how-llms-work/" target="_blank" rel="noopener">How LLMs Work</a>, a long visual walkthrough that starts with tokens.</p>
   <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Prompt</dt><dd>What you type to the AI.</dd><dt>Token</dt><dd>A small chunk of text (a word, part of a word, or punctuation) with its own part number. Think of it as a Lego brick of text. The only thing a model can read.</dd></dl></div>
 </section>
 
@@ -361,6 +365,7 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
   <p><b>Training</b> is how the dials get set. Nobody turns them by hand. The machine guesses, gets told "wrong, it was a cat", and each dial is nudged a tiny bit in the direction that would have made it less wrong. Repeat trillions of times. Press <b>Train it!</b> to watch a baby version of this.</p>
   <p>A real model works the same way, with <b>hundreds of billions</b> of dials instead of 9 and whole libraries of text instead of 3 examples. The finished "model" file is nothing but the final position of all the dials. That's where its "knowledge" lives.</p>
   <p><b>So how do tokens and weights connect?</b> Each brick's part number is looked up in a giant table to get a long list of numbers describing that brick (the machine's "notes" on it). Those notes are dials too, set during training. The brick's numbers then flow through the rest of the dials, and out the other end come scores for every possible next brick.</p>
+  <p class="deeper">🔭 <b>Go deeper:</b> <a href="https://animatedllm.github.io/pretraining-simple" target="_blank" rel="noopener">AnimatedLLM’s training demo</a> shows how a model learns, and <a href="https://bbycroft.net/llm" target="_blank" rel="noopener">LLM Visualization</a> is a 3D tour of a tiny model (more technical).</p>
   <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Model</dt><dd>The finished wall of dials, with every setting fixed.</dd><dt>Weight / Parameter</dt><dd>One dial: a single number. Models have billions.</dd><dt>Training</dt><dd>Guess, get corrected, nudge the dials. Repeat for ages. Done once, before you use it.</dd><dt>Inference</dt><dd>Using the finished model: dials frozen, text in, scores out. Every chat message is this.</dd></dl></div>
 </section>
 
@@ -378,6 +383,7 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
     <p class="note" id="stageNote"></p>
   </div>
   <p class="note">Why can the same question give different answers? The pick is a weighted dice roll, not always the top score. That "randomness" setting is called <span class="real">temperature</span>.</p>
+  <p class="deeper">🔭 <b>Go deeper:</b> <a href="https://animatedllm.github.io/generation-simple" target="_blank" rel="noopener">AnimatedLLM’s generation demo</a> animates a real model picking each next token (works on a phone). <a href="https://poloclub.github.io/transformer-explainer" target="_blank" rel="noopener">Transformer Explainer</a> shows the machinery inside one (best on a desktop).</p>
   <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Generation</dt><dd>Writing a reply by repeating "guess the next token, add it" until done.</dd><dt>Temperature</dt><dd>How adventurous the dice roll is when picking the next token.</dd></dl></div>
 </section>
 
@@ -437,6 +443,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   <h2>🗞️ Scary AI headlines, one question at a time</h2>
   <p>Most scary AI stories start from something real. But the headline and the event are often two different things. Each one below asks the same three things: <b>is there anything to it, what is really going on, and what does that mean?</b></p>
   <p class="note">This is only about how the machinery works. It’s not a forecast, because nobody can predict the future, and experts genuinely disagree. Where sources conflict or details are unconfirmed, we say so. </p>
+  <p class="deeper">🔭 <b>Go deeper:</b> <a href="https://incidentdatabase.ai" target="_blank" rel="noopener">the AI Incident Database</a> collects reported AI incidents from the news. It’s a raw, unfiltered archive, so expect headlines without the explaining.</p>
 </section>
 <div class="card">
   <h3>🌤️ The short version</h3>
@@ -715,7 +722,43 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </article>
 </div>
 
+<div id="v-resources" class="news res" hidden>
+<section class="reveal">
+  <span class="tag">RESOURCES</span>
+  <h2>📚 Where to go next</h2>
+  <p>This site is deliberately light. If something here made you curious, these go further. They’re other people’s sites, so they may change, and each opens in a new tab.</p>
+</section>
+<article class="card" id="watch">
+  <h3>🎬 Watch it work</h3>
+  <ul>
+    <li><b><a href="https://animatedllm.github.io" target="_blank" rel="noopener">AnimatedLLM</a></b><br><small>Press play and watch a real model pick each next word, with the odds shown. Also has training demos. Works on a phone.</small></li>
+    <li><b><a href="https://poloclub.github.io/transformer-explainer" target="_blank" rel="noopener">Transformer Explainer</a></b><br><small>A live diagram of the machinery inside a model. Detailed and best on a desktop screen.</small></li>
+    <li><b><a href="https://bbycroft.net/llm" target="_blank" rel="noopener">LLM Visualization</a></b><br><small>A 3D walkthrough of a tiny model. More technical than the others.</small></li>
+    <li><b><a href="https://ynarwal.github.io/how-llms-work/" target="_blank" rel="noopener">How LLMs Work</a></b><br><small>A long scrolling walkthrough based on a lecture by Andrej Karpathy. Its figures are rough numbers from about 2024, as the site says.</small></li>
+  </ul>
+</article>
+<article class="card" id="learn">
+  <h3>📖 Learn more</h3>
+  <ul>
+    <li><b><a href="https://www.elementsofai.com" target="_blank" rel="noopener">Elements of AI</a></b><br><small>A free course for non-experts from the University of Helsinki. It covers AI broadly rather than chatbots, and the exercises need a free account.</small></li>
+    <li><b><a href="https://theaicareerlab.com/blog/tokens-and-context-windows-explained" target="_blank" rel="noopener">Tokens and context windows explained</a></b><br><small>A short plain-English article on why a chatbot “forgets”. It sits on a site that sells AI tools.</small></li>
+  </ul>
+</article>
+<article class="card" id="cases">
+  <h3>🗞️ See the real cases</h3>
+  <ul>
+    <li><b><a href="https://incidentdatabase.ai" target="_blank" rel="noopener">AI Incident Database</a></b><br><small>A searchable archive of reported AI incidents. Raw news reports, not explained.</small></li>
+  </ul>
+</article>
+<article class="card" id="sources">
+  <h3>🔗 Sources used on this site</h3>
+  <p>Every “Read more” link from the Headlines and FAQ pages, in one place.</p>
+  <div id="srclist"></div>
+</article>
+</div>
+
 </main>
+<footer class="site">Made by <a href="https://peter-epp.dev" target="_blank" rel="noopener">Peter Epp</a></footer>
 <script>
 const $ = id => document.getElementById(id);
 
@@ -977,10 +1020,11 @@ document.addEventListener('keydown', e => e.key === 'Escape' && closeTip());
 addEventListener('resize', () => { if (cur) cur.dir = null; place(); }); addEventListener('scroll', place, true);
 
 // ---- router: each main section has its own URL (/, /explore, /headlines, /faq); #hashes jump to an item
-const ROUTES = {chat: '/', parts: '/explore', news: '/headlines', faq: '/faq'}, SITE = 'https://ai-for-dummies.info', META = {
+const ROUTES = {chat: '/', parts: '/explore', news: '/headlines', faq: '/faq', resources: '/resources'}, SITE = 'https://ai-for-dummies.info', META = {
   chat: [document.title, document.querySelector('meta[name=description]').content],
   parts: ['Explore by part: how an AI chatbot works, piece by piece | AI for Dummies', 'Walk through every part of an AI chatbot (the app, tokens, the model, memory, thinking and tools) with simple analogies and things to play with.'],
   news: ['Scary AI headlines, explained | AI for Dummies', 'What the scary AI headlines actually mean, one at a time: what is real, what would have to go wrong, and how the machinery really works.'],
+  resources: ['Resources: go deeper on how AI works | AI for Dummies', 'Where to go next: interactive demos, free courses, a database of real AI incidents, and every source linked on this site.'],
   faq: ['AI FAQ: common questions about chatbots | AI for Dummies', 'Short, plain answers to the questions people ask most about AI chatbots: why they make things up, whether they remember you, why answers change and more.']};
 const canPush = location.protocol.startsWith('http'), pathView = () => { const p = location.pathname.replace(/\/+$/, '') || '/'; return Object.keys(ROUTES).find(k => ROUTES[k] === p) || 'chat'; };
 let curView = '';
@@ -1018,7 +1062,20 @@ function toc(view, items) { // each entry is an icon and a text span side by sid
   box.querySelectorAll(items).forEach(el => { const a = Object.assign(document.createElement('a'), {href: ROUTES[view] + '#' + el.id}), [, ic, tx] = el.querySelector('h2,h3').textContent.match(/^(\S+)\s+([\s\S]*)$/); a.innerHTML = '<span class="ic"></span><span></span>'; a.firstChild.textContent = ic; a.lastChild.textContent = tx; const li = document.createElement('li'); li.append(a); ul.append(li); });
   view === 'parts' ? box.prepend(n) : box.querySelector('section').after(n);
 }
-toc('parts', 'section[id]'); toc('news', 'article[id]'); toc('faq', 'article[id]');
+{ // collect every existing "Read more" link, grouped by the headline or question it supports
+  const box = $("srclist");
+  [['v-news', 'Headlines'], ['v-faq', 'FAQ']].forEach(([id, label]) => {
+    const h = document.createElement('h4'); h.textContent = label; box.append(h);
+    $(id).querySelectorAll('article[id]').forEach(a => {
+      const links = [...a.querySelectorAll('.src a')]; if (!links.length) return;
+      const p = document.createElement('p'), t = document.createElement('b'); t.textContent = a.querySelector('h3').textContent; p.append(t);
+      const ul = document.createElement('ul'); links.forEach(l => { const li = document.createElement('li'), c = l.cloneNode(true); li.append(c); ul.append(li); });
+      box.append(p, ul);
+    });
+  });
+}
+toc('parts', 'section[id]'); toc('news', 'article[id]'); toc('resources', 'article[id]');
+toc('faq', 'article[id]');
 document.addEventListener('click', e => {
   const a = e.target.closest('a.back'); if (!a) return;
   e.preventDefault(); nav('chat'); hood(false, true); openTip(a.dataset.spot);
