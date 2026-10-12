@@ -1188,6 +1188,8 @@ $('engine').addEventListener('click', e => e.target.closest('#hnb') ? note('hpin
 $('hchips').innerHTML = MSGS.map(t => `<button type="button">${t}</button>`).join(''); $('hchips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
 resetPages([]);
 info(say('sys', '👀 Normally hidden: ' + SYS), 'sys');
+// the server answers every unknown path with this page, so unknown paths get noindex (crawlers see a 200) and are tidied to the home URL
+if (canPush && !Object.values(ROUTES).includes(location.pathname.replace(/\/+$/, '') || '/')) { document.head.append(Object.assign(document.createElement('meta'), {name: 'robots', content: 'noindex'})); history.replaceState(null, '', '/'); }
 nav(pathView(), decodeURIComponent(location.hash.slice(1)), false); document.fonts && document.fonts.ready.then(setBar);
 say('b', 'Hi! Ask me something. 👋');
 </script>
