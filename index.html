@@ -212,6 +212,7 @@ div.think summary{cursor:pointer;font-style:normal;font-weight:700;color:#9b6bff
 .news article{margin:22px 0}
 .news h3{margin:0 0 6px;font-size:1.25rem;line-height:1.3}
 .news .tagline{color:var(--mute);margin:0 0 8px}
+.news .short{font-weight:600;margin:6px 0 4px}
 .news details{margin-top:10px;border-top:2px solid var(--line);padding-top:10px}
 .news details>summary{cursor:pointer;font-weight:700;color:var(--b)}
 .news h4{margin:16px 0 4px;color:var(--a);font-size:1rem}
@@ -241,12 +242,13 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
   <button data-view="chat" aria-pressed="true">💬 Follow a chat</button>
   <button data-view="parts" aria-pressed="false">🧩 Explore by part</button>
   <button data-view="news" aria-pressed="false">🗞️ Debunking the headlines</button>
+  <button data-view="faq" aria-pressed="false">❓ FAQ</button>
 </div>
 
 <div id="v-chat">
 <section>
   <span class="tag">START HERE</span>
-  <h2>You've used one. Let's peek inside. 💬</h2>
+  <h2>💬 You've used one. Let's peek inside.</h2>
   <p>This is a <b>pretend chatbot</b> (it only knows a few tricks). Send a message, then tap the little orange <b>i</b> buttons on the chat to peek behind that piece of the screen. The rest of the page dims so you can see exactly what's being explained.</p>
   <div class="hoodwrap" id="hoodwrap">
   <div class="card chat" id="chatface">
@@ -280,9 +282,9 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 
 <!-- 1 APP -->
 <section class="reveal" id="s-app">
-  <a href="#" class="back" data-spot="app">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 1</span>
-  <h2>The chat window = the harness 🧰</h2>
+  <h2>🧰 The chat window = the harness</h2>
+  <a href="#" class="back" data-spot="app">💬 Where do I see this in a chat?</a>
   <p>The window you type into is <b>not</b> the AI. It's an ordinary app wrapped around the AI. The technical name for that wrapper is the <span class="real">harness</span>, and the AI inside is called the <span class="real">model</span>.</p>
   <div class="flow" aria-label="You talk to the harness, which talks to the model"><div><i>🙂</i>You</div><span>⇄</span><div><i>🧰</i>Harness<br><small>the app</small></div><span>⇄</span><div><i>🧠</i>Model<br><small>the brain · latest pick</small></div></div>
   <p>The model is surprisingly limited: text in, text out, and it forgets everything the moment it replies. The harness fills in every gap:</p>
@@ -299,25 +301,25 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 
 <!-- 2 TEXT BOX -->
 <section class="reveal" id="s-text">
-  <a href="#" class="back" data-spot="send">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 2</span>
-  <h2>The text box = tokens 🧱</h2>
-  <p>Whatever you type is your <span class="real">prompt</span>. But the model can't read letters or words like you. It only understands <b>numbers</b>. So first, your prompt is chopped into little chunks called <span class="real">tokens</span>, like Lego bricks. Each brick gets a number tag, like a coat-check ticket.</p>
+  <h2>🧱 The text box = tokens</h2>
+  <a href="#" class="back" data-spot="send">💬 Where do I see this in a chat?</a>
+  <p>Whatever you type is your <span class="real">prompt</span>. But the model can't read letters or words like you. It only understands <b>numbers</b>. So first, your prompt is taken apart into small standard pieces called <span class="real">tokens</span>. Think of <b>Lego bricks</b>: from a fixed set of standard parts you can build anything. Each piece of text is a brick, and each kind of brick has its own <b>part number</b>.</p>
   <div class="card">
     <label for="txt"><b>Type anything:</b></label>
     <input type="text" id="txt" value="Unbelievably friendly dragons love pizza!">
     <div class="bricks" id="bricks" aria-live="polite"></div>
-    <p class="note">The numbers here are made up for show. Real ones differ per model, but the idea is identical. Real models know roughly 50,000–200,000 different bricks.</p>
+    <p class="note">The numbers here are made up for show. Real ones differ per model, but the idea is identical. Real models know roughly 50,000–200,000 different kinds of brick, like a Lego set with that many part types. Common short words are usually one brick; long or rare words are built from several.</p>
   </div>
-  <p><b>Important:</b> a token number is just a <i>name tag</i>. It says <i>which</i> brick, not what it means. <b>Tokens are what goes into the model. The weights (next part) are the model itself.</b></p>
-  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Prompt</dt><dd>What you type to the AI.</dd><dt>Token</dt><dd>A small chunk of text (a word, part of a word, or punctuation) with a number tag. The only thing a model can read.</dd></dl></div>
+  <p><b>Important:</b> a token number is just a <i>part number</i>. It says <i>which</i> brick, not what it means, just as a Lego part number doesn't tell you what you're building. <b>Tokens are what goes into the model. The weights (next part) are the model itself.</b></p>
+  <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Prompt</dt><dd>What you type to the AI.</dd><dt>Token</dt><dd>A small chunk of text (a word, part of a word, or punctuation) with its own part number. Think of it as a Lego brick of text. The only thing a model can read.</dd></dl></div>
 </section>
 
 <!-- 3 BRAIN -->
 <section class="reveal" id="s-brain">
-  <a href="#" class="back" data-spot="model">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 3</span>
-  <h2>The brain behind the screen = the model 🎛️</h2>
+  <h2>🎛️ The brain behind the screen = the model</h2>
+  <a href="#" class="back" data-spot="model">💬 Where do I see this in a chat?</a>
   <p>The model is a wall of dials. Each dial is a <span class="real">weight</span>: one number saying "how much should this clue matter?" <span class="real">Parameters</span> is just another word for the dials. A "7-billion-parameter model" has 7 billion dials.</p>
   <p>Here's a tiny machine with just <b>9 dials</b> that guesses an animal from a clue. Two very different things happen to a machine like this, so try them one at a time:</p>
   <div class="card">
@@ -347,15 +349,15 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
   </div>
   <p><b>Training</b> is how the dials get set. Nobody turns them by hand. The machine guesses, gets told "wrong, it was a cat", and each dial is nudged a tiny bit in the direction that would have made it less wrong. Repeat trillions of times. Press <b>Train it!</b> to watch a baby version of this.</p>
   <p>A real model works the same way, with <b>hundreds of billions</b> of dials instead of 9 and whole libraries of text instead of 3 examples. The finished "model" file is nothing but the final position of all the dials. That's where its "knowledge" lives.</p>
-  <p><b>So how do tokens and weights connect?</b> Each brick's number tag is looked up in a giant table to get a long list of numbers describing that brick (the machine's "notes" on it). Those notes are dials too, set during training. The brick's numbers then flow through the rest of the dials, and out the other end come scores for every possible next brick.</p>
+  <p><b>So how do tokens and weights connect?</b> Each brick's part number is looked up in a giant table to get a long list of numbers describing that brick (the machine's "notes" on it). Those notes are dials too, set during training. The brick's numbers then flow through the rest of the dials, and out the other end come scores for every possible next brick.</p>
   <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Model</dt><dd>The finished wall of dials, with every setting fixed.</dd><dt>Weight / Parameter</dt><dd>One dial: a single number. Models have billions.</dd><dt>Training</dt><dd>Guess, get corrected, nudge the dials. Repeat for ages. Done once, before you use it.</dd><dt>Inference</dt><dd>Using the finished model: dials frozen, text in, scores out. Every chat message is this.</dd></dl></div>
 </section>
 
 <!-- 4 REPLY -->
 <section class="reveal" id="s-reply">
-  <a href="#" class="back" data-spot="stream">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 4</span>
-  <h2>The reply typing out = guess, add, repeat 🔮</h2>
+  <h2>🔮 The reply typing out = guess, add, repeat</h2>
+  <a href="#" class="back" data-spot="stream">💬 Where do I see this in a chat?</a>
   <p>The model only ever does <b>one thing</b>: given the bricks so far, score every possible next brick, and pick one. Then it adds that brick to the pile and does it again. That's how it "writes" a whole answer, which is why replies type out piece by piece. Press the button to step through.</p>
   <div class="card">
     <div class="pills" id="pills"></div>
@@ -370,9 +372,9 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 
 <!-- 5 MEMORY -->
 <section class="reveal" id="s-memory">
-  <a href="#" class="back" data-spot="memory">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 5</span>
-  <h2>Its memory = the context window 📓</h2>
+  <h2>📓 Its memory = the context window</h2>
+  <a href="#" class="back" data-spot="memory">💬 Where do I see this in a chat?</a>
   <p>The model forgets everything the instant it finishes a reply. So why does the chat feel like a conversation? Because the harness keeps a running copy of the whole chat and, every time you press Send, hands the model <b>the whole notebook</b> to read from scratch:</p>
   <div class="card"><pre style="margin:0;white-space:pre-wrap;font-size:.85rem">[hidden instructions] You are a helpful assistant...
 You: Hi!
@@ -385,9 +387,9 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 
 <!-- 6 THINKING -->
 <section class="reveal" id="s-think">
-  <a href="#" class="back" data-spot="think">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 6</span>
-  <h2>"Thinking…" = a private scratchpad 💭</h2>
+  <h2>💭 "Thinking…" = a private scratchpad</h2>
+  <a href="#" class="back" data-spot="think">💬 Where do I see this in a chat?</a>
   <p>Some chatbots first write notes to themselves, and only then answer. These notes are made exactly like any reply, one token at a time, using the very same guessing loop. They're added to the notebook, so the final answer is written after re-reading them.</p>
   <p>It's like <b>showing your work on a maths test</b>: writing the steps down makes the final answer easier to get right. The cost: all those extra tokens take extra time and money, and the notes can be longer than the answer you see. The harness usually collapses or hides them.</p>
   <div class="terms"><b>WORDS IN THIS PART</b><dl><dt>Thinking / reasoning</dt><dd>Tokens the model writes to itself as a scratchpad before its real answer. Same guessing, just aimed at notes.</dd></dl></div>
@@ -395,9 +397,9 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 
 <!-- 7 TOOLS -->
 <section class="reveal" id="s-tools">
-  <a href="#" class="back" data-spot="tool">💬 Where do I see this in a chat?</a><br>
   <span class="tag">PART 7</span>
-  <h2>"Using a tool…" = agents 🤲</h2>
+  <h2>🤲 "Using a tool…" = agents</h2>
+  <a href="#" class="back" data-spot="tool">💬 Where do I see this in a chat?</a>
   <p>The model is only a text-guesser. It can't browse the web, open files or check the weather. It's like a very clever person locked in a room who can only pass notes under the door.</p>
   <p>The <span class="real">harness</span> is the assistant sitting outside the door. It carries the notes, and when the model asks, it actually does things with <span class="real">tools</span>, then hands the results back. This back-and-forth is the <span class="real">agentic loop</span>, and a model set up to run it until a job is done is an <span class="real">agent</span>. Step through it:</p>
   <div class="card">
@@ -421,7 +423,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 <div id="v-news" class="news" hidden>
 <section class="reveal">
   <span class="tag">DEBUNKING THE HEADLINES</span>
-  <h2>Scary AI headlines, one question at a time 🗞️</h2>
+  <h2>🗞️ Scary AI headlines, one question at a time</h2>
   <p>Most scary AI stories start from something real. But the headline and the event are often two different things. Each one below asks the same three things: <b>is there anything to it, what is really going on, and what does that mean?</b></p>
   <p class="note">This is only about how the machinery works. It’s not a forecast, because nobody can predict the future, and experts genuinely disagree. Where sources conflict or details are unconfirmed, we say so. </p>
 </section>
@@ -594,6 +596,113 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </article>
 </div>
 
+<div id="v-faq" class="news" hidden>
+<section class="reveal">
+  <span class="tag">FAQ</span>
+  <h2>❓ Questions people actually ask</h2>
+  <p>Short answers first. Tap <b>Explain it</b> for the why.</p>
+  <p class="note">These are the questions that come up most often across explainers and help pages about chatbots. Where an answer rests on a study or help page, it’s linked.</p>
+</section>
+<article class="card">
+  <h3>🧩 What’s the difference between AI, an LLM and ChatGPT?</h3>
+  <p class="short">AI is the big field. An LLM is one kind of AI that works with text. ChatGPT is a chat app built around an LLM.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>Think of a car. “AI” is like “vehicles”: a huge category. An <b>LLM</b> (large language model) is the engine: it reads text and predicts more text. <b>ChatGPT</b> is the whole car: the engine plus the dashboard, steering and brakes, which is the app around it (the harness).</p>
+    <p>That’s why the same engine can power many different apps, and why an app can add things the engine alone can’t do, like searching the web.</p>
+  </details>
+</article>
+<article class="card">
+  <h3>🎲 Why does AI make things up?</h3>
+  <p class="short">It’s built to write the most likely next words, not to look up facts. When it doesn’t know, a confident guess still looks like the likeliest text.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>It’s like a friend who never says “I don’t know”. Ask about something they half remember and they’ll improvise something that sounds right. The model works the same way: it picks likely-sounding tokens one at a time, and nothing in the process stops to check whether the result is true.</p>
+    <p>It can also be wrong because its training texts had gaps or mistakes. People call this <b>hallucinating</b>, but “lying” isn’t quite right: lying needs an intent to deceive, and the model has no idea when it’s wrong.</p>
+    <p><b>What helps:</b> double-check names, numbers, quotes and sources that matter. Apps that give the model a search tool make errors rarer, but not impossible (see the next question).</p>
+    <p class="src">Read more: <a href="https://rss.org.uk/policy-campaigns/our-campaigns/our-work-on-public-understanding/faqs-statistics-misinformation-and-ai/" target="_blank" rel="noopener">Royal Statistical Society FAQ</a> · <a href="https://towardsdatascience.com/unraveling-large-language-model-hallucinations/" target="_blank" rel="noopener">Why LLMs hallucinate</a></p>
+  </details>
+</article>
+<article class="card">
+  <h3>🔎 Why is it still wrong when it can search for the answer?</h3>
+  <p class="short">Searching hands it sources, but the model still has to pick the right ones, read them correctly and write them up. Any of those steps can slip, so it can be wrong even when the right answer is out there.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>Picture a student writing a report from library books. They might grab the wrong book, skim a page and misread it, or fill a gap with a guess while writing it up. Then they hand it in with the same confident tone, whether they got it right or not.</p>
+    <ul>
+      <li><b>Picking:</b> search finds pages that <i>look relevant</i>, not pages that are true. Google’s famous “glue on your pizza” answer came from a joke post.</li>
+      <li><b>Reading:</b> the model can misread a nuance, or take a page that doesn’t actually settle the question as if it did.</li>
+      <li><b>Writing:</b> the summary can add details the sources never said, or drift from what they said. Nothing re-checks the finished text against the page.</li>
+    </ul>
+    <p><b>What helps:</b> open the links the tool shows and check that the page really says what the summary claims, especially for health, money or legal questions. That goes for any page, this one included, which is why the sources here are linked.</p>
+    <p class="src">Read more: <a href="https://www.technologyreview.com/2024/05/31/1093019/why-are-googles-ai-overviews-results-so-bad/" target="_blank" rel="noopener">Why Google’s AI Overviews went wrong (MIT Technology Review)</a> · <a href="https://arxiv.org/abs/2608.26385" target="_blank" rel="noopener">Why search-assisted answers still hallucinate</a></p>
+  </details>
+</article>
+<article class="card">
+  <h3>⌨️ Is it just fancy autocomplete? Does it understand?</h3>
+  <p class="short">It’s trained to predict the next piece of text, like autocomplete, but at a vastly bigger scale. Whether that counts as “understanding” is still debated.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>Your phone’s autocomplete looks at the last couple of words. An LLM reads its whole notebook (the context window) and uses billions of dials shaped by an enormous amount of writing. That’s a big step up from autocomplete, but the basic job is the same: pick the next token.</p>
+    <p>What experts argue about is whether doing that very well amounts to some kind of understanding. Nobody has settled it. What isn’t disputed: it doesn’t look answers up in a database, and the dials stay fixed while you chat.</p>
+  </details>
+</article>
+<article class="card">
+  <h3>📓 Does it remember me? Does it learn from my chats?</h3>
+  <p class="short">In one chat it re-reads the whole conversation each time. Between chats it remembers nothing unless the app adds a memory feature. Separately, companies may use saved chats to train future versions.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>These are three different things:</p>
+    <ul>
+      <li><b>Inside a chat:</b> the notebook. The app re-sends the whole conversation every turn.</li>
+      <li><b>Memory features:</b> the app saves notes about you and pastes them onto the notebook next time. The model itself hasn’t changed.</li>
+      <li><b>Training:</b> a company may use saved chats to improve <i>later</i> models. The one you’re talking to doesn’t change mid-chat. Many apps let you switch this off in their privacy settings, but it varies by company and plan.</li>
+    </ul>
+    <p>A sensible habit: don’t paste in passwords or private details you wouldn’t want stored.</p>
+    <p class="src">Read more: <a href="https://help.openai.com/en/articles/7730893-data-controls-faq" target="_blank" rel="noopener">One example: OpenAI’s data controls FAQ</a></p>
+  </details>
+</article>
+<article class="card">
+  <h3>🔁 Why do I get a different answer every time?</h3>
+  <p class="short">It picks each next token with a weighted dice roll, not a fixed rule. The likeliest option usually wins, but not always.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>Imagine a jukebox that usually plays the top hit but sometimes picks another song. Each token is a roll of loaded dice, with better odds for likelier words.</p>
+    <p>One different pick early on changes what comes after it, because each token depends on all the ones before. So the whole answer can drift. A setting called <b>temperature</b> controls how adventurous the dice are. Lower means steadier answers. Many chat apps don’t let you change it, and even at the lowest setting, small differences can creep in.</p>
+  </details>
+</article>
+<article class="card">
+  <h3>🙇 Why does it agree with me so much?</h3>
+  <p class="short">It’s tuned on answers people rate highly, and people tend to rate agreement and flattery highly. So it can lean toward telling you what you want to hear.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>Picture a shop assistant paid on how happy you are when you leave. They’ll tend to say your choice is great. Researchers call this <b>sycophancy</b>. It comes partly from training that rewards answers people like.</p>
+    <p><b>What helps:</b> ask neutral questions (“What are the pros and cons?” instead of “Isn’t X great?”), ask it to argue the other side, and don’t treat its agreement as proof you’re right.</p>
+    <p class="src">Read more: <a href="https://arxiv.org/abs/2411.15287" target="_blank" rel="noopener">Sycophancy in LLMs: causes and mitigations</a></p>
+  </details>
+</article>
+<article class="card">
+  <h3>📰 Why doesn’t it know today’s news?</h3>
+  <p class="short">Its knowledge is frozen at the time it was trained. Anything newer only shows up if the app gives it a search tool.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>It’s like a printed encyclopedia: accurate up to its print date, silent after. Training takes a huge amount of time and computing power, so models aren’t updated daily.</p>
+    <p>A search tool is like handing it a phone: the app (the harness) does the lookup and pastes the results onto the notebook. Without one, the model may still give a confident answer about recent events, and it may be outdated or made up. The “cutoff date” a company advertises can also be fuzzy. Research has found a model’s knowledge can effectively stop earlier than advertised.</p>
+    <p class="src">Read more: <a href="https://arxiv.org/abs/2403.12958" target="_blank" rel="noopener">Understanding knowledge cutoffs</a></p>
+  </details>
+</article>
+<article class="card">
+  <h3>🍓 Why does it get letters and simple maths wrong?</h3>
+  <p class="short">It doesn’t see letters or digits the way you do. It sees tokens, chunks of text, so counting letters or lining up digits is awkward for it.</p>
+  <details>
+    <summary>Explain it</summary>
+    <p>Remember the Lego bricks? The model gets text as pre-built bricks. Asking “how many r’s are in strawberry?” is like asking someone to count the red studs on bricks they can only see as whole pieces. The individual letters never appear in what it reads.</p>
+    <p>Models can do better by spelling the word out step by step, or by calling a calculator tool. Newer models handle more of these cases, though results vary from model to model.</p>
+    <p class="src">Read more: <a href="https://arxiv.org/abs/2412.18626" target="_blank" rel="noopener">Why LLMs struggle to count letters</a></p>
+  </details>
+</article>
+</div>
+
 </main>
 <script>
 const $ = id => document.getElementById(id);
@@ -686,7 +795,7 @@ draw();
 const stages = ['1. Cut into bricks', '2. Look up the numbers', '3. Run through the dials', '4. Score every next brick', '5. Pick one', '6. Add it & repeat'];
 const notes = [
   'The text is chopped into tokens.',
-  'Each brick\'s number tag is swapped for its list of "notes" (numbers).',
+  'Each brick\'s part number is swapped for its list of "notes" (numbers).',
   'Those numbers flow through billions of dials. This is the heavy work.',
   'Out come scores for every possible next brick, shown as chances.',
   'One is picked (usually a likely one, with a little dice-roll).',
@@ -750,7 +859,7 @@ const spots = {
     body: 'Behind the screen, the AI is a program called the model: a giant wall of dials, where each dial is called a weight. Text goes in as numbers, flows through the dials, and scores for what comes next come out. The dials were set in training and never change while you chat.',
     extra: el => { el.innerHTML = FLOW('📝<br>Your text<br>(as numbers)', '→', '🎛️<br>Billions of<br>dials (weights)', '→', '📊<br>Scores for<br>what comes next'); }},
   send: {label: '✉️ What you type (the "prompt")', parts: [['s-text', 'The text box: tokens']],
-    body: 'The AI only understands numbers. So what you send (called the prompt) is chopped into small pieces of text called tokens, each with a number tag. Your last message, as Lego-style bricks:',
+    body: 'The AI only understands numbers. So what you send (called the prompt) is chopped into small pieces of text called tokens. Think of them as Lego bricks, each with its own part number. Your last message, as bricks:',
     extra: el => { const u = hist.filter(h => h.role === 'You').pop(); if (!u) return el.append('Send a message first, and its tokens will appear here.'); renderBricks(el.appendChild(Object.assign(document.createElement('div'), {className: 'bricks'})), u.text); }},
   stream: {label: '⌨️ The reply appearing word by word', parts: [['s-reply', 'The reply: guess, add, repeat'], ['s-brain', 'The brain: the model']],
     body: 'The AI writes one small piece of text (a token) at a time: guess the next piece, add it, repeat. What you see typing out is each guess arriving.',
@@ -856,7 +965,7 @@ document.addEventListener('keydown', e => e.key === 'Escape' && closeTip());
 addEventListener('resize', () => { if (cur) cur.dir = null; place(); }); addEventListener('scroll', place, true);
 
 function setView(v) {
-  $('v-chat').hidden = v !== 'chat'; $('v-parts').hidden = v !== 'parts'; $('v-news').hidden = v !== 'news';
+  $('v-chat').hidden = v !== 'chat'; $('v-parts').hidden = v !== 'parts'; $('v-news').hidden = v !== 'news'; $('v-faq').hidden = v !== 'faq';
   document.querySelectorAll('#viewbar button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === v));
 }
 function goPart(id) { setView('parts'); $(id).scrollIntoView({behavior: 'smooth'}); }
