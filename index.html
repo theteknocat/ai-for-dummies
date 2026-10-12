@@ -1215,19 +1215,20 @@ const H = {
       ok = async pr => { await pr; if (id !== H.id) throw 0; }, read = ms => go(speed === 1 ? Math.max(ms, dwell - (Date.now() - shownAt)) : ms), tokEl = $('htok'), model = $('hmodel');
     let sent = false; // true when the model already has the current notebook
     const quick = seen.first, fixed = ms => go(ms / speed); // quick: the viewer has seen a narrated turn, so skip the explaining. fixed: a wait the slow/fast switch doesn't change
-    let k = 0; const ramp = () => { const f = .6 ** k++; return [Math.max(70, 900 * f), Math.max(60, 650 * f)]; }; // durations (ms) for the notebook trip and the token trip: each round is ~40% quicker until it whizzes by
+    let k = 0, decay = .6; const ramp = () => { const f = decay ** k++; return [Math.max(70, 900 * f), Math.max(60, 650 * f)]; }; // durations (ms) for the notebook trip and the token trip: each round is ~40% quicker until it whizzes by
     const land = (g, label, shown) => { g.full = shown; g.el.textContent = label + (shown.length > 22 ? '…' + shown.slice(-22) : shown); $('hpages').scrollTop = 1e6; count(); };
-    async function loop(text, cls, label, intro) { // write a reply one token at a time: narrated for the first three (first time only), then every round of notebook-to-model-to-token speeds up
-      const toks = tokenize(text), g = addPg(cls + ' live', label, ''); let shown = '';
+    async function loop(text, cls, label, intro, again) { // write a reply one token at a time: narrated for the first three (first time only), then every round of notebook-to-model-to-token speeds up
+      const toks = tokenize(text), g = addPg(cls + ' live', label, ''), narrate = !quick && !again; let shown = '';
+      if (again) { k = 0; decay = .4; callout('hmodel', intro); await read(2200); } // second pass of the same process: one note, then the ramp restarts but reaches full speed sooner
       for (let i = 0; i < toks.length; i++) {
         const t = toks[i];
-        if (!quick && i < 3) {
+        if (narrate && i < 3) {
           if (!sent) await ok(sendNb('hp2')); sent = false; model.classList.add('work');
           callout('hmodel', i === 0 ? intro : i === 1 ? 'Again: the whole notebook goes in, one new token comes out.' : 'And again. Every token works this way.'); await read(1200);
           tokEl.textContent = t; await ok(fly('hmodel', 'hnb', t, 'hp2')); shown += t; land(g, label, shown); // the token lands, then it appears in the reply
           if (i === 0) { callout('hnb', 'The token lands on the notebook, then everything is sent again.'); await read(1200); }
         } else {
-          if (!quick && i === 3) { callout('hmodel', `…and so on, ${toks.length - 3} more times, faster and faster.`); await read(1500); seen.first = true; }
+          if (narrate && i === 3) { callout('hmodel', `…and so on, ${toks.length - 3} more times, faster and faster.`); await read(1500); seen.first = true; }
           if (RM) { shown += t; tokEl.textContent = t; land(g, label, shown); await go(110); continue; } // reduced motion: no flying, just the tokens
           const [dn, dt] = ramp();
           if (!sent) await ok(sendNb('hp2', dn)); sent = false; model.classList.add('work');
@@ -1260,7 +1261,7 @@ const H = {
       }
       if (p.think) {
         await loop(p.think, 'think', 'Thinking: ', 'It writes notes to itself first, one token at a time.');
-        await loop(p.answer, 'b', 'Bot: ', 'Now the answer, the same way.');
+        await loop(p.answer, 'b', 'Bot: ', 'Thinking is done. Now it writes the reply: the same process all over again, one token at a time.', true);
       } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
       model.classList.remove('work'); $('hcall').hidden = true; spot();
       await ok(fly('hharness', 'hyou', '💬 reply', 'hp1', quick ? 500 : undefined)); spot('hyou'); await (quick ? fixed(500) : go(1500)); spot();
