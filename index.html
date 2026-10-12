@@ -7,6 +7,7 @@
 <style>
 :root{--bg:#fffaf0;--card:#fff;--ink:#2b2a33;--mute:#6b6a75;--a:#ff7a59;--b:#4a7cff;--c:#2fb67c;--line:#eadfca}
 @media(prefers-color-scheme:dark){:root{--bg:#17161c;--card:#22212a;--ink:#f1eee8;--mute:#a9a6b3;--line:#383643}}
+html{overflow-x:clip}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 system-ui,sans-serif}
 main{max-width:820px;margin:0 auto;padding:0 16px 80px}
@@ -89,11 +90,71 @@ section[id]{scroll-margin-top:64px}
 #tip pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:12px;font-size:.85rem}
 #tip .bricks{min-height:0}
 #c-bot,#cform,.msg{position:relative}
+.hoodwrap{display:grid;grid-template-columns:minmax(0,1fr);perspective:2200px;perspective-origin:50% 0;margin:18px 0 0}
+.hoodwrap>*{grid-area:1/1}
+.hoodwrap>.card{backface-visibility:hidden;margin:0;position:relative;z-index:2;transform-origin:50% 0;transition:transform .9s cubic-bezier(.3,.1,.2,1),visibility 0s}
+.hoodwrap.open>.card{transform:rotateX(92deg);visibility:hidden;transition:transform .9s cubic-bezier(.3,.1,.2,1),visibility 0s .9s}
+.engine{visibility:hidden;max-height:var(--lidH);overflow:hidden;transition:visibility 0s .9s;background:#1d2333 linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/24px 24px;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);color:#e8ecf5;border:2px solid #3a4560;border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.35}
+.hoodwrap.open .engine{visibility:visible;max-height:none;overflow:visible;transition:none}
+.hoodwrap.instant>*{transition:none!important}
+.ebar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ebar>span{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ebar #closebtn{white-space:nowrap}
+#speedbtn{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:0;background:#2a3350;border:2px solid #4b5a85;border-radius:99px;overflow:hidden;font-size:.85rem;color:#a9b4d6}
+#speedbtn span{position:relative;z-index:1;padding:3px 12px;white-space:nowrap;text-align:center;transition:color .25s}
+#speedbtn::before{content:'';position:absolute;top:0;bottom:0;left:0;width:50%;background:var(--c);border-radius:99px;transition:transform .25s}
+#speedbtn[aria-checked=true]::before{transform:translateX(100%)}
+#speedbtn span:first-child{color:#fff}#speedbtn[aria-checked=true] span:first-child{color:#a9b4d6}#speedbtn[aria-checked=true] span:last-child{color:#fff}.ebar button{padding:5px 14px;font-size:.85rem}
+.handlebar{display:flex;justify-content:center}
+.handle{background:var(--c);border-radius:0 0 18px 18px;padding:7px 28px;letter-spacing:.03em;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+#hbody{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,1.9fr) 54px minmax(0,1fr);grid-template-areas:"you p1 harness p2 model" ". . p3 . ." ". . tool . .";align-items:center;gap:0}
+#hyou{grid-area:you}#hp1{grid-area:p1}#hharness{grid-area:harness}#hp2{grid-area:p2}#hmodel{grid-area:model}#hp3{grid-area:p3}#htool{grid-area:tool}
+.unit{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#2a3350;border:2px solid #4b5a85;border-radius:16px;padding:8px 10px;cursor:pointer;transition:box-shadow .3s,border-color .3s}
+.unit:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.unit.spot{border-color:#ffb347;box-shadow:0 0 0 4px rgba(255,179,71,.35),0 0 18px rgba(255,179,71,.4)}
+.unit .sym{position:relative;flex:none;width:52px;height:52px;display:grid;place-items:center;font-size:1.9rem;border-radius:14px;background:#364064;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.unit .lab{display:flex;flex-direction:column;min-width:0;flex:1}.unit .lab small{color:#a9b4d6;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unit.harness{border-color:#2fb67c;align-items:stretch}.unit.harness>.top{display:flex;align-items:center;gap:10px;width:100%}
+.unit.model{border-color:#4a7cff;flex-direction:column;align-items:flex-start}.unit.model .lab{width:100%;flex:none}.unit.tool{border-color:#f5a623;justify-self:stretch}.unit.nb{position:relative;width:100%;border-style:dashed;background:#232a42;cursor:pointer}
+.gear{position:absolute;right:-8px;bottom:-8px;font-size:1rem;font-style:normal}
+.work .gear{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+#htok{display:block;height:1.6em;line-height:1.35;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:pre;text-align:center;font:700 .8rem monospace;background:#1d2333;border:2px solid #4a7cff;border-radius:8px;padding:0 8px}
+.pages{width:100%;display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px;height:78px;overflow-y:auto}
+.pg{font-size:.75rem;padding:0 8px;border-radius:99px;border:1.5px solid #4b5a85;animation:pop .4s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg.sys{border-style:dashed;color:#a9b4d6}.pg.u{background:var(--b);border-color:var(--b);color:#fff}.pg.tool{border-color:#f5a623;color:#f5a623}.pg.think{border-color:#b794ff;color:#b794ff}.pg.live{border-color:#ffb347}
+.pipe{position:relative;display:grid;place-items:center;min-height:30px;min-width:30px}
+.pipe::before{content:'';width:100%;height:8px;border-radius:4px;background:repeating-linear-gradient(90deg,#4b5a85 0 8px,#33406a 8px 16px)}
+.pipe.v::before{width:8px;height:100%;min-height:30px;background:repeating-linear-gradient(0deg,#4b5a85 0 8px,#33406a 8px 16px)}
+.pipe.on::before{background-image:repeating-linear-gradient(90deg,#ffb347 0 8px,#7a5a20 8px 16px);animation:flow .5s linear infinite}
+.pipe.v.on::before{background-image:repeating-linear-gradient(0deg,#ffb347 0 8px,#7a5a20 8px 16px)}
+@keyframes flow{to{background-position:16px 16px}}
+.unit.pulse{animation:ypulse .7s ease-in-out 3}@keyframes ypulse{50%{transform:scale(1.06);box-shadow:0 0 0 7px rgba(255,179,71,.55)}}
+.nbcopy{position:absolute;z-index:5;pointer-events:none;overflow:hidden;background:#232a42;border:2px dashed #ffb347;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.nbcopy .body{position:absolute;left:0;top:0;padding:8px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.nbcopy .lbl{position:absolute;inset:0;display:grid;place-items:center;font:700 .75rem system-ui;color:#ffb347;white-space:nowrap}
+.call button[hidden]{display:none}.call button{display:block;margin-top:6px;padding:3px 18px;font-size:.8rem;background:var(--c)}.call.ask{pointer-events:auto}
+.pkt{position:absolute;left:0;top:0;pointer-events:none;z-index:5;background:var(--a);color:#fff;font:700 .78rem system-ui;padding:2px 12px;border-radius:99px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.call{position:absolute;z-index:4;background:#fffaf0;color:#2b2a33;border-radius:14px;padding:8px 12px;font-size:.85rem;line-height:1.35;box-shadow:0 6px 20px rgba(0,0,0,.45);pointer-events:none}
+.call::after{content:'';position:absolute;left:var(--ax,50%);width:12px;height:12px;background:inherit;transform:translateX(-50%) rotate(45deg)}
+.call[data-dir=below]::after{top:-6px}.call[data-dir=above]::after{bottom:-6px}
+.call.pop{animation:callpop .35s}@keyframes callpop{from{opacity:0;transform:translateY(6px)}}
+.engine .chips{padding:0 0 14px}.engine .chips button{background:#2a3350;color:#e8ecf5;border-color:#4b5a85;display:flex;align-items:center;gap:8px}
+.engine .chips button::before{content:'▶';display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;font-size:.6rem;padding-left:2px}
+/* before the first press the machine looks switched off, and the play buttons pulse */
+#hbody{transition:opacity .6s,filter .6s}.engine.idle #hbody{opacity:.4;filter:saturate(.3)}
+.engine.idle .chips button::before{animation:playpulse 1.4s infinite}
+@keyframes playpulse{0%{box-shadow:0 0 0 0 rgba(47,182,124,.8)}100%{box-shadow:0 0 0 10px rgba(47,182,124,0)}}
+@media(max-width:640px){
+  #hbody{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"you you" "p1 p1" "harness harness" "p2 p3" "model tool";row-gap:0}
+  .pipe.h::before{width:8px;height:100%;min-height:30px;background:repeating-linear-gradient(0deg,#4b5a85 0 8px,#33406a 8px 16px)}
+  .pipe.h.on::before{background-image:repeating-linear-gradient(0deg,#ffb347 0 8px,#7a5a20 8px 16px)}
+  #hbody{column-gap:10px}
+}
+@media(prefers-reduced-motion:reduce){#hbody{transition:none}.hoodwrap>.card,.engine,#speedbtn::before,#speedbtn span{transition:none!important}}
 #cform{padding-right:46px}
 #cform button{white-space:nowrap}
-.ipin{position:absolute;top:-9px;right:-9px;width:24px;height:24px;padding:0;border-radius:50%;background:var(--a);color:#fff;font:italic 700 .9rem Georgia,serif;display:grid;place-items:center;animation:ring 2s infinite;z-index:2}
+.ipin,.hpin{position:absolute;top:-9px;right:-9px;width:24px;height:24px;padding:0;border-radius:50%;background:var(--a);color:#fff;font:italic 700 .9rem Georgia,serif;display:grid;place-items:center;animation:ring 2s infinite;z-index:2}
 /* invisible 44px hit areas for touch */
-.ipin::after,#tip .x::after{content:'';position:absolute;inset:-10px}
+.ipin::after,.hpin::after,#tip .x::after{content:'';position:absolute;inset:-10px}
 #tip .x::after{inset:-8px}
 #tip .go button{padding:11px 18px}
 #c-bot .ipin,#cform .ipin{top:50%;right:12px;margin-top:-12px}
@@ -166,12 +227,32 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
   <span class="tag">START HERE</span>
   <h2>You've used one. Let's peek inside. 💬</h2>
   <p>This is a <b>pretend chatbot</b> (it only knows a few tricks). Send a message, then tap the little orange <b>i</b> buttons on the chat to peek behind that piece of the screen. The rest of the page dims so you can see exactly what's being explained.</p>
-  <div class="card chat">
+  <div class="hoodwrap" id="hoodwrap">
+  <div class="card chat" id="chatface">
     <header id="c-bot"><span id="c-avatar">🤖</span> Chatbot <small class="note">(pretend)</small></header>
     <div id="chatbody"><div id="msgs" aria-live="polite"></div></div>
     <div class="chips" id="chips"></div>
     <form id="cform"><input type="text" id="cin" placeholder="Message the chatbot…" aria-label="Message" autocomplete="off"><button id="csend">Send ➤</button></form>
   </div>
+  <div class="engine idle" id="engine" inert>
+    <div class="ebar"><b>🔍 Under the hood</b><span><button type="button" id="speedbtn" role="switch" aria-checked="false" aria-label="Animation speed: slow or fast"><span>🐢 Slow</span><span>🐇 Fast</span></button><button type="button" class="alt" id="closebtn">⇩ Close the hood ⇩</button></span></div>
+    <div class="chips" id="hchips"></div>
+    <div id="hbody">
+      <div class="unit you" id="hyou" data-k="you" tabindex="0" role="button"><span class="sym">🙂</span><span class="lab"><b>You</b><small id="hyoutxt">waiting…</small></span></div>
+      <div class="pipe h" id="hp1"></div>
+      <div class="unit harness" id="hharness" data-k="harness" tabindex="0" role="button">
+        <div class="top"><span class="sym">🧰</span><span class="lab"><b>Harness</b><small>the app around the model</small></span></div>
+        <div class="unit nb" id="hnb" data-k="notebook" tabindex="0" role="button"><span class="sym">📓</span><span class="lab"><b>Notebook</b><small id="hcount"></small></span><button type="button" class="hpin" id="hpin" aria-label="What is the notebook?">i</button><div id="hpages" class="pages"></div></div>
+      </div>
+      <div class="pipe h" id="hp2"></div>
+      <div class="unit model" id="hmodel" data-k="model" tabindex="0" role="button"><span class="sym">🧠<i class="gear">⚙️</i></span><span class="lab"><b>Model</b><small>the brain · latest pick</small><span id="htok">–</span></span></div>
+      <div class="pipe v" id="hp3"></div>
+      <div class="unit tool" id="htool" data-k="tool" tabindex="0" role="button"><span class="sym">🔧</span><span class="lab"><b>Tools</b><small id="htooltxt">idle</small></span></div>
+      <div class="call" id="hcall" hidden role="status"><span id="hcalltxt"></span><button type="button" id="hok" hidden>OK</button></div>
+    </div>
+  </div>
+  </div>
+  <div class="handlebar"><button type="button" class="handle" id="flipbtn">⇧ Pop the hood ⇧</button></div>
 </section>
 </div>
 
@@ -183,7 +264,7 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
   <span class="tag">PART 1</span>
   <h2>The chat window = the harness 🧰</h2>
   <p>The window you type into is <b>not</b> the AI. It's an ordinary app wrapped around the AI. The technical name for that wrapper is the <span class="real">harness</span>, and the AI inside is called the <span class="real">model</span>.</p>
-  <div class="flow" aria-label="You talk to the harness, which talks to the model"><div><i>🙂</i>You</div><span>⇄</span><div><i>🧰</i>Harness<br><small>the app</small></div><span>⇄</span><div><i>🧠</i>Model<br><small>the brain</small></div></div>
+  <div class="flow" aria-label="You talk to the harness, which talks to the model"><div><i>🙂</i>You</div><span>⇄</span><div><i>🧰</i>Harness<br><small>the app</small></div><span>⇄</span><div><i>🧠</i>Model<br><small>the brain · latest pick</small></div></div>
   <p>The model is surprisingly limited: text in, text out, and it forgets everything the moment it replies. The harness fills in every gap:</p>
   <ul>
     <li>It shows the chat and the text box.</li>
@@ -303,7 +384,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <div class="actors">
       <div class="actor" id="a-you"><i>🙂</i>You</div>
       <div class="actor" id="a-harness"><i>🧰</i>Harness<br><small>the assistant</small></div>
-      <div class="actor" id="a-model"><i>🧠</i>Model<br><small>the brain</small></div>
+      <div class="actor" id="a-model"><i>🧠</i>Model<br><small>the brain · latest pick</small></div>
       <div class="actor" id="a-tool"><i>🌦️</i>Tool<br><small>weather app</small></div>
     </div>
     <div class="pills"><span class="pill" id="loopBadge">Loop: not started</span></div>
@@ -762,7 +843,7 @@ function goPart(id) { setView('parts'); $(id).scrollIntoView({behavior: 'smooth'
 $('viewbar').addEventListener('click', e => e.target.dataset.view && setView(e.target.dataset.view));
 document.addEventListener('click', e => {
   const a = e.target.closest('a.back'); if (!a) return;
-  e.preventDefault(); setView('chat'); openTip(a.dataset.spot);
+  e.preventDefault(); setView('chat'); hood(false, true); openTip(a.dataset.spot);
 });
 document.addEventListener('click', e => { const b = e.target.closest('.ipin'); b && openTip(b.dataset.k, b); });
 
@@ -787,21 +868,146 @@ function think(thought, answer) {
     setTimeout(() => stream(answer), 400);
   });
 }
+const PLANS = [
+  [/bigger|larger|9\.11|9\.9/, {think: 'The question: which is bigger, 9.11 or 9.9? Careful. 11 is more than 9, but these are decimals, so I should not compare 11 and 9 directly. Compare the tenths place first: 9.11 has 1 tenth, 9.9 has 9 tenths. 9 tenths is more than 1 tenth. Double-check by writing 9.9 as 9.90: 90 hundredths against 11 hundredths. 90 is more than 11. So 9.9 is bigger.', answer: '9.9 is bigger. Written as 9.90 versus 9.11, that is 90 hundredths against 11 hundredths.'}],
+  [/weather|umbrella|rain|paris/, {tool: {call: 'weather("Paris")', result: 'Rain, 12°C'}, answer: 'Yes, take an umbrella! It is going to rain in Paris today, around 12°C.'}],
+  [/sky|blue/, {answer: 'The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'}],
+  [/joke/, {answer: 'Why did the computer go to the doctor? It had a virus!'}]];
+const plan = q => (PLANS.find(([re]) => re.test(q)) || [0, {answer: 'I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'}])[1];
 function send(text) {
   text = text.trim(); if (busy || !text) return;
   busy = true; $('csend').disabled = true; $('cin').value = ''; say('u', text); hist.push({role: 'You', text});
-  const q = text.toLowerCase();
-  if (/bigger|larger|9\.11|9\.9/.test(q)) setTimeout(() => think('The question: which is bigger, 9.11 or 9.9? Careful. 11 is more than 9, but these are decimals, so I should not compare 11 and 9 directly. Compare the tenths place first: 9.11 has 1 tenth, 9.9 has 9 tenths. 9 tenths is more than 1 tenth. Double-check by writing 9.9 as 9.90: 90 hundredths against 11 hundredths. 90 is more than 11. So 9.9 is bigger.', '9.9 is bigger. Written as 9.90 versus 9.11, that is 90 hundredths against 11 hundredths.'), 400);
-  else if (/weather|umbrella|rain|paris/.test(q)) {
-    const d = say('tool', '🔧 Using tool: weather("Paris") …');
-    setTimeout(() => { d.textContent = '🔧 weather("Paris") → Rain, 12°C'; hist.push({role: 'Tool', text: d.textContent}); info(d, 'tool'); setTimeout(() => stream('Yes, take an umbrella! It is going to rain in Paris today, around 12°C.'), 600); }, 1300);
-  } else if (/sky|blue/.test(q)) setTimeout(() => stream('The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'), 500);
-  else if (/joke/.test(q)) setTimeout(() => stream('Why did the computer go to the doctor? It had a virus!'), 500);
-  else setTimeout(() => stream('I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'), 500);
+  const p = plan(text.toLowerCase()); H.turn(text, p);
+  if (p.think) setTimeout(() => think(p.think, p.answer), 400);
+  else if (p.tool) {
+    const d = say('tool', `🔧 Using tool: ${p.tool.call} …`);
+    setTimeout(() => { d.textContent = `🔧 ${p.tool.call} → ${p.tool.result}`; hist.push({role: 'Tool', text: d.textContent}); info(d, 'tool'); setTimeout(() => stream(p.answer), 600); }, 1300);
+  } else setTimeout(() => stream(p.answer), 500);
 }
 $('cform').addEventListener('submit', e => { e.preventDefault(); send($('cin').value); });
 $('chips').innerHTML = ['Why is the sky blue?', 'Tell me a joke', 'Do I need an umbrella in Paris?', 'Which is bigger, 9.11 or 9.9?'].map(t => `<button type="button">${t}</button>`).join('');
 $('chips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
+
+// ---- under the hood: a slow, narrated machine that replays each chat turn ----
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches, wrap = $('hoodwrap'), short = t => t.length > 26 ? t.slice(0, 25) + '…' : t;
+let isOpen = false, speed = 1, dwell = 0, shownAt = 0; // speed 1 = slow and clear
+const lid = () => wrap.style.setProperty('--lidH', $('chatface').offsetHeight + 'px'); lid(); addEventListener('resize', lid);
+function hood(on, instant) {
+  isOpen = on; lid(); wrap.classList.toggle('instant', !!instant); wrap.classList.toggle('open', on);
+  $('chatface').inert = on; $('engine').inert = !on; $('flipbtn').hidden = on;
+  if (!instant) (on ? $('closebtn') : $('flipbtn')).focus({preventScroll: true});
+  if (on) { if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else H.stop();
+}
+$('flipbtn').onclick = () => hood(true); $('closebtn').onclick = () => hood(false);
+if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn'), document.querySelector('.ebar b')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
+$('speedbtn').onclick = () => { speed = speed === 1 ? .4 : 1; $('speedbtn').setAttribute('aria-checked', speed !== 1); };
+// the notebook's "i": pauses the demo and explains it until the viewer presses OK
+function note(id, text) {
+  const prev = $('hcall').hidden || H.anims.size ? null : [H.lastId, $('hcalltxt').textContent];
+  H.paused = true; H.anims.forEach(a => a.pause()); callout(id, text); $('hcall').classList.add('ask'); $('hok').hidden = false; $('hok').focus({preventScroll: true});
+  $('hok').onclick = () => { $('hok').hidden = true; $('hcall').classList.remove('ask'); H.paused = false; H.anims.forEach(a => a.play()); if (prev) callout(...prev); else if (!H.anims.size) { $('hcall').hidden = true; spot(); } };
+}
+const CAP = {
+  you: 'You. All you do is type a message. Everything else happens without you.',
+  harness: 'The harness is the chat app, and it is the manager. It writes the notebook, calls the model, runs tools and shows you the reply. The model never touches anything directly.',
+  notebook: 'The notebook is everything the model can see: the hidden instructions plus the whole chat so far. It remembers nothing else. This is called the context window.',
+  model: 'The model reads the whole notebook and picks ONE next token (a small chunk of text). Then it reads the notebook again with that token added. A reply is hundreds of these loops.',
+  tool: 'Tools are the model’s only “hands”, and only if the harness provides them. The model can write a request such as weather("Paris"), but the harness decides whether to run it.'
+};
+const rel = el => { const a = $('hbody').getBoundingClientRect(), r = el.getBoundingClientRect(); return {x: r.left - a.left, y: r.top - a.top, w: r.width, h: r.height}; };
+function spot(id) { document.querySelectorAll('.unit.spot').forEach(u => u.classList.remove('spot')); id && $(id).classList.add('spot'); }
+function callout(id, text) { // a speech bubble next to the part that is doing something
+  const c = $('hcall'), B = $('hbody'), t = rel($(id)); $('hcalltxt').textContent = text; c.hidden = false; c.style.maxWidth = Math.min(270, B.clientWidth - 8) + 'px';
+  const cw = c.offsetWidth, ch = c.offsetHeight, below = t.y + t.h + ch + 14 <= B.clientHeight || t.y - ch - 14 < 0, left = Math.min(Math.max(t.x + t.w / 2 - cw / 2, 4), B.clientWidth - cw - 4);
+  c.style.left = left + 'px'; c.style.top = (below ? t.y + t.h + 10 : t.y - ch - 10) + 'px'; c.dataset.dir = below ? 'below' : 'above';
+  c.style.setProperty('--ax', Math.min(Math.max(t.x + t.w / 2 - left, 16), cw - 16) + 'px');
+  c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); spot(id);
+  H.lastId = id; dwell = 1200 + 380 * text.split(/\s+/).length; shownAt = Date.now(); // slow mode keeps a bubble up long enough to read it
+}
+function fly(a, b, label, pipe) {
+  const p = Object.assign(document.createElement('span'), {className: 'pkt', textContent: label}), A = rel($(a)), T = rel($(b)), at = (r, s) => `translate(${r.x + r.w / 2}px,${r.y + r.h / 2}px) translate(-50%,-50%) scale(${s})`;
+  pipe && $(pipe).classList.add('on'); $('hbody').append(p); $('hcall').hidden = true; // hide the bubble while something travels, so nothing is covered
+  const done = () => { p.remove(); pipe && $(pipe).classList.remove('on'); };
+  if (RM) return new Promise(r => setTimeout(() => (done(), r()), 600 * speed));
+  const an = p.animate([{transform: at(A, .6), opacity: 0}, {opacity: 1, offset: .15}, {opacity: 1, offset: .85}, {transform: at(T, 1), opacity: 0}], {duration: 1500 * speed, easing: 'ease-in-out'}); H.anims.add(an);
+  return an.finished.then(() => { H.anims.delete(an); done(); }, done);
+}
+// the notebook's pages; each one remembers its full text so the token count is honest
+const pgs = []; let scene = null;
+const chip = g => { g.el = Object.assign(document.createElement('span'), {className: 'pg ' + g.cls, textContent: g.label}); $('hpages').append(g.el); $('hpages').scrollTop = 1e6; };
+const count = () => { $('hcount').textContent = pgs.reduce((n, g) => n + tokenize(g.full).length, 0) + ' tokens of context'; };
+const addPg = (cls, label, full) => { const g = {cls, label, full: full || label}; pgs.push(g); chip(g); count(); return g; };
+function resetPages(mem) {
+  pgs.length = 0; $('hpages').textContent = ''; addPg('sys', '👀 hidden instructions', SYS);
+  mem.forEach(m => { addPg('u', 'You: ' + short(m.u), m.u); m.t && addPg('tool', 'Tool: ' + m.t, m.t); addPg('b', 'Bot: ' + short(m.a), m.a); });
+}
+function sendNb(pipe) { // a copy of the whole notebook shrinks into a pill and travels to the model
+  const src = $('hnb'), A = rel(src), T = rel($('hmodel')), pw = 128, ph = 30, px = n => n + 'px';
+  const c = document.createElement('div'), body = document.createElement('div'), lbl = Object.assign(document.createElement('span'), {className: 'lbl', textContent: '📓 whole notebook'});
+  c.className = 'nbcopy'; body.className = 'body'; body.innerHTML = src.innerHTML; body.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); body.querySelector('.hpin').remove(); body.style.width = px(A.w - 4); c.append(body, lbl);
+  Object.assign(c.style, {left: px(A.x), top: px(A.y), width: px(A.w), height: px(A.h)});
+  $('hcall').hidden = true; pipe && $(pipe).classList.add('on'); $('hbody').append(c);
+  const done = () => { c.remove(); pipe && $(pipe).classList.remove('on'); };
+  if (RM) return new Promise(r => setTimeout(() => (done(), r()), 600 * speed));
+  const D = 2200 * speed, o = {duration: D, fill: 'forwards'}, box = (x, y, w, h, r) => ({left: px(x), top: px(y), width: px(w), height: px(h), borderRadius: r}),
+    a = [c.animate([box(A.x, A.y, A.w, A.h, '16px'), {...box(A.x + A.w / 2 - pw / 2, A.y + A.h / 2 - ph / 2, pw, ph, '99px'), offset: .45}, box(T.x + T.w / 2 - pw / 2, T.y + T.h / 2 - ph / 2, pw, ph, '99px')], {...o, easing: 'ease-in-out'}),
+      body.animate([{opacity: 1}, {opacity: 0, offset: .35}, {opacity: 0}], o), lbl.animate([{opacity: 0}, {opacity: 0, offset: .3}, {opacity: 1, offset: .5}, {opacity: 1}], o)];
+  a.forEach(x => H.anims.add(x));
+  return a[0].finished.then(() => { a.forEach(x => H.anims.delete(x)); done(); }, done);
+}
+const H = {
+  id: 0, mem: [], queued: null, paused: false, anims: new Set(), lastId: '',
+  stop() { H.id++; H.paused = false; H.anims.forEach(x => x.cancel()); H.anims.clear(); document.querySelectorAll('.pkt,.nbcopy').forEach(e => e.remove()); document.querySelectorAll('.pipe.on').forEach(e => e.classList.remove('on')); $('hcall').hidden = true; $('hcall').classList.remove('ask'); $('hok').hidden = true; spot(); $('hyou').classList.remove('pulse'); $('hmodel').classList.remove('work'); },
+  turn(text, p) { if (isOpen) H.run(text, p); else H.queued = [text, p]; }, // from the chat: play it now if the hood is open, else when it is next opened
+  async run(user, p) {
+    H.stop(); $('engine').classList.remove('idle'); const id = H.id; if (scene) H.mem.push(scene); scene = {u: user, a: p.answer, t: p.tool && p.tool.result};
+    const go = async ms => { let left = ms * speed; while (left > 0) { await new Promise(r => setTimeout(r, 50)); if (!H.paused) left -= 50; if (id !== H.id) throw 0; } if (id !== H.id) throw 0; }, // pausable wait
+      ok = async pr => { await pr; if (id !== H.id) throw 0; }, read = ms => go(speed === 1 ? Math.max(ms, dwell - (Date.now() - shownAt)) : ms), tokEl = $('htok'), model = $('hmodel');
+    let sent = false; // true when the model already has the current notebook
+    const land = (g, label, shown) => { g.full = shown; g.el.textContent = label + (shown.length > 22 ? '…' + shown.slice(-22) : shown); $('hpages').scrollTop = 1e6; count(); };
+    async function loop(text, cls, label, intro) { // write a reply one token at a time: the first three slowly, then fast-forwarded
+      const toks = tokenize(text), g = addPg(cls + ' live', label, ''); let shown = '';
+      for (let i = 0; i < toks.length; i++) {
+        const t = toks[i];
+        if (i < 3) {
+          if (!sent) await ok(sendNb('hp2')); sent = false; model.classList.add('work');
+          callout('hmodel', i === 0 ? intro : i === 1 ? 'Again: the whole notebook goes in, one new token comes out.' : 'And again. Every token works this way.'); await read(1200);
+          tokEl.textContent = t; await ok(fly('hmodel', 'hnb', t, 'hp2')); shown += t; land(g, label, shown); // the token lands, then it appears in the reply
+          if (i === 0) { callout('hnb', 'The token lands on the notebook, then everything is sent again.'); await read(1200); }
+        } else {
+          if (i === 3) { callout('hmodel', `…and so on, ${toks.length - 3} more times. Fast-forwarding.`); $('hp2').classList.add('on'); await read(1500); }
+          shown += t; tokEl.textContent = t; land(g, label, shown); await go(110);
+        }
+      }
+      $('hp2').classList.remove('on'); g.el.classList.remove('live'); await go(1000);
+    }
+    try {
+      model.classList.remove('work'); resetPages(H.mem); $('hyoutxt').textContent = '“' + short(user) + '”'; tokEl.textContent = '–'; $('htooltxt').textContent = 'idle';
+      spot('hyou'); $('hyou').classList.add('pulse'); await go(2100); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
+      await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ' + short(user), user); await go(900);
+      await ok(sendNb('hp2')); sent = true;
+      if (p.tool) {
+        tokEl.textContent = p.tool.call; model.classList.add('work'); callout('hmodel', `Instead of an answer, it writes a request: “${p.tool.call}”. A model can only ask.`); await read(2000);
+        await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2')); callout('hharness', 'The harness decides whether to allow it.'); await read(1500);
+        await ok(fly('hharness', 'htool', 'run it', 'hp3')); $('htooltxt').textContent = `→ ${p.tool.result}`; callout('htool', `The tool runs: ${p.tool.result}.`); await read(1500);
+        await ok(fly('htool', 'hnb', p.tool.result, 'hp3')); addPg('tool', 'Tool: ' + p.tool.result, p.tool.result); await go(900); sent = false;
+      }
+      if (p.think) {
+        await loop(p.think, 'think', 'Thinking: ', 'It writes notes to itself first, one token at a time.');
+        await loop(p.answer, 'b', 'Bot: ', 'Now the answer, the same way.');
+      } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
+      model.classList.remove('work'); $('hcall').hidden = true; spot();
+      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot();
+      H.mem.push(scene); scene = null;
+    } catch (e) { if (e !== 0) throw e; }
+  }
+};
+// tap a part (while nothing is playing) for a one-line explanation
+const sel = e => { const k = e.target.closest('[data-k]'); if (k && !$('hbody').querySelector('.pkt') && !$('hmodel').classList.contains('work')) callout(k.id, CAP[k.dataset.k]); };
+$('hpin').onclick = e => { e.stopPropagation(); note('hpin', CAP.notebook); };
+$('engine').addEventListener('click', e => e.target.closest('#hnb') ? note('hpin', CAP.notebook) : sel(e)); $('engine').addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && e.target.dataset.k && (e.preventDefault(), sel(e)));
+$('hchips').innerHTML = $('chips').innerHTML; $('hchips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
+resetPages([]);
 info(say('sys', '👀 Normally hidden: ' + SYS), 'sys');
 say('b', 'Hi! Ask me something. 👋');
 </script>
