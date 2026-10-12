@@ -87,11 +87,11 @@ input[type=text]{font:inherit;width:100%;padding:10px 14px;border-radius:12px;bo
 :root{--bar:64px}
 section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .news article[id]{scroll-margin-top:calc(var(--bar) + 12px)}
-@media(max-width:560px){.viewbar{gap:6px;padding:8px 0}.viewbar a{padding:6px 12px;font-size:.85rem}}
 .viewbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;border-bottom:2px solid var(--line)}
 .chips button{background:var(--card);color:var(--ink);border:2px solid var(--line)}
 .viewbar a{display:inline-block;text-decoration:none;line-height:1.25;font-weight:700;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:8px 14px}
 .viewbar a[aria-current=page]{background:var(--b);color:#fff;border-color:var(--b)}
+@media(max-width:560px){.viewbar{gap:4px;padding:8px 0;transition:transform .25s}.viewbar a{padding:6px 6px;font-size:.8rem}.viewbar.away{transform:translateY(-100%)}}
 .viewbar a:focus-visible,.toc a:focus-visible{outline:3px solid var(--a);outline-offset:2px}
 .toc{margin:18px 0}.toc b{display:block;margin-bottom:6px}
 .toc ul{list-style:none;margin:0;padding:0;columns:2 260px;column-gap:24px}
@@ -250,9 +250,9 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
 </section>
 
 <div class="viewbar" id="viewbar">
-  <a href="/" data-view="chat" aria-current="page">💬 Follow a chat</a>
-  <a href="/explore" data-view="parts">🧩 Explore by part</a>
-  <a href="/headlines" data-view="news">🗞️ Debunking the headlines</a>
+  <a href="/" data-view="chat" aria-current="page">💬 Chat</a>
+  <a href="/explore" data-view="parts">🧩 Explore</a>
+  <a href="/headlines" data-view="news">🗞️ Headlines</a>
   <a href="/faq" data-view="faq">❓ FAQ</a>
 </div>
 
@@ -984,6 +984,9 @@ const ROUTES = {chat: '/', parts: '/explore', news: '/headlines', faq: '/faq'}, 
   faq: ['AI FAQ: common questions about chatbots | AI for Dummies', 'Short, plain answers to the questions people ask most about AI chatbots: why they make things up, whether they remember you, why answers change and more.']};
 const canPush = location.protocol.startsWith('http'), pathView = () => { const p = location.pathname.replace(/\/+$/, '') || '/'; return Object.keys(ROUTES).find(k => ROUTES[k] === p) || 'chat'; };
 let curView = '';
+// phones: slide the bar away when scrolling down, back on scroll up or keyboard focus
+let lastY = scrollY; addEventListener('scroll', () => { const y = scrollY; if (y > lastY + 8 && y > 120) $('viewbar').classList.add('away'); else if (y < lastY - 8 || y <= 120) $('viewbar').classList.remove('away'); lastY = y; }, {passive: true});
+$('viewbar').addEventListener('focusin', () => $('viewbar').classList.remove('away'));
 const setBar = () => document.documentElement.style.setProperty('--bar', $('viewbar').offsetHeight + 'px'); // so jumps land below the sticky bar
 function setView(v) {
   Object.keys(ROUTES).forEach(k => $('v-' + k).hidden = k !== v);
