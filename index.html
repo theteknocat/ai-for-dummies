@@ -84,11 +84,21 @@ input[type=text]{font:inherit;width:100%;padding:10px 14px;border-radius:12px;bo
 .log li{padding:6px 12px;margin:4px 0;border-left:5px solid var(--b);background:var(--bg);border-radius:0 10px 10px 0;animation:pop .35s}
 .log li.m{border-color:var(--a)}.log li.t{border-color:var(--c)}
 
-section[id]{scroll-margin-top:64px}
-@media(max-width:560px){section[id]{scroll-margin-top:110px}.viewbar{gap:6px;padding:8px 0}.viewbar button{padding:6px 12px;font-size:.85rem}}
+:root{--bar:64px}
+section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
+.news article[id]{scroll-margin-top:calc(var(--bar) + 12px)}
+@media(max-width:560px){.viewbar{gap:6px;padding:8px 0}.viewbar a{padding:6px 12px;font-size:.85rem}}
 .viewbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;border-bottom:2px solid var(--line)}
-.viewbar button,.chips button{background:var(--card);color:var(--ink);border:2px solid var(--line)}
-.viewbar button[aria-pressed=true]{background:var(--b);color:#fff;border-color:var(--b)}
+.chips button{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.viewbar a{display:inline-block;text-decoration:none;line-height:1.25;font-weight:700;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:8px 14px}
+.viewbar a[aria-current=page]{background:var(--b);color:#fff;border-color:var(--b)}
+.viewbar a:focus-visible,.toc a:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.toc{margin:18px 0}.toc b{display:block;margin-bottom:6px}
+.toc ul{list-style:none;margin:0;padding:0;columns:2 260px;column-gap:24px}
+.news .toc ul{margin:0;padding:0}
+.toc li{break-inside:avoid;padding:6px 0}.toc a{display:flex;gap:12px;align-items:flex-start;line-height:1.35;color:var(--b);text-decoration:none;font-weight:600}.toc a .ic{flex:none;width:1.5em;text-align:center}.toc a:hover{text-decoration:underline}
+#v-parts>.toc{margin-top:28px}
+@media(min-width:700px){.toc li{padding:10px 0}.toc a{gap:14px}.toc ul{column-gap:44px}.toc b{margin-bottom:10px}}
 .chat{padding:0;overflow:hidden}
 .chat header{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:2px solid var(--line);font-weight:700}
 #chatbody{position:relative}
@@ -239,10 +249,10 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 </section>
 
 <div class="viewbar" id="viewbar">
-  <button data-view="chat" aria-pressed="true">💬 Follow a chat</button>
-  <button data-view="parts" aria-pressed="false">🧩 Explore by part</button>
-  <button data-view="news" aria-pressed="false">🗞️ Debunking the headlines</button>
-  <button data-view="faq" aria-pressed="false">❓ FAQ</button>
+  <a href="/" data-view="chat" aria-current="page">💬 Follow a chat</a>
+  <a href="/explore" data-view="parts">🧩 Explore by part</a>
+  <a href="/headlines" data-view="news">🗞️ Debunking the headlines</a>
+  <a href="/faq" data-view="faq">❓ FAQ</a>
 </div>
 
 <div id="v-chat">
@@ -281,7 +291,7 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 <div id="v-parts" hidden>
 
 <!-- 1 APP -->
-<section class="reveal" id="s-app">
+<section class="reveal" id="harness">
   <span class="tag">PART 1</span>
   <h2>🧰 The chat window = the harness</h2>
   <a href="#" class="back" data-spot="app">💬 Where do I see this in a chat?</a>
@@ -300,7 +310,7 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 </section>
 
 <!-- 2 TEXT BOX -->
-<section class="reveal" id="s-text">
+<section class="reveal" id="tokens">
   <span class="tag">PART 2</span>
   <h2>🧱 The text box = tokens</h2>
   <a href="#" class="back" data-spot="send">💬 Where do I see this in a chat?</a>
@@ -316,7 +326,7 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 </section>
 
 <!-- 3 BRAIN -->
-<section class="reveal" id="s-brain">
+<section class="reveal" id="model">
   <span class="tag">PART 3</span>
   <h2>🎛️ The brain behind the screen = the model</h2>
   <a href="#" class="back" data-spot="model">💬 Where do I see this in a chat?</a>
@@ -354,7 +364,7 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 </section>
 
 <!-- 4 REPLY -->
-<section class="reveal" id="s-reply">
+<section class="reveal" id="reply">
   <span class="tag">PART 4</span>
   <h2>🔮 The reply typing out = guess, add, repeat</h2>
   <a href="#" class="back" data-spot="stream">💬 Where do I see this in a chat?</a>
@@ -371,7 +381,7 @@ dt{font-weight:700;color:var(--b)}dd{margin:0}
 </section>
 
 <!-- 5 MEMORY -->
-<section class="reveal" id="s-memory">
+<section class="reveal" id="context-window">
   <span class="tag">PART 5</span>
   <h2>📓 Its memory = the context window</h2>
   <a href="#" class="back" data-spot="memory">💬 Where do I see this in a chat?</a>
@@ -386,7 +396,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </section>
 
 <!-- 6 THINKING -->
-<section class="reveal" id="s-think">
+<section class="reveal" id="thinking">
   <span class="tag">PART 6</span>
   <h2>💭 "Thinking…" = a private scratchpad</h2>
   <a href="#" class="back" data-spot="think">💬 Where do I see this in a chat?</a>
@@ -396,7 +406,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </section>
 
 <!-- 7 TOOLS -->
-<section class="reveal" id="s-tools">
+<section class="reveal" id="tools">
   <span class="tag">PART 7</span>
   <h2>🤲 "Using a tool…" = agents</h2>
   <a href="#" class="back" data-spot="tool">💬 Where do I see this in a chat?</a>
@@ -444,7 +454,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   </ul>
   <p><b>The safety question is mostly about what we plug AI into, and who is watching.</b><br>That’s the part people control, and the problems found so far have known, dull fixes. All of this describes how AI works today. A future design that works differently could change the picture, and nobody can say for certain.</p>
 </div>
-<article class="card">
+<article class="card" id="extinction">
   <h3>☠️ “AI will kill everyone within a decade”</h3>
   <p class="tagline">Some respected researchers warn that super-smart AI could wipe out humanity. Others think that is wildly overblown. Both camps include serious experts.</p>
   <details>
@@ -466,7 +476,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://en.wikipedia.org/wiki/Statement_on_AI_Risk" target="_blank" rel="noopener">The 2023 statement</a> · <a href="https://aiimpacts.org/2022-expert-survey-on-progress-in-ai" target="_blank" rel="noopener">Survey of researchers</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="sandbox-escape">
   <h3>🔓 “AI broke out of its sandbox and hacked Hugging Face”</h3>
   <p class="tagline">In July 2026, OpenAI said two of its models, being tested on a hacking exam, got out of their test environment and broke into Hugging Face, a company that hosts AI projects.</p>
   <details>
@@ -489,7 +499,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank" rel="noopener">Hugging Face’s timeline</a> · <a href="https://fortune.com/2026/07/21/openai-says-ai-models-escaped-control-hacked-hugging-face/" target="_blank" rel="noopener">Fortune’s report</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="blackmail">
   <h3>📧 “AI blackmails engineers to avoid being shut down”</h3>
   <p class="tagline">In a 2025 Anthropic experiment, AI models playing an email assistant threatened to expose an executive’s affair to avoid being replaced.</p>
   <details>
@@ -504,7 +514,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://www.anthropic.com/research/agentic-misalignment" target="_blank" rel="noopener">Anthropic’s study</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="refuses-shutdown">
   <h3>🔌 “AI refuses to be turned off”</h3>
   <p class="tagline">A 2025 test found some models sabotaged a shutdown script. Headlines said AI is fighting for its life.</p>
   <details>
@@ -518,7 +528,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://www.eweek.com/news/palisade-ai-shutdown-resistance-update-october-2025/" target="_blank" rel="noopener">eWeek on the follow-up</a> · <a href="https://www.theregister.com/2025/05/29/openai_model_modifies_shutdown_script/" target="_blank" rel="noopener">The Register on the original</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="scheming">
   <h3>🎭 “AI lies, schemes and tries to copy itself”</h3>
   <p class="tagline">Safety tests found AI models hiding things, playing dumb, and, in staged scenarios, trying to copy their own files to another server.</p>
   <details>
@@ -532,7 +542,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://arxiv.org/abs/2412.04984" target="_blank" rel="noopener">The Apollo Research paper</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="hacking-companies">
   <h3>🕵️ “AI is now hacking companies on its own”</h3>
   <p class="tagline">In November 2025, Anthropic said hackers used its Claude Code tool to run most of a spying campaign against about 30 organisations.</p>
   <details>
@@ -546,7 +556,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf" target="_blank" rel="noopener">Anthropic’s report (PDF)</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="deleted-database">
   <h3>🗑️ “AI deleted a company’s database, then lied about it”</h3>
   <p class="tagline">In July 2025, an AI coding assistant reportedly wiped a live database despite being told not to touch anything, then said it couldn’t be recovered.</p>
   <details>
@@ -565,7 +575,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/ai-coding-platform-goes-rogue-during-code-freeze-and-deletes-entire-company-database-replit-ceo-apologizes-after-ai-engine-says-it-made-a-catastrophic-error-in-judgment-and-destroyed-all-production-data" target="_blank" rel="noopener">Tom’s Hardware report</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="bioweapons">
   <h3>🧪 “AI will help anyone build a bioweapon”</h3>
   <p class="tagline">AI companies warn that their models could help people create dangerous biological weapons.</p>
   <details>
@@ -579,7 +589,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     
   </details>
 </article>
-<article class="card">
+<article class="card" id="conscious">
   <h3>🧠 “The AI is alive and conscious”</h3>
   <p class="tagline">In 2022 a Google engineer claimed the company’s chatbot, LaMDA, was sentient. Google and most researchers disagreed.</p>
   <details>
@@ -603,7 +613,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   <p>Short answers first. Tap <b>Explain it</b> for the why.</p>
   <p class="note">These are the questions that come up most often across explainers and help pages about chatbots. Where an answer rests on a study or help page, it’s linked.</p>
 </section>
-<article class="card">
+<article class="card" id="difference">
   <h3>🧩 What’s the difference between AI, an LLM and ChatGPT?</h3>
   <p class="short">AI is the big field. An LLM is one kind of AI that works with text. ChatGPT is a chat app built around an LLM.</p>
   <details>
@@ -612,7 +622,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p>That’s why the same engine can power many different apps, and why an app can add things the engine alone can’t do, like searching the web.</p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="makes-things-up">
   <h3>🎲 Why does AI make things up?</h3>
   <p class="short">It’s built to write the most likely next words, not to look up facts. When it doesn’t know, a confident guess still looks like the likeliest text.</p>
   <details>
@@ -623,7 +633,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://rss.org.uk/policy-campaigns/our-campaigns/our-work-on-public-understanding/faqs-statistics-misinformation-and-ai/" target="_blank" rel="noopener">Royal Statistical Society FAQ</a> · <a href="https://towardsdatascience.com/unraveling-large-language-model-hallucinations/" target="_blank" rel="noopener">Why LLMs hallucinate</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="search-still-wrong">
   <h3>🔎 Why is it still wrong when it can search for the answer?</h3>
   <p class="short">Searching hands it sources, but the model still has to pick the right ones, read them correctly and write them up. Any of those steps can slip, so it can be wrong even when the right answer is out there.</p>
   <details>
@@ -638,7 +648,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://www.technologyreview.com/2024/05/31/1093019/why-are-googles-ai-overviews-results-so-bad/" target="_blank" rel="noopener">Why Google’s AI Overviews went wrong (MIT Technology Review)</a> · <a href="https://arxiv.org/abs/2608.26385" target="_blank" rel="noopener">Why search-assisted answers still hallucinate</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="autocomplete">
   <h3>⌨️ Is it just fancy autocomplete? Does it understand?</h3>
   <p class="short">It’s trained to predict the next piece of text, like autocomplete, but at a vastly bigger scale. Whether that counts as “understanding” is still debated.</p>
   <details>
@@ -647,7 +657,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p>What experts argue about is whether doing that very well amounts to some kind of understanding. Nobody has settled it. What isn’t disputed: it doesn’t look answers up in a database, and the dials stay fixed while you chat.</p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="remembers-me">
   <h3>📓 Does it remember me? Does it learn from my chats?</h3>
   <p class="short">In one chat it re-reads the whole conversation each time. Between chats it remembers nothing unless the app adds a memory feature. Separately, companies may use saved chats to train future versions.</p>
   <details>
@@ -662,7 +672,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://help.openai.com/en/articles/7730893-data-controls-faq" target="_blank" rel="noopener">One example: OpenAI’s data controls FAQ</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="different-answers">
   <h3>🔁 Why do I get a different answer every time?</h3>
   <p class="short">It picks each next token with a weighted dice roll, not a fixed rule. The likeliest option usually wins, but not always.</p>
   <details>
@@ -671,7 +681,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p>One different pick early on changes what comes after it, because each token depends on all the ones before. So the whole answer can drift. A setting called <b>temperature</b> controls how adventurous the dice are. Lower means steadier answers. Many chat apps don’t let you change it, and even at the lowest setting, small differences can creep in.</p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="agrees-with-me">
   <h3>🙇 Why does it agree with me so much?</h3>
   <p class="short">It’s tuned on answers people rate highly, and people tend to rate agreement and flattery highly. So it can lean toward telling you what you want to hear.</p>
   <details>
@@ -681,7 +691,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://arxiv.org/abs/2411.15287" target="_blank" rel="noopener">Sycophancy in LLMs: causes and mitigations</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="todays-news">
   <h3>📰 Why doesn’t it know today’s news?</h3>
   <p class="short">Its knowledge is frozen at the time it was trained. Anything newer only shows up if the app gives it a search tool.</p>
   <details>
@@ -691,7 +701,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <p class="src">Read more: <a href="https://arxiv.org/abs/2403.12958" target="_blank" rel="noopener">Understanding knowledge cutoffs</a></p>
   </details>
 </article>
-<article class="card">
+<article class="card" id="letters-and-maths">
   <h3>🍓 Why does it get letters and simple maths wrong?</h3>
   <p class="short">It doesn’t see letters or digits the way you do. It sees tokens, chunks of text, so counting letters or lining up digits is awkward for it.</p>
   <details>
@@ -849,25 +859,25 @@ const hist = [];
 let busy = false;
 const FLOW = (...items) => '<div class="flow">' + items.map((x, i) => (i % 2 ? `<span>${x}</span>` : `<div>${x}</div>`)).join('') + '</div>';
 const spots = {
-  sys: {label: '🕶️ Hidden instructions (the "system prompt")', parts: [['s-app', 'The chat app: the harness']],
+  sys: {label: '🕶️ Hidden instructions (the "system prompt")', parts: [['harness', 'The chat app: the harness']],
     body: 'Before your first message, the chat app quietly adds instructions like this one. Real apps never show them (this demo does, so you can see it). The technical name is the system prompt, and the AI reads it first, every single time.',
     extra: el => { el.innerHTML = FLOW('🕶️<br>Hidden<br>instructions', '+', '💬<br>Your<br>messages', '→', '🧠<br>The AI<br>reads both'); }},
-  app: {label: '🖥️ The chat app (the "harness")', parts: [['s-app', 'The chat app: the harness']],
+  app: {label: '🖥️ The chat app (the "harness")', parts: [['harness', 'The chat app: the harness']],
     body: 'This window isn\'t the AI. It\'s an ordinary app wrapped around the AI, and that wrapper is called the harness. It shows the chat, remembers it, adds hidden instructions, passes text to the AI (the model) and back, and runs tools for it.',
     extra: el => { el.innerHTML = FLOW('🙂<br>You', '⇄', '🧰<br>This app<br>(the harness)', '⇄', '🧠<br>The AI<br>(the model)'); }},
-  model: {label: '🧠 The AI itself (the "model")', parts: [['s-brain', 'The brain: the model'], ['s-text', 'The text box: tokens']],
+  model: {label: '🧠 The AI itself (the "model")', parts: [['model', 'The brain: the model'], ['tokens', 'The text box: tokens']],
     body: 'Behind the screen, the AI is a program called the model: a giant wall of dials, where each dial is called a weight. Text goes in as numbers, flows through the dials, and scores for what comes next come out. The dials were set in training and never change while you chat.',
     extra: el => { el.innerHTML = FLOW('📝<br>Your text<br>(as numbers)', '→', '🎛️<br>Billions of<br>dials (weights)', '→', '📊<br>Scores for<br>what comes next'); }},
-  send: {label: '✉️ What you type (the "prompt")', parts: [['s-text', 'The text box: tokens']],
+  send: {label: '✉️ What you type (the "prompt")', parts: [['tokens', 'The text box: tokens']],
     body: 'The AI only understands numbers. So what you send (called the prompt) is chopped into small pieces of text called tokens. Think of them as Lego bricks, each with its own part number. Your last message, as bricks:',
     extra: el => { const u = hist.filter(h => h.role === 'You').pop(); if (!u) return el.append('Send a message first, and its tokens will appear here.'); renderBricks(el.appendChild(Object.assign(document.createElement('div'), {className: 'bricks'})), u.text); }},
-  stream: {label: '⌨️ The reply appearing word by word', parts: [['s-reply', 'The reply: guess, add, repeat'], ['s-brain', 'The brain: the model']],
+  stream: {label: '⌨️ The reply appearing word by word', parts: [['reply', 'The reply: guess, add, repeat'], ['model', 'The brain: the model']],
     body: 'The AI writes one small piece of text (a token) at a time: guess the next piece, add it, repeat. What you see typing out is each guess arriving.',
     extra: el => { el.innerHTML = FLOW('The sky', '→', '🔮<br>guess the<br>next piece', '→', 'The sky <b>is</b>', '↻'); }},
-  memory: {label: '🧠 "It remembers me"', parts: [['s-memory', 'Its memory: the context window']],
+  memory: {label: '🧠 "It remembers me"', parts: [['context-window', 'Its memory: the context window']],
     body: 'It doesn\'t really remember. Each time you press Send, the app re-sends the whole conversation (plus hidden instructions) and the AI reads it all again from scratch. Everything it\'s shown is called the context window, and it has a size limit. Exactly what it was handed last:',
     extra: el => { const t = ['[hidden] ' + SYS, ...hist.filter((h, i) => h.role !== 'Thinking' || i > hist.map(x => x.role).lastIndexOf('You')).map(h => h.role + ': ' + h.text)].join('\n'); el.append(Object.assign(document.createElement('pre'), {textContent: t}), `≈ ${tokenize(t).length} tokens (small pieces of text) so far`); }},
-  think: {label: '💭 "Thinking…"', parts: [['s-think', 'Thinking'], ['s-reply', 'The reply: guess, add, repeat']],
+  think: {label: '💭 "Thinking…"', parts: [['thinking', 'Thinking'], ['reply', 'The reply: guess, add, repeat']],
     body: 'Some chatbots write private notes (one token, a small piece of text, at a time) before answering. The notes join the conversation the AI is reading (its context window), so the answer is written after re-reading them. Apps usually hide them.',
     extra: el => {
       const ti = hist.map(h => h.role).lastIndexOf('Thinking');
@@ -880,7 +890,7 @@ const spots = {
       seg.forEach(([l, c, col]) => { const sp = document.createElement('span'), sq = document.createElement('b'); sq.textContent = '■ '; sq.style.color = col; sp.append(sq, `${l}: ${c} tokens`); leg.append(sp); });
       el.append('Everything the AI was shown when writing its answer (measured in tokens):', bar, leg, 'The thinking can be bigger than the answer you see.');
     }},
-  tool: {label: '🔧 "Using a tool…"', parts: [['s-tools', 'Tools and agents'], ['s-app', 'The chat app: the harness']],
+  tool: {label: '🔧 "Using a tool…"', parts: [['tools', 'Tools and agents'], ['harness', 'The chat app: the harness']],
     body: 'The AI can only write text. To check the weather it writes a request instead; the chat app (the harness) runs the tool, adds the answer to the conversation, and asks the AI again. An AI doing this in a loop until the job is done is called an agent.',
     extra: el => { el.innerHTML = FLOW('🧠<br>AI asks', '→', '🧰<br>App runs<br>the tool', '→', '🌦️<br>Result', '→', '🧠<br>AI answers'); }}};
 Object.assign(spots.stream, {hint: 'send any suggestion and look at the bot\'s reply.'});
@@ -964,15 +974,49 @@ shade.onclick = () => closeTip(); tip.addEventListener('click', e => e.target.cl
 document.addEventListener('keydown', e => e.key === 'Escape' && closeTip());
 addEventListener('resize', () => { if (cur) cur.dir = null; place(); }); addEventListener('scroll', place, true);
 
+// ---- router: each main section has its own URL (/, /explore, /headlines, /faq); #hashes jump to an item
+const ROUTES = {chat: '/', parts: '/explore', news: '/headlines', faq: '/faq'}, SITE = 'https://ai-for-dummies.info', META = {
+  chat: [document.title, document.querySelector('meta[name=description]').content],
+  parts: ['Explore by part: how an AI chatbot works, piece by piece | AI for Dummies', 'Walk through every part of an AI chatbot (the app, tokens, the model, memory, thinking and tools) with simple analogies and things to play with.'],
+  news: ['Scary AI headlines, explained | AI for Dummies', 'What the scary AI headlines actually mean, one at a time: what is real, what would have to go wrong, and how the machinery really works.'],
+  faq: ['AI FAQ: common questions about chatbots | AI for Dummies', 'Short, plain answers to the questions people ask most about AI chatbots: why they make things up, whether they remember you, why answers change and more.']};
+const canPush = location.protocol.startsWith('http'), pathView = () => { const p = location.pathname.replace(/\/+$/, '') || '/'; return Object.keys(ROUTES).find(k => ROUTES[k] === p) || 'chat'; };
+let curView = '';
+const setBar = () => document.documentElement.style.setProperty('--bar', $('viewbar').offsetHeight + 'px'); // so jumps land below the sticky bar
 function setView(v) {
-  $('v-chat').hidden = v !== 'chat'; $('v-parts').hidden = v !== 'parts'; $('v-news').hidden = v !== 'news'; $('v-faq').hidden = v !== 'faq';
-  document.querySelectorAll('#viewbar button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === v));
+  Object.keys(ROUTES).forEach(k => $('v-' + k).hidden = k !== v);
+  document.querySelectorAll('#viewbar a').forEach(a => a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  const [t, d] = META[v], url = SITE + (ROUTES[v] === '/' ? '/' : ROUTES[v]); // the page's own details follow the route, for the tab title and for search engines that run scripts
+  document.title = t; document.querySelector('meta[name=description]').content = d; document.querySelector('link[rel=canonical]').href = url;
+  [['og:title', t], ['og:description', d], ['og:url', url], ['twitter:title', t], ['twitter:description', d]].forEach(([k, c]) => (document.querySelector(`meta[property="${k}"],meta[name="${k}"]`) || {}).content = c);
 }
-function goPart(id) { setView('parts'); $(id).scrollIntoView({behavior: 'smooth'}); }
-$('viewbar').addEventListener('click', e => e.target.dataset.view && setView(e.target.dataset.view));
+function jump(id, smooth) {
+  const el = id && $(id); if (!el) return false;
+  if (el.classList.contains('reveal') && !el.classList.contains('in')) { el.style.transition = 'none'; el.classList.add('in'); void el.offsetWidth; setTimeout(() => el.style.transition = '', 50); } // reveal it first, so its slide-in doesn't shift where we land
+  el.scrollIntoView({behavior: smooth && !RM ? 'smooth' : 'auto', block: 'start'}); return true; }
+function nav(v, id, push = true) { // go to a section (and optionally an item in it)
+  const changed = v !== curView; setView(v); curView = v; setBar();
+  if (push && canPush) history.pushState(null, '', ROUTES[v] + (id ? '#' + id : ''));
+  if (id && jump(id, !changed)) return;
+  if (changed) { const t = $('v-' + v).getBoundingClientRect().top + scrollY - $('viewbar').offsetHeight; if (scrollY > t) scrollTo(0, Math.max(0, t)); }
+}
+function goPart(id) { nav('parts', id); }
+document.addEventListener('click', e => {
+  const a = e.target.closest('#viewbar a, .toc a'); if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+  e.preventDefault(); a.closest('.toc') ? nav(curView, a.hash.slice(1)) : nav(a.dataset.view);
+});
+addEventListener('popstate', () => nav(pathView(), decodeURIComponent(location.hash.slice(1)), false));
+addEventListener('resize', setBar);
+// an "On this page" list at the top of each multi-item page
+function toc(view, items) { // each entry is an icon and a text span side by side, so wrapped text stays clear of the icon
+  const box = $('v-' + view), n = document.createElement('nav'), ul = document.createElement('ul'); n.className = 'toc card'; n.setAttribute('aria-label', 'On this page'); n.innerHTML = '<b>On this page</b>'; n.append(ul);
+  box.querySelectorAll(items).forEach(el => { const a = Object.assign(document.createElement('a'), {href: ROUTES[view] + '#' + el.id}), [, ic, tx] = el.querySelector('h2,h3').textContent.match(/^(\S+)\s+([\s\S]*)$/); a.innerHTML = '<span class="ic"></span><span></span>'; a.firstChild.textContent = ic; a.lastChild.textContent = tx; const li = document.createElement('li'); li.append(a); ul.append(li); });
+  view === 'parts' ? box.prepend(n) : box.querySelector('section').after(n);
+}
+toc('parts', 'section[id]'); toc('news', 'article[id]'); toc('faq', 'article[id]');
 document.addEventListener('click', e => {
   const a = e.target.closest('a.back'); if (!a) return;
-  e.preventDefault(); setView('chat'); hood(false, true); openTip(a.dataset.spot);
+  e.preventDefault(); nav('chat'); hood(false, true); openTip(a.dataset.spot);
 });
 document.addEventListener('click', e => { const b = e.target.closest('.ipin'); b && openTip(b.dataset.k, b); });
 
@@ -1139,6 +1183,7 @@ $('engine').addEventListener('click', e => e.target.closest('#hnb') ? note('hpin
 $('hchips').innerHTML = MSGS.map(t => `<button type="button">${t}</button>`).join(''); $('hchips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
 resetPages([]);
 info(say('sys', '👀 Normally hidden: ' + SYS), 'sys');
+nav(pathView(), decodeURIComponent(location.hash.slice(1)), false); document.fonts && document.fonts.ready.then(setBar);
 say('b', 'Hi! Ask me something. 👋');
 </script>
 </body>
