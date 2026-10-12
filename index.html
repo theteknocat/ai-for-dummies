@@ -101,6 +101,8 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 @media(min-width:700px){.toc li{padding:10px 0}.toc a{gap:14px}.toc ul{column-gap:44px}.toc b{margin-bottom:10px}}
 .chat{padding:0;overflow:hidden}
 .chat header{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:2px solid var(--line);font-weight:700}
+#creset{white-space:nowrap;margin:0 40px 0 auto;padding:4px 12px;font-size:.8rem;background:var(--card);color:var(--ink);border:2px solid var(--line)}#creset:disabled,#hreset:disabled{opacity:.4}
+@media(pointer:coarse){#creset{min-height:44px}}
 #chatbody{position:relative}
 #chatbody>.ipin{top:10px;right:20px}
 #msgs{height:320px;overflow-y:auto;padding:14px 52px 14px 14px;display:flex;flex-direction:column;gap:10px}
@@ -126,7 +128,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .hoodwrap.open .engine{visibility:visible;max-height:none;overflow:visible;transition:none}
 .hoodwrap.instant>*{transition:none!important}
 .ebar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.ebar>span{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ebar #closebtn{white-space:nowrap}
+.handlebar.top{margin:-12px 0 0}.handle{white-space:nowrap}
 #speedbtn{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:0;background:#2a3350;border:2px solid #4b5a85;border-radius:99px;overflow:hidden;font-size:.85rem;color:#a9b4d6}
 #speedbtn span{position:relative;z-index:1;padding:3px 12px;white-space:nowrap;text-align:center;transition:color .25s}
 #speedbtn::before{content:'';position:absolute;top:0;bottom:0;left:0;width:50%;background:var(--c);border-radius:99px;transition:transform .25s}
@@ -266,12 +268,13 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
   <p>This is a <b>pretend chatbot</b> (it only knows a few tricks). Send a message, then tap the little orange <b>i</b> buttons on the chat to peek behind that piece of the screen. The rest of the page dims so you can see exactly what's being explained.</p>
   <div class="hoodwrap" id="hoodwrap">
   <div class="card chat" id="chatface">
-    <header id="c-bot"><span id="c-avatar">🤖</span> Chatbot <small class="note">(pretend)</small></header>
+    <header id="c-bot"><span id="c-avatar">🤖</span> Chatbot <small class="note">(pretend)</small><button type="button" id="creset" title="Clear the chat and start over">↺ Clear</button></header>
     <div id="chatbody"><div id="msgs" aria-live="polite"></div></div>
     <form id="cform"><select id="cin" aria-label="Choose a message to send"><option value="" disabled selected>Choose a message…</option></select><button id="csend" disabled>Send ➤</button></form>
   </div>
   <div class="engine idle" id="engine" inert>
-    <div class="ebar"><b>🔍 Under the hood</b><span><button type="button" id="speedbtn" role="switch" aria-checked="false" aria-label="Animation speed: slow or fast"><span>🐢 Slow</span><span>🐇 Fast</span></button><button type="button" class="alt" id="closebtn">⇩ Close the hood ⇩</button></span></div>
+    <div class="handlebar top"><button type="button" class="handle" id="closebtn">⇩ Close the hood ⇩</button></div>
+    <div class="ebar"><button type="button" id="hreset" title="Clear the chat and start over">↺ Clear</button><button type="button" id="speedbtn" role="switch" aria-checked="false" aria-label="Animation speed: slow or fast"><span>🐢 Slow</span><span>🐇 Fast</span></button></div>
     <div class="chips" id="hchips"></div>
     <div id="hbody">
       <div class="unit you" id="hyou" data-k="you" tabindex="0" role="button"><span class="sym">🙂</span><span class="lab"><b>You</b><small id="hyoutxt">waiting…</small></span></div>
@@ -899,6 +902,7 @@ $('anext').onclick = () => { as++; adraw(); };
 $('arestart').onclick = () => { as = 0; adraw(); }; adraw();
 
 // ---------- chat view ----------
+const greet = () => { info(say('sys', '👀 Normally hidden: ' + SYS), 'sys'); say('b', 'Hi! Ask me something. 👋'); };
 const SYS = 'You are a helpful assistant. Be friendly and short.'; // the hidden instructions real apps add
 const hist = [];
 let busy = false;
@@ -1111,7 +1115,7 @@ const PLANS = [
 const plan = q => (PLANS.find(([re]) => re.test(q)) || [0, {answer: 'I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'}])[1];
 function send(text) {
   text = text.trim(); if (busy || !text) return;
-  busy = true; $('csend').disabled = true; $('cin').selectedIndex = 0; say('u', text); hist.push({role: 'You', text});
+  busy = true; $('csend').disabled = true; $('creset').disabled = $('hreset').disabled = true; $('cin').selectedIndex = 0; say('u', text); hist.push({role: 'You', text});
   const p = plan(text.toLowerCase()); H.turn(text, p);
   if (p.think) setTimeout(() => think(p.think, p.answer), 400);
   else if (p.tool) {
@@ -1119,23 +1123,33 @@ function send(text) {
     setTimeout(() => { d.textContent = `🔧 ${p.tool.call} → ${p.tool.result}`; hist.push({role: 'Tool', text: d.textContent}); info(d, 'tool'); setTimeout(() => stream(p.answer), 600); }, 1300);
   } else setTimeout(() => stream(p.answer), 500);
 }
+const resetChat = () => { // start over: empty chat, empty notebook, and the narrated first-time tour comes back
+  if (busy) return;
+  H.stop(); H.mem = []; H.queued = null; scene = null; seen.first = seen.tool = false; hist.length = 0; $('msgs').textContent = ''; greet(); resetPages([]);
+  $('hyoutxt').textContent = 'waiting…'; $('htok').textContent = '–'; $('htooltxt').textContent = 'idle'; $('engine').classList.add('idle'); $('cin').selectedIndex = 0; syncSend();
+};
+$('creset').onclick = $('hreset').onclick = resetChat;
 $('cform').addEventListener('submit', e => { e.preventDefault(); send($('cin').value); });
 const MSGS = ['Why is the sky blue?', 'Tell me a joke', 'Do I need an umbrella in Paris?', 'Which is bigger, 9.11 or 9.9?'];
-const syncSend = () => { $('csend').disabled = busy || !$('cin').value; };
-$('cin').append(...MSGS.map(t => new Option(t, t))); $('cin').onchange = syncSend;
+const syncSend = () => { $('csend').disabled = busy || !$('cin').value; $('creset').disabled = $('hreset').disabled = busy || !hist.length; }; // nothing to clear until something has been sent
+$('cin').append(...MSGS.map(t => new Option(t, t))); $('cin').onchange = syncSend; syncSend();
 
 // ---- under the hood: a slow, narrated machine that replays each chat turn ----
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches, wrap = $('hoodwrap'), short = t => t.length > 26 ? t.slice(0, 25) + '…' : t;
 let isOpen = false, speed = 1, dwell = 0, shownAt = 0; // speed 1 = slow and clear
+const seen = {first: false, tool: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
 const lid = () => wrap.style.setProperty('--lidH', $('chatface').offsetHeight + 'px'); lid(); addEventListener('resize', lid);
 function hood(on, instant) {
-  isOpen = on; lid(); wrap.classList.toggle('instant', !!instant); wrap.classList.toggle('open', on);
+  isOpen = on; lid(); const e = $('engine'), lidH = $('chatface').offsetHeight, anim = !instant && !RM && wrap.classList.contains('open') !== on, from = e.offsetHeight;
+  if (anim) { e.style.overflow = 'hidden'; e.style.maxHeight = from + 'px'; e.style.transition = on ? 'none' : 'visibility 0s .9s'; } // grow or shrink the height smoothly instead of snapping
+  wrap.classList.toggle('instant', !!instant); wrap.classList.toggle('open', on);
+  if (anim) { const to = on ? e.scrollHeight : lidH; void e.offsetHeight; e.style.transition = 'max-height .4s ease' + (on ? '' : ', visibility 0s .9s'); e.style.maxHeight = to + 'px'; clearTimeout(hood.t); hood.t = setTimeout(() => ['maxHeight', 'overflow', 'transition'].forEach(q => e.style[q] = ''), on ? 450 : 1000); }
   $('chatface').inert = on; $('engine').inert = !on; $('flipbtn').hidden = on;
   if (!instant) (on ? $('closebtn') : $('flipbtn')).focus({preventScroll: true});
   if (on) { if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else H.stop();
 }
 $('flipbtn').onclick = () => hood(true); $('closebtn').onclick = () => hood(false);
-if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn'), document.querySelector('.ebar b')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
+if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
 $('speedbtn').onclick = () => { speed = speed === 1 ? .4 : 1; $('speedbtn').setAttribute('aria-checked', speed !== 1); };
 // the notebook's "i": pauses the demo and explains it until the viewer presses OK
 function note(id, text) {
@@ -1160,12 +1174,12 @@ function callout(id, text) { // a speech bubble next to the part that is doing s
   c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); spot(id);
   H.lastId = id; dwell = 1200 + 380 * text.split(/\s+/).length; shownAt = Date.now(); // slow mode keeps a bubble up long enough to read it
 }
-function fly(a, b, label, pipe) {
+function fly(a, b, label, pipe, dur) { // dur (ms) overrides the slow/fast setting
   const p = Object.assign(document.createElement('span'), {className: 'pkt', textContent: label}), A = rel($(a)), T = rel($(b)), at = (r, s) => `translate(${r.x + r.w / 2}px,${r.y + r.h / 2}px) translate(-50%,-50%) scale(${s})`;
   pipe && $(pipe).classList.add('on'); $('hbody').append(p); $('hcall').hidden = true; // hide the bubble while something travels, so nothing is covered
   const done = () => { p.remove(); pipe && $(pipe).classList.remove('on'); };
   if (RM) return new Promise(r => setTimeout(() => (done(), r()), 600 * speed));
-  const an = p.animate([{transform: at(A, .6), opacity: 0}, {opacity: 1, offset: .15}, {opacity: 1, offset: .85}, {transform: at(T, 1), opacity: 0}], {duration: 1500 * speed, easing: 'ease-in-out'}); H.anims.add(an);
+  const an = p.animate([{transform: at(A, .6), opacity: 0}, {opacity: 1, offset: .15}, {opacity: 1, offset: .85}, {transform: at(T, 1), opacity: 0}], {duration: dur ?? 1500 * speed, easing: 'ease-in-out'}); H.anims.add(an);
   return an.finished.then(() => { H.anims.delete(an); done(); }, done);
 }
 // the notebook's pages; each one remembers its full text so the token count is honest
@@ -1177,7 +1191,7 @@ function resetPages(mem) {
   pgs.length = 0; $('hpages').textContent = ''; addPg('sys', '👀 hidden instructions', SYS);
   mem.forEach(m => { addPg('u', 'You: ' + short(m.u), m.u); m.t && addPg('tool', 'Tool: ' + m.t, m.t); addPg('b', 'Bot: ' + short(m.a), m.a); });
 }
-function sendNb(pipe) { // a copy of the whole notebook shrinks into a pill and travels to the model
+function sendNb(pipe, dur) { // a copy of the whole notebook shrinks into a pill and travels to the model
   const src = $('hnb'), A = rel(src), T = rel($('hmodel')), pw = 128, ph = 30, px = n => n + 'px';
   const c = document.createElement('div'), body = document.createElement('div'), lbl = Object.assign(document.createElement('span'), {className: 'lbl', textContent: '📓 whole notebook'});
   c.className = 'nbcopy'; body.className = 'body'; body.innerHTML = src.innerHTML; body.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); body.querySelector('.hpin').remove(); body.style.width = px(A.w - 4); c.append(body, lbl);
@@ -1185,7 +1199,7 @@ function sendNb(pipe) { // a copy of the whole notebook shrinks into a pill and 
   $('hcall').hidden = true; pipe && $(pipe).classList.add('on'); $('hbody').append(c);
   const done = () => { c.remove(); pipe && $(pipe).classList.remove('on'); };
   if (RM) return new Promise(r => setTimeout(() => (done(), r()), 600 * speed));
-  const D = 2200 * speed, o = {duration: D, fill: 'forwards'}, box = (x, y, w, h, r) => ({left: px(x), top: px(y), width: px(w), height: px(h), borderRadius: r}),
+  const D = dur ?? 2200 * speed, o = {duration: D, fill: 'forwards'}, box = (x, y, w, h, r) => ({left: px(x), top: px(y), width: px(w), height: px(h), borderRadius: r}),
     a = [c.animate([box(A.x, A.y, A.w, A.h, '16px'), {...box(A.x + A.w / 2 - pw / 2, A.y + A.h / 2 - ph / 2, pw, ph, '99px'), offset: .45}, box(T.x + T.w / 2 - pw / 2, T.y + T.h / 2 - ph / 2, pw, ph, '99px')], {...o, easing: 'ease-in-out'}),
       body.animate([{opacity: 1}, {opacity: 0, offset: .35}, {opacity: 0}], o), lbl.animate([{opacity: 0}, {opacity: 0, offset: .3}, {opacity: 1, offset: .5}, {opacity: 1}], o)];
   a.forEach(x => H.anims.add(x));
@@ -1200,41 +1214,57 @@ const H = {
     const go = async ms => { let left = ms * speed; while (left > 0) { await new Promise(r => setTimeout(r, 50)); if (!H.paused) left -= 50; if (id !== H.id) throw 0; } if (id !== H.id) throw 0; }, // pausable wait
       ok = async pr => { await pr; if (id !== H.id) throw 0; }, read = ms => go(speed === 1 ? Math.max(ms, dwell - (Date.now() - shownAt)) : ms), tokEl = $('htok'), model = $('hmodel');
     let sent = false; // true when the model already has the current notebook
+    const quick = seen.first, fixed = ms => go(ms / speed); // quick: the viewer has seen a narrated turn, so skip the explaining. fixed: a wait the slow/fast switch doesn't change
+    let k = 0; const ramp = () => { const f = .6 ** k++; return [Math.max(70, 900 * f), Math.max(60, 650 * f)]; }; // durations (ms) for the notebook trip and the token trip: each round is ~40% quicker until it whizzes by
     const land = (g, label, shown) => { g.full = shown; g.el.textContent = label + (shown.length > 22 ? '…' + shown.slice(-22) : shown); $('hpages').scrollTop = 1e6; count(); };
-    async function loop(text, cls, label, intro) { // write a reply one token at a time: the first three slowly, then fast-forwarded
+    async function loop(text, cls, label, intro) { // write a reply one token at a time: narrated for the first three (first time only), then every round of notebook-to-model-to-token speeds up
       const toks = tokenize(text), g = addPg(cls + ' live', label, ''); let shown = '';
       for (let i = 0; i < toks.length; i++) {
         const t = toks[i];
-        if (i < 3) {
+        if (!quick && i < 3) {
           if (!sent) await ok(sendNb('hp2')); sent = false; model.classList.add('work');
           callout('hmodel', i === 0 ? intro : i === 1 ? 'Again: the whole notebook goes in, one new token comes out.' : 'And again. Every token works this way.'); await read(1200);
           tokEl.textContent = t; await ok(fly('hmodel', 'hnb', t, 'hp2')); shown += t; land(g, label, shown); // the token lands, then it appears in the reply
           if (i === 0) { callout('hnb', 'The token lands on the notebook, then everything is sent again.'); await read(1200); }
         } else {
-          if (i === 3) { callout('hmodel', `…and so on, ${toks.length - 3} more times. Fast-forwarding.`); $('hp2').classList.add('on'); await read(1500); }
-          shown += t; tokEl.textContent = t; land(g, label, shown); await go(110);
+          if (!quick && i === 3) { callout('hmodel', `…and so on, ${toks.length - 3} more times, faster and faster.`); await read(1500); seen.first = true; }
+          if (RM) { shown += t; tokEl.textContent = t; land(g, label, shown); await go(110); continue; } // reduced motion: no flying, just the tokens
+          const [dn, dt] = ramp();
+          if (!sent) await ok(sendNb('hp2', dn)); sent = false; model.classList.add('work');
+          tokEl.textContent = t; await ok(fly('hmodel', 'hnb', t, 'hp2', dt)); shown += t; land(g, label, shown);
         }
       }
-      $('hp2').classList.remove('on'); g.el.classList.remove('live'); await go(1000);
+      $('hp2').classList.remove('on'); g.el.classList.remove('live'); await (quick ? fixed(200) : go(1000));
     }
     try {
       model.classList.remove('work'); resetPages(H.mem); $('hyoutxt').textContent = '“' + short(user) + '”'; tokEl.textContent = '–'; $('htooltxt').textContent = 'idle';
-      spot('hyou'); $('hyou').classList.add('pulse'); await go(2100); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
-      await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ' + short(user), user); await go(900);
-      await ok(sendNb('hp2')); sent = true;
+      spot('hyou'); $('hyou').classList.add('pulse'); await (quick ? fixed(250) : go(2100)); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
+      await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1', quick ? 500 : undefined)); spot(); addPg('u', 'You: ' + short(user), user); await (quick ? fixed(150) : go(900));
+      if (!quick || p.tool) { await ok(sendNb('hp2', quick ? 600 : undefined)); sent = true; }
       if (p.tool) {
-        tokEl.textContent = p.tool.call; model.classList.add('work'); callout('hmodel', `Instead of an answer, it writes a request: “${p.tool.call}”. A model can only ask.`); await read(2000);
-        await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2')); callout('hharness', 'The harness decides whether to allow it.'); await read(1500);
-        await ok(fly('hharness', 'htool', 'run it', 'hp3')); $('htooltxt').textContent = `→ ${p.tool.result}`; callout('htool', `The tool runs: ${p.tool.result}.`); await read(1500);
-        await ok(fly('htool', 'hnb', p.tool.result, 'hp3')); addPg('tool', 'Tool: ' + p.tool.result, p.tool.result); await go(900); sent = false;
+        if (!seen.tool) { // the first time the viewer meets a tool, slow right down and explain it
+          const keep = speed; if (quick) speed = 1;
+          try {
+          tokEl.textContent = p.tool.call; model.classList.add('work'); callout('hmodel', `Instead of an answer, it writes a request: “${p.tool.call}”. A model can only ask.`); await read(2000);
+          await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2')); callout('hharness', 'The harness decides whether to allow it.'); await read(1500);
+          await ok(fly('hharness', 'htool', 'run it', 'hp3')); $('htooltxt').textContent = `→ ${p.tool.result}`; callout('htool', `The tool runs: ${p.tool.result}.`); await read(1500);
+          await ok(fly('htool', 'hnb', p.tool.result, 'hp3')); addPg('tool', 'Tool: ' + p.tool.result, p.tool.result); await go(900); sent = false;
+          } finally { speed = keep; }
+          seen.tool = true;
+        } else { // seen it before: no explaining, but slow enough to follow
+          tokEl.textContent = p.tool.call; model.classList.add('work'); await fixed(500);
+          await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2', 700)); await fixed(250);
+          await ok(fly('hharness', 'htool', 'run it', 'hp3', 700)); $('htooltxt').textContent = `→ ${p.tool.result}`; await fixed(800);
+          await ok(fly('htool', 'hnb', p.tool.result, 'hp3', 700)); addPg('tool', 'Tool: ' + p.tool.result, p.tool.result); await fixed(300); sent = false;
+        }
       }
       if (p.think) {
         await loop(p.think, 'think', 'Thinking: ', 'It writes notes to itself first, one token at a time.');
         await loop(p.answer, 'b', 'Bot: ', 'Now the answer, the same way.');
       } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
       model.classList.remove('work'); $('hcall').hidden = true; spot();
-      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot();
-      H.mem.push(scene); scene = null;
+      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1', quick ? 500 : undefined)); spot('hyou'); await (quick ? fixed(500) : go(1500)); spot();
+      H.mem.push(scene); scene = null; seen.first = true;
     } catch (e) { if (e !== 0) throw e; }
   }
 };
@@ -1244,11 +1274,10 @@ $('hpin').onclick = e => { e.stopPropagation(); note('hpin', CAP.notebook); };
 $('engine').addEventListener('click', e => e.target.closest('#hnb') ? note('hpin', CAP.notebook) : sel(e)); $('engine').addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && e.target.dataset.k && (e.preventDefault(), sel(e)));
 $('hchips').innerHTML = MSGS.map(t => `<button type="button">${t}</button>`).join(''); $('hchips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
 resetPages([]);
-info(say('sys', '👀 Normally hidden: ' + SYS), 'sys');
+greet();
 // the server answers every unknown path with this page, so unknown paths get noindex (crawlers see a 200) and are tidied to the home URL
 if (canPush && !Object.values(ROUTES).includes(location.pathname.replace(/\/+$/, '') || '/')) { document.head.append(Object.assign(document.createElement('meta'), {name: 'robots', content: 'noindex'})); history.replaceState(null, '', '/'); }
 nav(pathView(), decodeURIComponent(location.hash.slice(1)), false); document.fonts && document.fonts.ready.then(setBar);
-say('b', 'Hi! Ask me something. 👋');
 </script>
 </body>
 </html>
