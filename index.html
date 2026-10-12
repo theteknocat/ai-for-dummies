@@ -748,7 +748,7 @@ function renderBricks(el, text) {
     el.append(d);
   });
 }
-const showBricks = () => renderBricks($('bricks'), $('txt').value);
+const showBricks = () => { renderBricks($('bricks'), $('txt').value); if (!$('txt').value.trim()) $('bricks').textContent = 'Type something above and it will be chopped into bricks here.'; };
 $('txt').addEventListener('input', showBricks); showBricks();
 
 // ---------- dials ----------
