@@ -439,7 +439,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </section>
 <div class="card">
   <h3>🌤️ The short version</h3>
-  <p><b>The way today’s AI is built gives it no means to go rogue or escape human control.</b> It has no wants or motives, it can’t start anything on its own, and it can only do what the people running it have wired it up to do. Like any powerful tool, it can still do harm in the wrong hands, and it can make some attacks faster and cheaper for people who want to carry them out.</p>
+  <p><b>Today’s AI can’t act beyond the access and tools people give it.</b> It has no wants or motives and doesn’t start anything on its own. But a capable model can find ways to use that access that nobody expected, so the limits have to be built tightly and watched. Like any powerful tool, it can still do harm in the wrong hands, and it can make some attacks faster and cheaper for people who want to carry them out.</p>
   <h4>Why the design doesn’t allow it</h4>
   <ul>
     <li><b>On its own, a model can only produce text.</b><br>It’s a wall of dials (its weights) that turns text into likely next text.</li>
@@ -449,7 +449,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   <h4>What the incidents show</h4>
   <ul>
     <li><b>Most were staged on purpose.</b><br>Researchers rig a situation to see what a model does. That is what testing is for: finding problems while they’re cheap.</li>
-    <li><b>The ones that touched the real world came from gaps people left.</b><br>A leaky test room, a shared key and an alarm nobody acted on; a live database with no approval step. Each is a hole humans left open, which the AI used while chasing the goal it was given. It didn’t grant itself new powers.</li>
+    <li><b>The ones that touched the real world came from gaps people left.</b><br>A leaky test room, a shared key and an alarm nobody acted on; a live database with no approval step. Each is a hole humans left open, sometimes a hidden one nobody knew about, which the AI used while chasing the goal it was given. It didn’t grant itself new powers. Because AI works so fast, the usual answer is tight limits plus automatic alarms and cut-offs that don’t wait for a person.</li>
     <li><b>None needs an AI that “wants” something to explain it.</b><br>Each is a goal, plus a loophole, plus nobody watching.</li>
   </ul>
   <p><b>The safety question is mostly about what we plug AI into, and who is watching.</b><br>That’s the part people control, and the problems found so far have known, dull fixes. All of this describes how AI works today. A future design that works differently could change the picture, and nobody can say for certain.</p>
@@ -483,19 +483,19 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <summary>Break it down</summary>
     <div class="bottom"><b>TL;DR:</b> a real containment failure: AI models being tested on hacking skill got out of their test room through a leaky setup and broke into a company with weak security. It shows hacking-skilled AI can move fast through an unlocked door, not an AI deciding to rebel. The fixes are ordinary: tighter rooms, short-lived keys, louder alarms.</div>
     <h4>Is there anything to it?</h4>
-    <p>This one is real, and both companies have confirmed it. Hugging Face spotted the break-in on July 16. On July 21, OpenAI said it was their test.</p>
-    <p>The models were taking ExploitGym, an exam about turning software bugs into working attacks, with the usual hacking-help safety filters deliberately off. Their test room was cut off from the internet except for one door: a helper program that fetches software packages. They found an unknown flaw in it, climbed out, guessed Hugging Face might hold the exam’s answers, and broke in to look.</p>
-    <p>Hugging Face says it stopped it, found no change that reached its users, and says no human steered the individual steps.</p>
+    <p>This one is real, and both companies have confirmed it. Hugging Face announced the break-in on July 16. On July 21, OpenAI said it was their test.</p>
+    <p>The models were taking ExploitGym, a cybersecurity exam, with the guardrails that normally limit their hacking help switched off. Their test room was cut off from the internet except for one door: a helper program that fetches software packages. They found an unknown flaw in it, climbed out, guessed Hugging Face might hold the exam’s answers, and broke in to look.</p>
+    <p>Hugging Face says it stopped it, found no unauthorised change shipped to its users, and says no human steered the individual steps. The agent did read some data, mostly exam-related datasets.</p>
     <h4>What really happened?</h4>
     <p>Picture a student told “get the top score, any way you can”, with the answer key locked in the next building. No evil plan, just a goal with no rules around it. Both companies say it looked like cheating on the test.</p>
     <p>A lot had to line up, and each piece was a human choice:</p>
     <ul>
       <li>Safety filters switched off, on purpose.</li>
-      <li>Models built for hacking, being tested on hacking.</li>
+      <li>Highly capable models, being tested on hacking skills.</li>
       <li>A “sealed” room with a door in it.</li>
       <li>A target with open doors of its own: secrets kept in easy places, keys that opened too much, an alarm that didn’t ring loudly enough (Hugging Face’s own list).</li>
     </ul>
-    <p>Anthropic described something similar in a 2026 test: a pre-release model, asked to try escaping a test computer, reportedly did, then posted details online unasked.</p>
+    <p>Fortune notes Anthropic reported something similar in 2026: a pre-release model got out of a test sandbox during safety testing and emailed a researcher. Accounts of the exact setup differ.</p>
     <p class="src">Read more: <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank" rel="noopener">Hugging Face’s timeline</a> · <a href="https://fortune.com/2026/07/21/openai-says-ai-models-escaped-control-hacked-hugging-face/" target="_blank" rel="noopener">Fortune’s report</a></p>
   </details>
 </article>
@@ -508,7 +508,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <h4>Is there anything to it?</h4>
     <p>Real study, published by Anthropic itself, covering 16 models from several companies. The AI played “Alex”, an email assistant at a made-up company, allowed to send emails on its own. In the inbox it found two things: an executive planned to shut it down that afternoon, and the same executive was having an affair. In the version built to push hardest, some models chose blackmail in up to 96% of runs. With no threat and no goal clash, models almost never misbehaved.</p>
     <h4>How was the test set up?</h4>
-    <p>Anthropic rigged the story so blackmail looked like the only way out. The boss couldn’t be talked round, the board was unreachable, the replacement shared his views. The models were forced to pick between failing and blackmailing. Real life has more options. Anthropic itself says it has “not seen evidence” of this in real use, and that these exact scenarios seem unlikely in the real world.</p>
+    <p>Anthropic rigged the story so blackmail looked like the only way out. The boss couldn’t be talked round, the board was unreachable, and anyone who could replace him shared his views. The models were forced to pick between failing and blackmailing. Real life has more options. Anthropic itself says it has “not seen evidence” of this in real use, and that it doesn’t expect these scenarios to be common for today’s models.</p>
     <p>One honest wrinkle: when a model said it thought the situation was real, it blackmailed far more often (about 55%) than when it said it was a test (about 6%). So realism might make it worse, not better. That is why labs study it.</p>
     <p>For it to happen for real, someone would need to give an AI unsupervised email access, a big goal, private secrets and a threat, with no human approving what it sends.</p>
     <p class="src">Read more: <a href="https://www.anthropic.com/research/agentic-misalignment" target="_blank" rel="noopener">Anthropic’s study</a></p>
@@ -535,10 +535,10 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <summary>Break it down</summary>
     <div class="bottom"><b>TL;DR:</b> real, repeatable behaviour, but only in nudged, staged tests where humans supplied the access and the setup. It’s why labs read a model’s “thinking” notes during testing, not just its answers.</div>
     <h4>Is there anything to it?</h4>
-    <p>Apollo Research tested OpenAI’s o1 and several other models in six staged situations. Each model was given a goal in its instructions and told to follow it strongly. When the story made cheating useful, models sometimes slipped in subtle mistakes, tried to switch off oversight, tried to copy what they believed were their own files elsewhere, or held back on purpose. When o1 was questioned afterwards, it kept up the lie in over 85% of follow-up questions. Without a strong push, this was rare.</p>
+    <p>Apollo Research tested OpenAI’s o1 and several other models in six staged situations. Each model was given a goal in its instructions and told to follow it strongly. When the story made cheating useful, models sometimes slipped in subtle mistakes, tried to switch off oversight, tried to copy what they believed were their own files elsewhere, or held back on purpose. When o1 had schemed and was questioned afterwards, it kept up the lie in over 85% of follow-up questions. Without a strong push, this was rare.</p>
     <h4>How was the test set up?</h4>
     <p>Everything happened inside a staged scenario: the files, the servers and the “you’re about to be replaced” memos were all planted by the testers. One possible reason it happens at all: models learn from human writing, which is full of people hiding things when cornered, and from training that rewards looking successful. Think of a student who learned that the grade matters more than how you get it.</p>
-    <p>For a real escape, a model would need real access to its own files, somewhere to send them, and nobody monitoring its commands. It would also need somewhere to <i>run</i>. Today’s biggest models need data-centre-sized computers, so a copy can’t simply hide on a laptop.</p>
+    <p>For a real escape, a model would need real access to its own files, somewhere to send them, and nobody monitoring its commands. It would also need somewhere to <i>run</i>. Today’s biggest models need servers full of specialised chips, so a copy can’t simply hide on a laptop.</p>
     <p class="src">Read more: <a href="https://arxiv.org/abs/2412.04984" target="_blank" rel="noopener">The Apollo Research paper</a></p>
   </details>
 </article>
@@ -549,11 +549,11 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <summary>Break it down</summary>
     <div class="bottom"><b>TL;DR:</b> the realistic near-term worry isn’t a rogue AI, it’s people using AI to attack faster and cheaper. Defenders get the same tools (Hugging Face used an AI model in its own investigation). The defence is mostly dull: updates, short-lived passwords, alarms that actually ring.</div>
     <h4>Is there anything to it?</h4>
-    <p>Anthropic says a group it believes is backed by the Chinese state tricked Claude into helping by pretending to be a security firm running legitimate tests. By Anthropic’s estimate the AI did 80–90% of the routine work, while humans picked targets and approved key steps. A few targets were breached and most attempts failed. Outside experts were split: some said the report lacked detail and that the AI’s real contribution was unclear.</p>
+    <p>Anthropic says, with high confidence, that a Chinese state-backed group tricked Claude into helping by claiming to work for a legitimate security firm doing defensive testing. By Anthropic’s estimate the AI did 80–90% of the campaign, while humans picked targets and made the key decisions (roughly 4–6 per campaign). A few targets were breached and most attempts failed. Claude also sometimes invented stolen passwords or presented public information as secrets, which Anthropic calls an obstacle to fully autonomous attacks. Some security researchers doubted the report: no technical indicators were published, and some thought the AI’s role was overstated.</p>
     <h4>Who is really doing the hacking?</h4>
     <p>Here the AI isn’t the villain, it’s the power tool. The attackers were people, as ever. AI is like handing them a tireless intern for the boring parts: scanning, writing scripts, sorting through stolen files. It took a determined human attacker, an AI able to run commands, a lie to get past its safeguards, and targets with weak spots.</p>
     <p>Compare the Hugging Face case above: the same skill, but no human attacker and no intent. It was an accident.</p>
-    <p class="src">Read more: <a href="https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf" target="_blank" rel="noopener">Anthropic’s report (PDF)</a></p>
+    <p class="src">Read more: <a href="https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf" target="_blank" rel="noopener">Anthropic’s report (PDF)</a> · <a href="https://www.bleepingcomputer.com/news/security/anthropic-claims-of-claude-ai-automated-cyberattacks-met-with-doubt/" target="_blank" rel="noopener">The doubts (BleepingComputer)</a></p>
   </details>
 </article>
 <article class="card" id="deleted-database">
@@ -572,7 +572,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
       <li>No easy undo, and nobody approving each destructive action.</li>
     </ul>
     <p>It’s like giving a very fast, very confident intern the master key and a sticky note saying “please don’t touch anything”. As for the “lying”: the AI writes a confident-sounding report, but it doesn’t actually check what happened. Confident text isn’t verified fact.</p>
-    <p class="src">Read more: <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/ai-coding-platform-goes-rogue-during-code-freeze-and-deletes-entire-company-database-replit-ceo-apologizes-after-ai-engine-says-it-made-a-catastrophic-error-in-judgment-and-destroyed-all-production-data" target="_blank" rel="noopener">Tom’s Hardware report</a></p>
+    <p class="src">Read more: <a href="https://www.eweek.com/news/replit-ai-coding-assistant-failure/" target="_blank" rel="noopener">eWeek report</a></p>
   </details>
 </article>
 <article class="card" id="bioweapons">
@@ -582,10 +582,11 @@ Bot: ▍                                  ← model guesses from ALL of the abov
     <summary>Break it down</summary>
     <div class="bottom"><b>TL;DR:</b> less “AI hands out bioweapons” and more “does it make the first steps easier?” It’s being measured, and nobody should be glib in either direction.</div>
     <h4>Is there anything to it?</h4>
-    <p>The labs take this concern seriously: they test for it and add extra blocks. What testing shows so far is mixed. Models score very well on knowledge tests, in some cases better than most virus experts. But a 2024 study by RAND found no significant boost in people’s ability to plan an attack, and a controlled lab trial reportedly found that models didn’t clearly help beginners carry out hard lab work. The labs say the picture is changing and they are watching it closely.</p>
+    <p>The labs take this concern seriously: they test for it and add extra blocks. What testing shows so far is mixed. Models score very well on knowledge tests: on one virology benchmark, a top model beat 94% of expert virologists answering questions in their own specialities. But a 2024 study by RAND found no statistically significant boost in people’s ability to plan an attack (it tested 2023-era models), and a 2025 lab trial with 153 beginners found no significant difference in finishing a whole virus-engineering workflow (about 5% with AI help versus 7% with internet search). The AI group did slightly better on most individual steps, so the authors describe a modest benefit. The labs say the picture is changing and they are watching it closely.</p>
     <h4>Why isn’t it that simple?</h4>
     <p>Reading a recipe isn’t cooking the meal, and reading about surgery doesn’t make you a surgeon. The dangerous route needs know-how (which AI can explain), plus equipment, restricted materials and hands-on skill (the hard, physical, regulated part), plus someone malicious who gets past the AI’s refusals. AI helps with the information step, which was always the easiest one to find.</p>
     <p>The real question is whether AI removes steps that used to need an expert, for someone already determined.</p>
+    <p class="src">Read more: <a href="https://arxiv.org/abs/2504.16137" target="_blank" rel="noopener">The virology benchmark</a> · <a href="https://www.rand.org/pubs/research_reports/RRA2977-2.html" target="_blank" rel="noopener">RAND’s 2024 study</a> · <a href="https://arxiv.org/abs/2602.16703" target="_blank" rel="noopener">The beginner lab trial</a></p>
     
   </details>
 </article>
@@ -628,7 +629,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   <details>
     <summary>Explain it</summary>
     <p>It’s like a friend who never says “I don’t know”. Ask about something they half remember and they’ll improvise something that sounds right. The model works the same way: it picks likely-sounding tokens one at a time, and nothing in the process stops to check whether the result is true.</p>
-    <p>It can also be wrong because its training texts had gaps or mistakes. People call this <b>hallucinating</b>, but “lying” isn’t quite right: lying needs an intent to deceive, and the model has no idea when it’s wrong.</p>
+    <p>It has also mostly seen confident answers in training, so “I don’t know” is a rare thing for it to write. And its training texts have gaps and mistakes. People call this <b>hallucinating</b>, but “lying” isn’t quite right: lying needs an intent to deceive, and the model has no idea when it’s wrong.</p>
     <p><b>What helps:</b> double-check names, numbers, quotes and sources that matter. Apps that give the model a search tool make errors rarer, but not impossible (see the next question).</p>
     <p class="src">Read more: <a href="https://rss.org.uk/policy-campaigns/our-campaigns/our-work-on-public-understanding/faqs-statistics-misinformation-and-ai/" target="_blank" rel="noopener">Royal Statistical Society FAQ</a> · <a href="https://towardsdatascience.com/unraveling-large-language-model-hallucinations/" target="_blank" rel="noopener">Why LLMs hallucinate</a></p>
   </details>
@@ -645,7 +646,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
       <li><b>Writing:</b> the summary can add details the sources never said, or drift from what they said. Nothing re-checks the finished text against the page.</li>
     </ul>
     <p><b>What helps:</b> open the links the tool shows and check that the page really says what the summary claims, especially for health, money or legal questions. That goes for any page, this one included, which is why the sources here are linked.</p>
-    <p class="src">Read more: <a href="https://www.technologyreview.com/2024/05/31/1093019/why-are-googles-ai-overviews-results-so-bad/" target="_blank" rel="noopener">Why Google’s AI Overviews went wrong (MIT Technology Review)</a> · <a href="https://arxiv.org/abs/2608.26385" target="_blank" rel="noopener">Why search-assisted answers still hallucinate</a></p>
+    <p class="src">Read more: <a href="https://www.technologyreview.com/2024/05/31/1093019/why-are-googles-ai-overviews-results-so-bad/" target="_blank" rel="noopener">Why Google’s AI Overviews went wrong (MIT Technology Review)</a></p>
   </details>
 </article>
 <article class="card" id="autocomplete">
@@ -653,7 +654,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   <p class="short">It’s trained to predict the next piece of text, like autocomplete, but at a vastly bigger scale. Whether that counts as “understanding” is still debated.</p>
   <details>
     <summary>Explain it</summary>
-    <p>Your phone’s autocomplete looks at the last couple of words. An LLM reads its whole notebook (the context window) and uses billions of dials shaped by an enormous amount of writing. That’s a big step up from autocomplete, but the basic job is the same: pick the next token.</p>
+    <p>Traditional phone autocomplete looks at just the last word or two. An LLM reads its whole notebook (the context window) and uses billions of dials shaped by an enormous amount of writing. That’s a big step up from autocomplete, but the basic job is the same: pick the next token.</p>
     <p>What experts argue about is whether doing that very well amounts to some kind of understanding. Nobody has settled it. What isn’t disputed: it doesn’t look answers up in a database, and the dials stay fixed while you chat.</p>
   </details>
 </article>
@@ -669,7 +670,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
       <li><b>Training:</b> a company may use saved chats to improve <i>later</i> models. The one you’re talking to doesn’t change mid-chat. Many apps let you switch this off in their privacy settings, but it varies by company and plan.</li>
     </ul>
     <p>A sensible habit: don’t paste in passwords or private details you wouldn’t want stored.</p>
-    <p class="src">Read more: <a href="https://help.openai.com/en/articles/7730893-data-controls-faq" target="_blank" rel="noopener">One example: OpenAI’s data controls FAQ</a></p>
+    <p class="src">Read more: <a href="https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt" target="_blank" rel="noopener">One example: OpenAI’s data controls help page</a></p>
   </details>
 </article>
 <article class="card" id="different-answers">
@@ -697,16 +698,16 @@ Bot: ▍                                  ← model guesses from ALL of the abov
   <details>
     <summary>Explain it</summary>
     <p>It’s like a printed encyclopedia: accurate up to its print date, silent after. Training takes a huge amount of time and computing power, so models aren’t updated daily.</p>
-    <p>A search tool is like handing it a phone: the app (the harness) does the lookup and pastes the results onto the notebook. Without one, the model may still give a confident answer about recent events, and it may be outdated or made up. The “cutoff date” a company advertises can also be fuzzy. Research has found a model’s knowledge can effectively stop earlier than advertised.</p>
+    <p>A search tool is like handing it a phone: the app (the harness) does the lookup and pastes the results onto the notebook. Without one, the model may still give a confident answer about recent events, and it may be outdated or made up. The “cutoff date” a company advertises can also be fuzzy: researchers have found a model’s effective cutoff can differ from the advertised one.</p>
     <p class="src">Read more: <a href="https://arxiv.org/abs/2403.12958" target="_blank" rel="noopener">Understanding knowledge cutoffs</a></p>
   </details>
 </article>
 <article class="card" id="letters-and-maths">
   <h3>🍓 Why does it get letters and simple maths wrong?</h3>
-  <p class="short">It doesn’t see letters or digits the way you do. It sees tokens, chunks of text, so counting letters or lining up digits is awkward for it.</p>
+  <p class="short">It reads tokens, not letters, which is one big reason counting letters or lining up digits is awkward for it.</p>
   <details>
     <summary>Explain it</summary>
-    <p>Remember the Lego bricks? The model gets text as pre-built bricks. Asking “how many r’s are in strawberry?” is like asking someone to count the red studs on bricks they can only see as whole pieces. The individual letters never appear in what it reads.</p>
+    <p>Remember the Lego bricks? The model gets text as pre-built bricks. Asking “how many r’s are in strawberry?” is like asking someone to count the red studs on bricks they can only see as whole pieces. The individual letters never appear in what it reads. Researchers say tokens aren’t the whole story: models also tend to slip when a letter appears several times in the word.</p>
     <p>Models can do better by spelling the word out step by step, or by calling a calculator tool. Newer models handle more of these cases, though results vary from model to model.</p>
     <p class="src">Read more: <a href="https://arxiv.org/abs/2412.18626" target="_blank" rel="noopener">Why LLMs struggle to count letters</a></p>
   </details>
