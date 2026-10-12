@@ -132,6 +132,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 #speedbtn::before{content:'';position:absolute;top:0;bottom:0;left:0;width:50%;background:var(--c);border-radius:99px;transition:transform .25s}
 #speedbtn[aria-checked=true]::before{transform:translateX(100%)}
 #speedbtn span:first-child{color:#fff}#speedbtn[aria-checked=true] span:first-child{color:#a9b4d6}#speedbtn[aria-checked=true] span:last-child{color:#fff}.ebar button{padding:5px 14px;font-size:.85rem}
+@media(pointer:coarse){.ebar button{min-height:44px}#speedbtn span{padding:10px 12px}}
 .handlebar{display:flex;justify-content:center}
 .handle{background:var(--c);border-radius:0 0 18px 18px;padding:7px 28px;letter-spacing:.03em;box-shadow:0 3px 0 rgba(0,0,0,.18)}
 #hbody{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,1.9fr) 54px minmax(0,1fr);grid-template-areas:"you p1 harness p2 model" ". . p3 . ." ". . tool . .";align-items:center;gap:0}
