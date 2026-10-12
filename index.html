@@ -1267,7 +1267,7 @@ const H = {
           const keep = speed; if (quick) speed = 1;
           try {
           tokEl.textContent = p.tool.call; model.classList.add('work'); tell('hmodel', `From your question, the model decides it needs a tool. So instead of an answer, it writes a request: “${p.tool.call}”. A model can only ask.`); await read(2000);
-          await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2')); tell('hharness', 'The harness decides whether to allow it.'); await read(1500);
+          await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2')); tell('hharness', 'The harness checks its permissions and decides whether to allow it. It can say no.'); await read(1500);
           await ok(fly('hharness', 'htool', 'run it', 'hp3')); $('htooltxt').textContent = `→ ${p.tool.result}`; tell('htool', `The tool runs: ${p.tool.result}.`); await read(1500);
           await ok(fly('htool', 'hnb', p.tool.result, 'hp3')); addPg('tool', 'Tool: ', p.tool.result); await go(900); sent = false;
           } finally { speed = keep; }
