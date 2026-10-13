@@ -6,6 +6,7 @@ Single-file static site: everything is in `index.html` (HTML, CSS, JS). Serve wi
 - `PLANS` (regex → scripted reply, optional `think` / `tool`) defines each suggested prompt; `MSGS` lists the chips.
 - `send()` runs the chat; `H.run()` plays the hood animation for the same turn (`H.turn` queues it if the hood is closed).
 - `seen = {first, tool, think}`: what the viewer has already watched explained. First-time explanations play once; later turns skip them (`quick = seen.first`). `resetChat` clears every key automatically, so a new first-time explanation = add a key to `seen` + check it in `H.run`.
+- The hood's orange "i" buttons (`.hi`, plus the notebook's `#hpin`) open the same `openTip` modal as the chat's `.ipin` pins; `data-k` is a key in `spots` (add one in `spots` for a new part). Opening one calls `hoodHold()` (pauses the demo, hides its bubble) and `closeTip` calls `hoodRelease()`. Demo bubbles (`tell()` → `callout(id, text, true)`) get a Next button with a countdown (`go(ms, true)`; `H.skip`). Nothing else in the hood is clickable.
 - `tell()`/`tips()`: bubbles are skipped in fast mode (set `window.tipsFast = true` to test them).
 
 ## Testing gotchas
