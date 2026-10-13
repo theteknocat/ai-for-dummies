@@ -1146,10 +1146,17 @@ const PLANS = [
   [/sky|blue/, {answer: 'The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'}],
   [/joke/, {answer: 'Why did the computer go to the doctor? It had a virus!'}]];
 const plan = q => (PLANS.find(([re]) => re.test(q)) || [0, {answer: 'I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'}])[1];
+const LIMIT = 200; // tiny on purpose so the demo hits it after a few turns (real context windows hold many thousands of tokens)
+let full = false; // once a message would not fit, the chat stays closed until it is cleared (the simplest way a chatbot can handle a full context)
+const used = () => tokenize(SYS).length + hist.reduce((n, h) => h.role === 'Thinking' ? n : n + tokenize(h.role === 'Tool' ? h.text.split('→ ').pop() : h.text).length, 0); // what the hood's notebook holds
 function send(text) {
   text = text.trim(); if (busy || !text) return;
+  const q = plan(text.toLowerCase()), need = [text, q.tool && q.tool.result, q.answer].reduce((n, t) => n + tokenize(t || '').length, 0);
+  if (full || used() + need > LIMIT) { // too big for the notebook: no model run, the app just says so
+    full = true; say('u', text); say('b', '⚠️ The context limit has been reached, so I can\'t help any more in this chat. Please clear it and start a new one.'); $('cin').selectedIndex = 0; syncSend(); count(); return;
+  }
   busy = true; $('csend').disabled = true; $('creset').disabled = $('hreset').disabled = true; $('cin').selectedIndex = 0; say('u', text); hist.push({role: 'You', text});
-  const p = plan(text.toLowerCase()); H.turn(text, p);
+  const p = q; H.turn(text, p);
   if (p.think) setTimeout(() => think(p.think, p.answer), 400);
   else if (p.tool) {
     const d = say('tool', `🔧 Using tool: ${p.tool.call} …`);
@@ -1158,7 +1165,7 @@ function send(text) {
 }
 const resetChat = () => { // start over: empty chat, empty notebook, and the narrated first-time tour comes back
   if (busy) return;
-  H.stop(); H.mem = []; H.queued = null; scene = null; Object.keys(seen).forEach(k => seen[k] = false); hist.length = 0; $('msgs').textContent = ''; greet(); resetPages([]);
+  H.stop(); H.cur = null; H.mem = []; H.queued = null; scene = null; Object.keys(seen).forEach(k => seen[k] = false); hist.length = 0; full = false; $('msgs').textContent = ''; greet(); resetPages([]);
   $('hyoutxt').textContent = 'Click a button above to run a demo'; $('htok').textContent = '–'; $('htooltxt').textContent = 'idle'; $('engine').classList.add('idle'); $('cin').selectedIndex = 0; syncSend();
 };
 $('creset').onclick = $('hreset').onclick = resetChat;
@@ -1179,7 +1186,7 @@ function hood(on, instant) {
   if (anim) { const to = on ? e.scrollHeight : lidH; void e.offsetHeight; e.style.transition = 'max-height .4s ease' + (on ? '' : ', visibility 0s .9s'); e.style.maxHeight = to + 'px'; clearTimeout(hood.t); hood.t = setTimeout(() => ['maxHeight', 'overflow', 'transition'].forEach(q => e.style[q] = ''), on ? 450 : 1000); }
   $('chatface').inert = on; $('engine').inert = !on; $('flipbtn').hidden = on;
   if (!instant) (on ? $('closebtn') : $('flipbtn')).focus({preventScroll: true});
-  if (on) { if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else H.stop();
+  if (on) { if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else { if (H.cur) { H.queued = H.cur; scene = null; } H.stop(); } // closed mid-run: reopening replays that turn from the start (it is not in the history yet, so no duplicate)
 }
 $('flipbtn').onclick = () => hood(true); $('closebtn').onclick = () => hood(false);
 if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
@@ -1206,13 +1213,13 @@ function fly(a, b, label, pipe, dur) { // dur (ms) overrides the slow/fast setti
 // the notebook's pages; each one remembers its full text so the token count is honest
 const pgs = []; let scene = null;
 const chip = g => { g.el = Object.assign(document.createElement('span'), {className: 'pg ' + g.cls, innerHTML: `<span class="pre"></span>` + (g.show ? '<span class="tx"><bdi dir="ltr"></bdi></span>' : '')}); g.el.firstChild.textContent = g.pre; g.show && (g.el.querySelector('bdi').textContent = g.full); $('hpages').append(g.el); $('hpages').scrollTop = 1e6; };
-const count = () => { $('hcount').textContent = pgs.reduce((n, g) => n + tokenize(g.full).length, 0) + ' tokens of context'; };
+const count = () => { $('hcount').textContent = pgs.reduce((n, g) => n + tokenize(g.full).length, 0) + ' of ' + LIMIT + ' tokens of context' + (full ? ' (full)' : ''); };
 const addPg = (cls, pre, full = '', show = true) => { const g = {cls, pre, full, show}; pgs.push(g); chip(g); count(); return g; };
 const cacheN = () => $('hcells').childElementCount, cacheSet = n => { $('hcachen').textContent = n ? n + ' tokens' : 'empty'; $('hcells').scrollTop = 1e6; };
 const cacheAdd = (n = 1, stagger) => { const c = $('hcells'), have = cacheN(); for (let i = 0; i < n; i++) c.append(Object.assign(document.createElement('i'), {className: 'cell', style: stagger ? `animation-delay:${Math.min(i * 20, 700)}ms` : ''})); cacheSet(have + n); }; // one square per token the model has worked through
-const cacheFill = () => { const need = pgs.reduce((n, g) => n + tokenize(g.full).length, 0) - cacheN(); need > 0 ? cacheAdd(need, true) : need < 0 && (() => { for (let i = 0; i > need; i--) $('hcells').lastChild.remove(); cacheSet(cacheN()); })(); }; // the notebook reached the model: whatever it had not read yet is added
-function resetPages(mem) {
-  $('hcells').textContent = ''; cacheSet(0); pgs.length = 0; $('hpages').textContent = ''; addPg('sys', '👀 hidden instructions', SYS, false);
+const cacheFill = still => { const need = pgs.reduce((n, g) => n + tokenize(g.full).length, 0) - cacheN(); need > 0 ? cacheAdd(need, !still) : need < 0 && (() => { for (let i = 0; i > need; i--) $('hcells').lastChild.remove(); cacheSet(cacheN()); })(); }; // the notebook reached the model: whatever it had not read yet is added
+function resetPages(mem, keepCache) { // keepCache: a new turn in the same chat, the model still remembers what it read
+  keepCache || ($('hcells').textContent = '', cacheSet(0)); pgs.length = 0; $('hpages').textContent = ''; addPg('sys', '👀 hidden instructions', SYS, false);
   mem.forEach(m => { addPg('u', 'You: ', m.u); m.t && addPg('tool', 'Tool: ', m.t); addPg('b', 'Bot: ', m.a); });
 }
 function sendNb(pipe, dur) { // a copy of the whole notebook shrinks into a pill and travels to the model
@@ -1232,9 +1239,9 @@ function sendNb(pipe, dur) { // a copy of the whole notebook shrinks into a pill
 const H = {
   id: 0, mem: [], queued: null, paused: false, anims: new Set(), lastId: '',
   stop() { H.id++; H.paused = false; H.anims.forEach(x => x.cancel()); H.anims.clear(); hold = null; document.querySelectorAll('.pkt,.nbcopy').forEach(e => e.remove()); document.querySelectorAll('.pipe.on').forEach(e => e.classList.remove('on')); $('hcall').hidden = true; spot(); $('hyou').classList.remove('pulse'); $('hmodel').classList.remove('work'); },
-  turn(text, p) { if (isOpen) H.run(text, p); else H.queued = [text, p]; }, // from the chat: play it now if the hood is open, else when it is next opened
+  turn(text, p) { if (isOpen) H.run(text, p); else { if (H.queued) { if (scene) H.mem.push(scene); scene = {u: H.queued[0], a: H.queued[1].answer, t: H.queued[1].tool && H.queued[1].tool.result}; } H.queued = [text, p]; } }, // a turn skipped while closed still joins the notebook history; only the latest one is replayed on open // from the chat: play it now if the hood is open, else when it is next opened
   async run(user, p) {
-    H.stop(); $('engine').classList.remove('idle'); const id = H.id; if (scene) H.mem.push(scene); scene = {u: user, a: p.answer, t: p.tool && p.tool.result};
+    H.stop(); $('engine').classList.remove('idle'); const id = H.id; H.cur = [user, p]; if (scene) H.mem.push(scene); scene = {u: user, a: p.answer, t: p.tool && p.tool.result};
     const go = async (ms, bubble) => { let left = ms * speed; H.skip = false; while (left > 0 && !(bubble && H.skip)) { if (bubble) $('hnext').textContent = `Next (${Math.ceil(left / 1000)}s)`; await new Promise(r => setTimeout(r, 50)); if (!H.paused) left -= 50; if (id !== H.id) throw 0; } H.skip = false; if (id !== H.id) throw 0; }, // pausable wait; bubble: a demo bubble's wait, with a Next button counting down that can end it early
       ok = async pr => { await pr; if (id !== H.id) throw 0; }, read = ms => tips() ? go(speed === 1 ? Math.max(ms, dwell - (Date.now() - shownAt)) : ms, true) : 0, tokEl = $('htok'), model = $('hmodel');
     const tips = () => speed === 1 || window.tipsFast, tell = (id, t) => tips() && callout(id, t, true); // fast mode is too quick to read the explanations, so it skips them (set window.tipsFast = true to see them anyway, e.g. when testing)
@@ -1265,7 +1272,8 @@ const H = {
       $('hp2').classList.remove('on'); g.el.classList.remove('live'); await go(1000);
     }
     try {
-      model.classList.remove('work'); resetPages(H.mem); $('hyoutxt').textContent = '“' + user + '”'; tokEl.textContent = '–'; $('htooltxt').textContent = 'idle';
+      model.classList.remove('work'); resetPages(H.mem, true); cacheFill(true); // history the model has already read is in the cache before the new message arrives
+      $('hyoutxt').textContent = '“' + user + '”'; tokEl.textContent = '–'; $('htooltxt').textContent = 'idle';
       spot('hyou'); $('hyou').classList.add('pulse'); await go(2100); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
       await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ', user); await go(900);
       await send('hp2'); sent = true;
@@ -1294,7 +1302,7 @@ const H = {
       } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
       model.classList.remove('work'); $('hcall').hidden = true; spot();
       await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot();
-      H.mem.push(scene); scene = null; tips() && (seen.first = true);
+      H.mem.push(scene); scene = null; H.cur = null; tips() && (seen.first = true);
     } catch (e) { if (e !== 0) throw e; }
   }
 };
