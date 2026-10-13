@@ -1227,7 +1227,7 @@ const H = {
     const tips = () => speed === 1 || window.tipsFast, tell = (id, t) => tips() && callout(id, t, true); // fast mode is too quick to read the explanations, so it skips them (set window.tipsFast = true to see them anyway, e.g. when testing)
     let sent = false; // true when the model already has the current notebook
     const send = (pipe, dur) => ok(sendNb(pipe, dur)).then(cacheFill);
-    const quick = seen.first, fixed = ms => go(ms / speed); // quick: the viewer has seen a narrated turn, so skip the explaining. fixed: a wait the slow/fast switch doesn't change
+    const quick = seen.first, fixed = ms => go(ms / speed); // quick: the viewer has seen a narrated turn, so skip the tooltips and the pauses spent reading them. Nothing else changes: the slow/fast switch is the only speed control. fixed: a wait the slow/fast switch doesn't change (only the short gaps in the already-seen tool path)
     let k = 0, decay = .6; const ramp = () => { const f = decay ** k++; return [Math.max(70, 900 * f), Math.max(60, 650 * f)]; }; // durations (ms) for the notebook trip and the token trip: each round is ~40% quicker until it whizzes by
     const land = (g, shown) => { g.full = shown; g.el.querySelector('bdi').textContent = shown; $('hpages').scrollTop = 1e6; count(); cacheFill(); };
     async function loop(text, cls, label, intro, again) { // write a reply one token at a time: narrated for the first three (first time only), then every round of notebook-to-model-to-token speeds up
@@ -1249,13 +1249,13 @@ const H = {
           tokEl.textContent = t; cacheAdd(); await ok(fly('hmodel', 'hnb', t, 'hp2', dt)); shown += t; land(g, shown);
         }
       }
-      $('hp2').classList.remove('on'); g.el.classList.remove('live'); await (quick ? fixed(200) : go(1000));
+      $('hp2').classList.remove('on'); g.el.classList.remove('live'); await go(1000);
     }
     try {
       model.classList.remove('work'); resetPages(H.mem); $('hyoutxt').textContent = '“' + user + '”'; tokEl.textContent = '–'; $('htooltxt').textContent = 'idle';
-      spot('hyou'); $('hyou').classList.add('pulse'); await (quick ? fixed(250) : go(2100)); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
-      await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1', quick ? 500 : undefined)); spot(); addPg('u', 'You: ', user); await (quick ? fixed(150) : go(900));
-      if (!quick || p.tool) { await send('hp2', quick ? 600 : undefined); sent = true; }
+      spot('hyou'); $('hyou').classList.add('pulse'); await go(2100); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
+      await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ', user); await go(900);
+      await send('hp2'); sent = true;
       if (p.tool) {
         if (!seen.tool && tips()) { // the first time the viewer meets a tool, slow right down and explain it
           const keep = speed; if (quick) speed = 1;
@@ -1268,9 +1268,9 @@ const H = {
           seen.tool = true;
         } else { // seen it before: no explaining, but slow enough to follow
           tokEl.textContent = p.tool.call; model.classList.add('work'); await fixed(500);
-          await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2', 700)); await fixed(250);
-          await ok(fly('hharness', 'htool', 'run it', 'hp3', 700)); $('htooltxt').textContent = `→ ${p.tool.result}`; await fixed(800);
-          await ok(fly('htool', 'hnb', p.tool.result, 'hp3', 700)); addPg('tool', 'Tool: ', p.tool.result); await fixed(300); sent = false;
+          await ok(fly('hmodel', 'hharness', '🔧 a request', 'hp2')); await fixed(250);
+          await ok(fly('hharness', 'htool', 'run it', 'hp3')); $('htooltxt').textContent = `→ ${p.tool.result}`; await fixed(800);
+          await ok(fly('htool', 'hnb', p.tool.result, 'hp3')); addPg('tool', 'Tool: ', p.tool.result); await go(900); sent = false;
         }
       }
       if (p.think) {
@@ -1280,7 +1280,7 @@ const H = {
         await loop(p.answer, 'b', 'Bot: ', 'Thinking is done. Now it writes the reply: the same process all over again, one token at a time.', true);
       } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
       model.classList.remove('work'); $('hcall').hidden = true; spot();
-      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1', quick ? 500 : undefined)); spot('hyou'); await (quick ? fixed(500) : go(1500)); spot();
+      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot();
       H.mem.push(scene); scene = null; tips() && (seen.first = true);
     } catch (e) { if (e !== 0) throw e; }
   }
