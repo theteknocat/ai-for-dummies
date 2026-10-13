@@ -133,8 +133,15 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 #c-bot,#cform,.msg{position:relative}
 .hoodwrap{display:grid;grid-template-columns:minmax(0,1fr);perspective:2200px;perspective-origin:50% 0;margin:18px 0 0}
 .hoodwrap>*{grid-area:1/1}
-.hoodwrap>.card{align-self:start;backface-visibility:hidden;margin:0;position:relative;z-index:2;transform-origin:50% 0;transition:transform .9s cubic-bezier(.3,.1,.2,1),visibility 0s}
-.hoodwrap.open>.card{transform:rotateX(92deg);visibility:hidden;transition:transform .9s cubic-bezier(.3,.1,.2,1),visibility 0s .9s}
+.hoodwrap>.card{align-self:start;backface-visibility:hidden;margin:0;position:relative;z-index:2;transform-origin:50% 0;box-shadow:0 0 0 rgba(0,0,0,0);transition:transform .9s cubic-bezier(.3,.1,.2,1),box-shadow .9s cubic-bezier(.3,.1,.2,1),visibility 0s}
+.hoodwrap>.card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.4));opacity:0;pointer-events:none;transition:opacity .9s cubic-bezier(.3,.1,.2,1)}
+.hoodwrap{--lift:93deg}
+.hoodwrap>.lidback{align-self:start;height:var(--lidH);position:relative;z-index:2;pointer-events:none;box-sizing:border-box;background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,0) 75%),var(--back);border:2px solid var(--backline);border-radius:20px;backface-visibility:hidden;transform-origin:50% 0;transform:rotateX(0) rotateY(180deg);box-shadow:0 30px 50px -10px rgba(0,0,0,.4);transition:transform .9s cubic-bezier(.3,.1,.2,1)} /* the lid's underside: only seen once the lid is past 90deg */
+.hoodwrap{--back:#5a5868;--backline:#6e6b7c}
+@media(prefers-color-scheme:dark){.hoodwrap{--back:#22212a;--backline:#383643}}
+.hoodwrap.open>.lidback{transform:rotateX(var(--lift)) rotateY(180deg)}
+.hoodwrap.open>.card{transform:rotateX(var(--lift));visibility:hidden;box-shadow:0 40px 70px -10px rgba(0,0,0,.5);transition:transform .9s cubic-bezier(.3,.1,.2,1),box-shadow .9s cubic-bezier(.3,.1,.2,1),visibility 0s .9s}
+.hoodwrap.open>.card::before{opacity:1}
 .engine{position:relative;z-index:1;visibility:hidden;max-height:var(--lidH);overflow:hidden;transition:visibility 0s .9s;background:#1d2333 linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/24px 24px;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);color:#e8ecf5;border:2px solid #3a4560;border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.35}
 .hoodwrap.open .engine{visibility:visible;max-height:none;overflow:visible;transition:none}
 .hoodwrap.instant>*{transition:none!important}
@@ -195,7 +202,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
   .pipe.h.on::before{background-image:repeating-linear-gradient(0deg,#ffb347 0 8px,#7a5a20 8px 16px)}
   #hbody{column-gap:10px}
 }
-@media(prefers-reduced-motion:reduce){#hbody{transition:none}.hoodwrap>.card,.engine,#speedbtn::before,#speedbtn span{transition:none!important}}
+@media(prefers-reduced-motion:reduce){#hbody{transition:none}.hoodwrap>.card,.hoodwrap>.card::before,.hoodwrap>.lidback,.engine,#speedbtn::before,#speedbtn span{transition:none!important}}
 #cform{padding-right:46px}
 #cform button{white-space:nowrap}
 #cform select{flex:1;min-width:0;font:inherit;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
@@ -290,6 +297,7 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
     <div id="chatbody"><div id="msgs" aria-live="polite"></div></div>
     <form id="cform"><select id="cin" aria-label="Choose a message to send"><option value="" disabled selected>Choose a message…</option></select><button id="csend" disabled>Send ➤</button></form>
   </div>
+  <div class="lidback" aria-hidden="true"></div>
   <div class="engine idle" id="engine" inert>
     <div class="handlebar top"><button type="button" class="handle" id="closebtn">⇩ Close the hood ⇩</button></div>
     <div class="ebar"><button type="button" id="hreset" title="Clear the chat and start over">↺ Clear</button><button type="button" id="speedbtn" role="switch" aria-checked="false" aria-label="Animation speed: slow or fast"><span>🐢 Slow</span><span>🐇 Fast</span></button></div>
