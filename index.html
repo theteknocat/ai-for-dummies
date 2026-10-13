@@ -93,6 +93,17 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .viewbar a[aria-current=page]{background:var(--b);color:#fff;border-color:var(--b)}
 @media(max-width:560px){.viewbar{gap:4px;padding:8px 0;transition:transform .25s}.viewbar a{padding:6px 6px;font-size:.8rem}.viewbar.away{transform:translateY(-100%)}}
 .viewbar a:focus-visible,.toc a:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+/* "buy me a coffee": its own centred line under the tabs on wide screens (721px+, where the tabs fit one row); a short pill on the tab row below that, where the tabs already wrap and have room, so the bar never gets an extra row */
+.viewbar .brk{flex-basis:100%;height:0;margin-top:-8px}.viewbar a.coffee .sm{display:none}
+@media(min-width:721px){.viewbar a.coffee{font-size:.8rem;padding:3px 12px}}
+/* hover feedback, pointer devices only (so a tap on a phone doesn't leave a stuck hover): outlined things get an accent border, solid buttons get a touch brighter, text links a thicker underline */
+@media(hover:hover){
+  .viewbar a:not([aria-current=page]):hover,.chips button:hover,.engine .chips button:hover,#creset:hover,.toggles label:hover,#cform select:hover,#speedbtn:hover{border-color:var(--a)}
+  button:not(:disabled):hover{filter:brightness(1.12)}.call button:hover,#speedbtn:hover{filter:none}
+  summary:hover{text-decoration:underline}
+  main a:hover,footer a:hover{text-decoration-thickness:2px}
+}
+@media(max-width:720px){.viewbar .brk{display:none}.viewbar a.coffee .lg{display:none}.viewbar a.coffee .sm{display:inline}}
 .toc{margin:18px 0}.toc b{display:block;margin-bottom:6px}
 .toc ul{list-style:none;margin:0;padding:0;columns:2 260px;column-gap:24px}
 .news .toc ul{margin:0;padding:0}
@@ -264,6 +275,8 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
   <a href="/headlines" data-view="news">🗞️ Headlines</a>
   <a href="/faq" data-view="faq">❓ FAQ</a>
   <a href="/resources" data-view="resources">📚 Resources</a>
+  <span class="brk" aria-hidden="true"></span>
+  <a class="coffee" href="https://buymeacoffee.com/teknocat" target="_blank" rel="noopener" aria-label="Buy me a coffee (opens in a new tab)">☕ <span class="lg">Buy me a coffee</span><span class="sm">Coffee</span></a>
 </div>
 
 <div id="v-chat">
@@ -766,7 +779,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </div>
 
 </main>
-<footer class="site">Made by <a href="https://peter-epp.dev" target="_blank" rel="noopener">Peter Epp</a></footer>
+<footer class="site">Made by <a href="https://peter-epp.dev" target="_blank" rel="noopener">Peter Epp</a> · <a href="https://buymeacoffee.com/teknocat" target="_blank" rel="noopener">☕ Buy me a coffee</a></footer>
 <script>
 const $ = id => document.getElementById(id);
 
@@ -1058,7 +1071,7 @@ $('viewbar').addEventListener('focusin', () => $('viewbar').classList.remove('aw
 const setBar = () => document.documentElement.style.setProperty('--bar', $('viewbar').offsetHeight + 'px'); // so jumps land below the sticky bar
 function setView(v) {
   Object.keys(ROUTES).forEach(k => $('v-' + k).hidden = k !== v);
-  document.querySelectorAll('#viewbar a').forEach(a => a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  document.querySelectorAll('#viewbar a[data-view]').forEach(a => a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
   const [t, d] = META[v], url = SITE + (ROUTES[v] === '/' ? '/' : ROUTES[v]); // the page's own details follow the route, for the tab title and for search engines that run scripts
   document.title = t; document.querySelector('meta[name=description]').content = d; document.querySelector('link[rel=canonical]').href = url;
   [['og:title', t], ['og:description', d], ['og:url', url], ['twitter:title', t], ['twitter:description', d]].forEach(([k, c]) => (document.querySelector(`meta[property="${k}"],meta[name="${k}"]`) || {}).content = c);
@@ -1075,7 +1088,7 @@ function nav(v, id, push = true) { // go to a section (and optionally an item in
 }
 function goPart(id) { nav('parts', id); }
 document.addEventListener('click', e => {
-  const a = e.target.closest('#viewbar a, .toc a'); if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+  const a = e.target.closest('#viewbar a[data-view], .toc a'); if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
   e.preventDefault(); a.closest('.toc') ? nav(curView, a.hash.slice(1)) : nav(a.dataset.view);
 });
 addEventListener('popstate', () => nav(pathView(), decodeURIComponent(location.hash.slice(1)), false));
