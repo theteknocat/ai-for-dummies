@@ -160,6 +160,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 #hyou{grid-area:you}#hp1{grid-area:p1}#hharness{grid-area:harness}#hp2{grid-area:p2}#hmodel{grid-area:model}#hp3{grid-area:p3}#htool{grid-area:tool}
 .unit{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#2a3350;border:2px solid #4b5a85;border-radius:16px;padding:8px 10px;transition:box-shadow .3s,border-color .3s}
 .unit:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.unit.unit.deny{background:#4a1519;border-color:#e5484d;box-shadow:0 0 0 4px rgba(229,72,77,.35);animation:dpulse .35s ease-in-out 4}@keyframes dpulse{50%{transform:scale(1.04);box-shadow:0 0 0 9px rgba(229,72,77,.55)}}
 .unit.spot{border-color:#ffb347;box-shadow:0 0 0 4px rgba(255,179,71,.35),0 0 18px rgba(255,179,71,.4)}
 .unit .sym{position:relative;flex:none;width:52px;height:52px;display:grid;place-items:center;font-size:1.9rem;border-radius:14px;background:#364064;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
 .unit .lab{display:flex;flex-direction:column;min-width:0;flex:1}.unit .lab small{color:#a9b4d6;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -172,6 +173,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 #htok{display:block;height:1.6em;line-height:1.35;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:pre;text-align:center;font:700 .8rem monospace;background:#1d2333;border:2px solid #4a7cff;border-radius:8px;padding:0 8px}
 .pages{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:4px;height:128px;overflow-y:auto}
 .pg{flex:none;display:flex;font-size:.75rem;padding:0 8px;border-radius:99px;border:1.5px solid #4b5a85;animation:pop .4s;max-width:100%;overflow:hidden;white-space:nowrap}.pg .pre{flex:none;white-space:pre}.pg .tx{min-width:0;overflow:hidden;text-overflow:ellipsis;direction:rtl}/* rtl puts the ellipsis on the left, so the newest end of the text stays visible */
+.pg.notice{white-space:normal;border-radius:12px;padding:3px 10px;background:#4a1519;border-color:#e5484d;color:#ffd9da;box-shadow:0 5px 14px rgba(0,0,0,.6),0 0 0 2px rgba(229,72,77,.3);transform:translateY(-2px)}.pg.notice .tx{white-space:normal;overflow:visible;text-overflow:clip}
 .pg.sys{border-style:dashed;color:#a9b4d6}.pg.u{background:var(--b);border-color:var(--b);color:#fff}.pg.tool{border-color:#f5a623;color:#f5a623}.pg.think{border-color:#b794ff;color:#b794ff}.pg.live{border-color:#ffb347}
 .pipe{position:relative;display:grid;place-items:center;min-height:30px;min-width:30px}
 .pipe::before{content:'';width:100%;height:8px;border-radius:4px;background:repeating-linear-gradient(90deg,#4b5a85 0 8px,#33406a 8px 16px)}
@@ -183,7 +185,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .nbcopy{position:absolute;z-index:5;pointer-events:none;overflow:hidden;background:#232a42;border:2px dashed #ffb347;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
 .nbcopy .body{position:absolute;left:0;top:0;padding:8px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .nbcopy .lbl{position:absolute;inset:0;display:grid;place-items:center;font:700 .75rem system-ui;color:#ffb347;white-space:nowrap}
-.call button[hidden]{display:none}.call button{display:block;margin:10px 0 0 auto;padding:2px 14px;font-size:.72rem;font-weight:400;background:transparent;color:inherit;border:1.5px solid var(--c)}.call button:hover{background:color-mix(in srgb,var(--c) 15%,transparent)}.call.demo{pointer-events:auto}
+.call button:focus{outline:3px solid var(--a);outline-offset:2px}.call button[hidden]{display:none}.call button{display:block;margin:10px 0 0 auto;padding:2px 14px;font-size:.72rem;font-weight:400;background:transparent;color:inherit;border:1.5px solid var(--c)}.call button:hover{background:color-mix(in srgb,var(--c) 15%,transparent)}.call.demo{pointer-events:auto}
 .pkt{position:absolute;left:0;top:0;pointer-events:none;z-index:5;background:var(--a);color:#fff;font:700 .78rem system-ui;padding:2px 12px;border-radius:99px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4)}
 .call{position:absolute;z-index:4;background:#fffaf0;color:#2b2a33;border-radius:14px;padding:8px 12px;font-size:.85rem;line-height:1.35;box-shadow:0 6px 20px rgba(0,0,0,.45);pointer-events:none}
 .call::after{content:'';position:absolute;left:var(--ax,50%);width:12px;height:12px;background:inherit;transform:translateX(-50%) rotate(45deg)}
@@ -193,6 +195,8 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .engine .chips button::before{content:'▶';display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;font-size:.6rem;padding-left:2px}
 /* before the first press the machine looks switched off, and the play buttons pulse */
 #hbody{transition:opacity .6s,filter .6s}
+.engine .chips button.on:disabled{opacity:1;border-color:var(--a);box-shadow:0 0 0 3px var(--a);background-image:repeating-linear-gradient(135deg,#2a3350 0 8px,#323c5f 8px 16px);background-size:22.63px 22.63px;animation:chipflow 1s linear infinite}@keyframes chipflow{to{background-position:22.63px 0}} /* 22.63 = 16 * sqrt2: a square tile whose diagonal holds exactly two 16px stripe pairs, so it tiles and the loop has no seam */
+@media(prefers-reduced-motion:reduce){.engine .chips button.on:disabled{animation:none}}
 .engine.idle .chips button::before{animation:playpulse 1.4s infinite}
 @keyframes playpulse{0%{box-shadow:0 0 0 0 rgba(47,182,124,.8)}100%{box-shadow:0 0 0 10px rgba(47,182,124,0)}}
 @media(min-width:641px){#htool,#hp3{margin-top:14px}#hharness{align-self:stretch;align-content:flex-start}}
@@ -969,6 +973,8 @@ const spots = {
     body: 'The AI can only write text. To check the weather it writes a request instead; the chat app (the harness) runs the tool, adds the answer to the conversation, and asks the AI again. An AI doing this in a loop until the job is done is called an agent.',
     extra: el => { el.innerHTML = FLOW('🧠<br>AI asks', '→', '🧰<br>App runs<br>the tool', '→', '🌦️<br>Result', '→', '🧠<br>AI answers'); }}};
 Object.assign(spots, {
+  limit: {label: '🚧 "Context limit reached"', parts: [['context-window', 'Its memory: the context window']],
+    body: 'A chat\'s memory (the context window) is finite, and apps handle a full one differently. Some compact it: they summarise old messages and keep going (Claude Code does this automatically near the limit). Some stop and ask you to start a new chat. If a reply hits the limit mid-write, some cut it off. None can know a reply\'s length in advance, so they watch how full the window is.'},
   you: {label: '🙂 You', parts: [['tokens', 'The text box: tokens']], body: 'All you do is type a message. Everything else happens without you: the app adds your message to the notebook, then the AI reads the notebook.',
     extra: el => { el.innerHTML = FLOW('🙂<br>You', '→', '📓<br>Notebook', '→', '🧠<br>The AI<br>reads it'); }},
   notebook: Object.assign({}, spots.memory, {label: '📓 The notebook (the "context window")', body: 'The notebook is everything the model can see: the hidden instructions plus the whole chat so far. It remembers nothing else. This is called the context window. Exactly what it was handed last:'}),
@@ -1136,16 +1142,16 @@ function typeInto(d, text, ms, cb) {
     clearInterval(t); d.classList.remove('cur'); cb(toks.length);
   }, ms);
 }
-function stream(text) {
-  const d = say('b', '');
-  typeInto(d, text, 70, () => { hist.push({role: 'Bot', text}); busy = false; syncSend(); info(d, 'stream'); });
+function stream(text, cut) { // cut: the reply hit the context limit, so it ends here with a notice
+  const d = say('b', ''), done = () => { text ? (hist.push({role: 'Bot', text}), info(d, 'stream')) : d.remove(); cut && (full = true, info(say('b', CUTMSG), 'limit'), count()); busy = false; syncSend(); };
+  text ? typeInto(d, text, 70, done) : done();
 }
-function think(thought, answer) {
+function think(thought, answer, cut) {
   const wrap = Object.assign(document.createElement('div'), {className: 'msg think'}), det = Object.assign(document.createElement('details'), {open: true}), sum = document.createElement('summary'), body = document.createElement('div');
   sum.textContent = '💭 Thinking…'; det.append(sum, body); wrap.append(det); $('msgs').append(wrap); // the pin lives on the wrapper: a closed <details> doesn't render anything but its <summary>
   typeInto(body, thought, 45, n => {
     sum.textContent = `💭 Thought for ${n} tokens (tap to read)`; det.open = false; hist.push({role: 'Thinking', text: thought}); info(wrap, 'think');
-    setTimeout(() => stream(answer), 400);
+    setTimeout(() => stream(answer, cut), 400);
   });
 }
 const PLANS = [
@@ -1154,38 +1160,42 @@ const PLANS = [
   [/sky|blue/, {answer: 'The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'}],
   [/joke/, {answer: 'Why did the computer go to the doctor? It had a virus!'}]];
 const plan = q => (PLANS.find(([re]) => re.test(q)) || [0, {answer: 'I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'}])[1];
-const LIMIT = 200; // tiny on purpose so the demo hits it after a few turns (real context windows hold many thousands of tokens)
+const LIMIT = 200, FILL = Math.round(LIMIT * .8); // tiny on purpose so the demo hits it after a few turns (real context windows hold many thousands of tokens). FILL: the harness can't know how long a reply will be, so it refuses new messages once the notebook is this full, and cuts a reply off if it still reaches LIMIT
+const CUTMSG = '✂️ The context limit was reached while I was answering, so my reply stops here. Please clear the chat and start a new one.', FULLMSG = '⚠️ The context limit has been reached, so I can\'t help any more in this chat. Please clear it and start a new one.';
 let full = false; // once a message would not fit, the chat stays closed until it is cleared (the simplest way a chatbot can handle a full context)
 const used = () => tokenize(SYS).length + hist.reduce((n, h) => h.role === 'Thinking' ? n : n + tokenize(h.role === 'Tool' ? h.text.split('→ ').pop() : h.text).length, 0); // what the hood's notebook holds
 function send(text) {
   text = text.trim(); if (busy || !text) return;
-  const q = plan(text.toLowerCase()), need = [text, q.tool && q.tool.result, q.answer].reduce((n, t) => n + tokenize(t || '').length, 0);
-  if (full || used() + need > LIMIT) { // too big for the notebook: no model run, the app just says so
-    full = true; say('u', text); say('b', '⚠️ The context limit has been reached, so I can\'t help any more in this chat. Please clear it and start a new one.'); $('cin').selectedIndex = 0; syncSend(); count(); return;
+  const q = plan(text.toLowerCase()), len = t => tokenize(t || '').length;
+  if (full || used() + len(text) > FILL) { // the notebook is too full: no model run, the app just says so
+    full = true; say('u', text); info(say('b', FULLMSG), 'limit'); $('cin').selectedIndex = 0; syncSend(); count(); isOpen && H.run(text, {reject: true}); return;
   }
-  busy = true; $('csend').disabled = true; $('creset').disabled = $('hreset').disabled = true; $('cin').selectedIndex = 0; say('u', text); hist.push({role: 'You', text});
-  const p = q; H.turn(text, p);
-  if (p.think) setTimeout(() => think(p.think, p.answer), 400);
+  busy = true; $('csend').disabled = true; $('creset').disabled = $('hreset').disabled = true; $('cin').selectedIndex = 0; say('u', text); hist.push({role: 'You', text}); chips();
+  let room = LIMIT - used() - len(text) - len(q.tool && q.tool.result), cut = false; // the model doesn't know the limit: it just writes, and the harness clips the reply where the notebook runs out
+  const clip = t => { const k = tokenize(t).slice(0, Math.max(room, 0)); cut = cut || k.length < len(t); room -= k.length; return k.join(''); };
+  const p = {...q}; q.think && (p.think = clip(q.think)); p.answer = clip(q.answer); p.cut = cut; H.turn(text, p);
+  if (p.think) setTimeout(() => think(p.think, p.answer, p.cut), 400);
   else if (p.tool) {
     const d = say('tool', `🔧 Using tool: ${p.tool.call} …`);
-    setTimeout(() => { d.textContent = `🔧 ${p.tool.call} → ${p.tool.result}`; hist.push({role: 'Tool', text: d.textContent}); info(d, 'tool'); setTimeout(() => stream(p.answer), 600); }, 1300);
-  } else setTimeout(() => stream(p.answer), 500);
+    setTimeout(() => { d.textContent = `🔧 ${p.tool.call} → ${p.tool.result}`; hist.push({role: 'Tool', text: d.textContent}); info(d, 'tool'); setTimeout(() => stream(p.answer, p.cut), 600); }, 1300);
+  } else setTimeout(() => stream(p.answer, p.cut), 500);
 }
 const resetChat = () => { // start over: empty chat, empty notebook, and the narrated first-time tour comes back
   if (busy) return;
-  H.stop(); H.cur = null; H.mem = []; H.queued = null; scene = null; Object.keys(seen).forEach(k => seen[k] = false); hist.length = 0; full = false; $('msgs').textContent = ''; greet(); resetPages([]);
+  H.stop(); H.cur = null; H.mem = []; H.queued = null; H.notice = ''; scene = null; Object.keys(seen).forEach(k => seen[k] = false); hist.length = 0; full = false; $('msgs').textContent = ''; greet(); resetPages([]);
   $('hyoutxt').textContent = 'Click a button above to run a demo'; $('htok').textContent = '–'; $('htooltxt').textContent = 'idle'; $('engine').classList.add('idle'); $('cin').selectedIndex = 0; syncSend();
 };
 $('creset').onclick = $('hreset').onclick = resetChat;
 $('cform').addEventListener('submit', e => { e.preventDefault(); send($('cin').value); });
 const MSGS = ['Why is the sky blue?', 'Tell me a joke', 'Do I need an umbrella in Paris?', 'Which is bigger, 9.11 or 9.9?'];
-const syncSend = () => { $('csend').disabled = busy || !$('cin').value; $('creset').disabled = $('hreset').disabled = busy || !hist.length; }; // nothing to clear until something has been sent
-$('cin').append(...MSGS.map(t => new Option(t, t))); $('cin').onchange = syncSend; syncSend();
+const chips = () => { const t = H.cur ? H.cur[0] : busy && hist.length ? hist[hist.length - 1].text : null; $('hchips').querySelectorAll('button').forEach(b => { b.disabled = t != null; b.classList.toggle('on', b.textContent === t); }); $('speedbtn').disabled = t != null; $('creset').disabled = $('hreset').disabled = t != null || !hist.length; }; // a demo is running: dim every chip except the one in progress, and lock the speed switch and Clear (nothing to clear until something has been sent)
+const syncSend = () => { chips(); $('csend').disabled = busy || !$('cin').value;  };
+$('cin').append(...MSGS.map(t => new Option(t, t))); $('cin').onchange = syncSend;
 
 // ---- under the hood: a slow, narrated machine that replays each chat turn ----
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches, wrap = $('hoodwrap');
 let isOpen = false, speed = 1, dwell = 0, shownAt = 0; // speed 1 = slow and clear
-const seen = {first: false, tool: false, think: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
+const seen = {first: false, tool: false, think: false, reject: false, cut: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
 const lid = () => wrap.style.setProperty('--lidH', $('chatface').offsetHeight + 'px'); lid(); addEventListener('resize', lid);
 function hood(on, instant) {
   isOpen = on; lid(); const e = $('engine'), lidH = $('chatface').offsetHeight, anim = !instant && !RM && wrap.classList.contains('open') !== on, from = e.offsetHeight;
@@ -1204,11 +1214,19 @@ const rel = el => { const a = $('hbody').getBoundingClientRect(), r = el.getBoun
 function spot(id) { document.querySelectorAll('.unit.spot').forEach(u => u.classList.remove('spot')); id && $(id).classList.add('spot'); }
 function callout(id, text, demo) { // a speech bubble next to the part that is doing something
   const c = $('hcall'), B = $('hbody'), t = rel($(id)); $('hcalltxt').textContent = text; c.hidden = false; c.classList.toggle('demo', !!demo); $('hnext').hidden = !demo; $('hnext').textContent = 'Next'; c.style.maxWidth = Math.min(270, B.clientWidth - 8) + 'px';
-  const cw = c.offsetWidth, ch = c.offsetHeight, below = t.y + t.h + ch + 14 <= B.clientHeight || t.y - ch - 14 < 0, left = Math.min(Math.max(t.x + t.w / 2 - cw / 2, 4), B.clientWidth - cw - 4);
+  const cw = c.offsetWidth, ch = c.offsetHeight, visB = innerHeight - B.getBoundingClientRect().top, below = t.y + t.h + ch + 14 <= Math.min(B.clientHeight, visB) || t.y - ch - 14 < 110 - B.getBoundingClientRect().top, // below if it fits on screen, else above (arrow at the bottom) so nobody has to scroll to read it; 110 ≈ the sticky bar's height
+    left = Math.min(Math.max(t.x + t.w / 2 - cw / 2, 4), B.clientWidth - cw - 4);
   c.style.left = left + 'px'; c.style.top = (below ? t.y + t.h + 10 : t.y - ch - 10) + 'px'; c.dataset.dir = below ? 'below' : 'above';
   c.style.setProperty('--ax', Math.min(Math.max(t.x + t.w / 2 - left, 16), cw - 16) + 'px');
-  c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); spot(id);
+  c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); spot(id); demo && $('hnext').focus({preventScroll: true}); // Enter skips the wait
   H.lastId = id; dwell = 1200 + 380 * text.split(/\s+/).length; shownAt = Date.now(); // slow mode keeps a bubble up long enough to read it
+}
+function bounce(id, label) { // the refused message is thrown back off the part in a random direction, fading as it goes
+  const R = rel($(id)), a = Math.random() * 2 * Math.PI, d = 320 + Math.random() * 120, x = R.x + R.w / 2, y = R.y + R.h / 2, at = (px, py, s, rot) => `translate(${px}px,${py}px) translate(-50%,-50%) scale(${s}) rotate(${rot}deg)`,
+    p = Object.assign(document.createElement('span'), {className: 'pkt', textContent: label}); $('hbody').append(p);
+  if (RM) return new Promise(r => setTimeout(() => (p.remove(), r()), 400));
+  const an = p.animate([{transform: at(x, y, 1, 0), opacity: 1}, {opacity: 1, offset: .55}, {transform: at(x + Math.cos(a) * d, y + Math.sin(a) * d, .7, (Math.random() - .5) * 220), opacity: 0}], {duration: 1700, easing: 'cubic-bezier(.15,.8,.3,1)'}); H.anims.add(an);
+  return an.finished.then(() => { H.anims.delete(an); p.remove(); }, () => p.remove());
 }
 function fly(a, b, label, pipe, dur) { // dur (ms) overrides the slow/fast setting
   const p = Object.assign(document.createElement('span'), {className: 'pkt', textContent: label}), A = rel($(a)), T = rel($(b)), at = (r, s) => `translate(${r.x + r.w / 2}px,${r.y + r.h / 2}px) translate(-50%,-50%) scale(${s})`;
@@ -1226,9 +1244,11 @@ const addPg = (cls, pre, full = '', show = true) => { const g = {cls, pre, full,
 const cacheN = () => $('hcells').childElementCount, cacheSet = n => { $('hcachen').textContent = n ? n + ' tokens' : 'empty'; $('hcells').scrollTop = 1e6; };
 const cacheAdd = (n = 1, stagger) => { const c = $('hcells'), have = cacheN(); for (let i = 0; i < n; i++) c.append(Object.assign(document.createElement('i'), {className: 'cell', style: stagger ? `animation-delay:${Math.min(i * 20, 700)}ms` : ''})); cacheSet(have + n); }; // one square per token the model has worked through
 const cacheFill = still => { const need = pgs.reduce((n, g) => n + tokenize(g.full).length, 0) - cacheN(); need > 0 ? cacheAdd(need, !still) : need < 0 && (() => { for (let i = 0; i > need; i--) $('hcells').lastChild.remove(); cacheSet(cacheN()); })(); }; // the notebook reached the model: whatever it had not read yet is added
+const addNotice = (text, quiet) => { const g = addPg('b notice', 'Harness: ', '', true); g.el.querySelector('bdi').textContent = text; quiet && (g.el.style.animation = 'none'); $('hpages').scrollTop = 1e6; }; // looks like it floats over the notebook: it is the harness's own notice, so it has no tokens and the model never reads it
 function resetPages(mem, keepCache) { // keepCache: a new turn in the same chat, the model still remembers what it read
   keepCache || ($('hcells').textContent = '', cacheSet(0)); pgs.length = 0; $('hpages').textContent = ''; addPg('sys', '👀 hidden instructions', SYS, false);
   mem.forEach(m => { addPg('u', 'You: ', m.u); m.t && addPg('tool', 'Tool: ', m.t); addPg('b', 'Bot: ', m.a); });
+  H.notice && addNotice(H.notice, true); // once shown it stays until the chat is cleared, and a repeat rejection doesn't add a second one
 }
 function sendNb(pipe, dur) { // a copy of the whole notebook shrinks into a pill and travels to the model
   const src = $('hnb'), A = rel(src), T = rel($('hmodel')), pw = 128, ph = 30, px = n => n + 'px';
@@ -1245,22 +1265,22 @@ function sendNb(pipe, dur) { // a copy of the whole notebook shrinks into a pill
   return a[0].finished.then(() => { a.forEach(x => H.anims.delete(x)); done(); }, done);
 }
 const H = {
-  id: 0, mem: [], queued: null, paused: false, anims: new Set(), lastId: '',
-  stop() { H.id++; H.paused = false; H.anims.forEach(x => x.cancel()); H.anims.clear(); hold = null; document.querySelectorAll('.pkt,.nbcopy').forEach(e => e.remove()); document.querySelectorAll('.pipe.on').forEach(e => e.classList.remove('on')); $('hcall').hidden = true; spot(); $('hyou').classList.remove('pulse'); $('hmodel').classList.remove('work'); },
+  id: 0, mem: [], queued: null, notice: '', paused: false, anims: new Set(), lastId: '',
+  stop() { H.id++; H.paused = false; H.anims.forEach(x => x.cancel()); H.anims.clear(); hold = null; document.querySelectorAll('.pkt,.nbcopy').forEach(e => e.remove()); document.querySelectorAll('.pipe.on').forEach(e => e.classList.remove('on')); $('hcall').hidden = true; spot(); $('hyou').classList.remove('pulse'); $('hmodel').classList.remove('work'); $('hharness').classList.remove('deny'); },
   turn(text, p) { if (isOpen) H.run(text, p); else { if (H.queued) { if (scene) H.mem.push(scene); scene = {u: H.queued[0], a: H.queued[1].answer, t: H.queued[1].tool && H.queued[1].tool.result}; } H.queued = [text, p]; } }, // a turn skipped while closed still joins the notebook history; only the latest one is replayed on open // from the chat: play it now if the hood is open, else when it is next opened
   async run(user, p) {
-    H.stop(); $('engine').classList.remove('idle'); const id = H.id; H.cur = [user, p]; if (scene) H.mem.push(scene); scene = {u: user, a: p.answer, t: p.tool && p.tool.result};
+    H.stop(); $('engine').classList.remove('idle'); const id = H.id; H.cur = [user, p]; chips(); if (scene) H.mem.push(scene); scene = p.reject ? null : {u: user, a: p.answer, t: p.tool && p.tool.result}; // reject: the harness refuses the message, so it never joins the notebook
     const go = async (ms, bubble) => { let left = ms * speed; H.skip = false; while (left > 0 && !(bubble && H.skip)) { if (bubble) $('hnext').textContent = `Next (${Math.ceil(left / 1000)}s)`; await new Promise(r => setTimeout(r, 50)); if (!H.paused) left -= 50; if (id !== H.id) throw 0; } H.skip = false; if (id !== H.id) throw 0; }, // pausable wait; bubble: a demo bubble's wait, with a Next button counting down that can end it early
       ok = async pr => { await pr; if (id !== H.id) throw 0; }, read = ms => tips() ? go(speed === 1 ? Math.max(ms, dwell - (Date.now() - shownAt)) : ms, true) : 0, tokEl = $('htok'), model = $('hmodel');
     const tips = () => speed === 1 || window.tipsFast, tell = (id, t) => tips() && callout(id, t, true); // fast mode is too quick to read the explanations, so it skips them (set window.tipsFast = true to see them anyway, e.g. when testing)
     let sent = false; // true when the model already has the current notebook
     const send = (pipe, dur) => ok(sendNb(pipe, dur)).then(cacheFill);
     const quick = seen.first, fixed = ms => go(ms / speed); // quick: the viewer has seen a narrated turn, so skip the tooltips and the pauses spent reading them. Nothing else changes: the slow/fast switch is the only speed control. fixed: a wait the slow/fast switch doesn't change (only the short gaps in the already-seen tool path)
-    let k = 0, decay = .6; const ramp = () => { const f = decay ** k++; return [Math.max(70, 900 * f), Math.max(60, 650 * f)]; }; // durations (ms) for the notebook trip and the token trip: each round is ~40% quicker until it whizzes by
+    let k = 0, decay = .4; const ramp = (left = 99) => { const f = decay ** k++, e = decay ** (left - 1); return [Math.max(70, 900 * f, 900 * e), Math.max(60, 650 * f, 650 * e)]; }; // durations (ms) for the notebook trip and the token trip: each round is ~60% quicker until it whizzes by, and the last few tokens mirror that ramp back down to the starting pace (left = tokens still to write, counting this one)
     const land = (g, shown) => { g.full = shown; g.el.querySelector('bdi').textContent = shown; $('hpages').scrollTop = 1e6; count(); cacheFill(); };
     async function loop(text, cls, label, intro, again) { // write a reply one token at a time: narrated for the first three (first time only), then every round of notebook-to-model-to-token speeds up
       const toks = tokenize(text), g = addPg(cls + ' live', label, ''), narrate = !quick && !again; let shown = '';
-      if (again) { k = 0; decay = .4; tell('hmodel', intro); await read(2200); } // second pass of the same process: one note, then the ramp restarts but reaches full speed sooner
+      if (again) { k = 0; tell('hmodel', intro); await read(2200); } // second pass of the same process: one note, then the ramp restarts but reaches full speed sooner
       for (let i = 0; i < toks.length; i++) {
         const t = toks[i];
         if (narrate && i < 3) {
@@ -1272,7 +1292,7 @@ const H = {
         } else {
           if (narrate && i === 3 && tips()) seen.first = true;
           if (RM) { shown += t; tokEl.textContent = t; land(g, shown); await go(110); continue; } // reduced motion: no flying, just the tokens
-          const [dn, dt] = ramp();
+          const [dn, dt] = ramp(toks.length - i);
           if (!sent) await send('hp2', dn); sent = false; model.classList.add('work');
           tokEl.textContent = t; cacheAdd(); await ok(fly('hmodel', 'hnb', t, 'hp2', dt)); shown += t; land(g, shown);
         }
@@ -1283,6 +1303,13 @@ const H = {
       model.classList.remove('work'); resetPages(H.mem, true); cacheFill(true); // history the model has already read is in the cache before the new message arrives
       $('hyoutxt').textContent = '“' + user + '”'; tokEl.textContent = '–'; $('htooltxt').textContent = 'idle';
       spot('hyou'); $('hyou').classList.add('pulse'); await go(2100); $('hyou').classList.remove('pulse'); // pulse the sender to draw the eye
+      if (p.reject) { // over the limit: the harness refuses the message (red, pulsing, message bounced away), explains, and replies from the notebook
+        const hh = $('hharness'); await ok(fly('hyou', 'hharness', '✉️ your message', 'hp1'));
+        hh.classList.add('deny'); const b = bounce('hharness', '✉️ your message'); await go(1500); await ok(b);
+        if (!seen.reject && tips()) { tell('hharness', `The harness checks how full the notebook is before sending. It is past ${Math.round(FILL / LIMIT * 100)}% of its ${LIMIT}-token limit, so the message is refused and the model never sees it. Other apps may summarise old messages and carry on, or ask you to start a new chat.`); await read(3500); seen.reject = true; }
+        H.notice || (addNotice(FULLMSG), H.notice = FULLMSG); await go(1200); hh.classList.remove('deny'); $('hcall').hidden = true; spot(); 
+        await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot(); H.cur = null; return;
+      }
       await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ', user); await go(900);
       await send('hp2'); sent = true;
       if (p.tool) {
@@ -1309,13 +1336,18 @@ const H = {
         await loop(p.answer, 'b', 'Bot: ', 'Thinking is done. Now it writes the reply: the same process all over again, one token at a time.', true);
       } else await loop(p.answer, 'b', 'Bot: ', p.tool ? 'Now the answer, one token per read.' : 'It reads everything and picks ONE next token (a small chunk of text).');
       model.classList.remove('work'); $('hcall').hidden = true; spot();
+      if (p.cut) { // the notebook ran out while the model was still writing: the harness stops the reply there
+        const hh = $('hharness'); hh.classList.add('deny'); H.notice || (addNotice(CUTMSG), H.notice = CUTMSG); await go(1500);
+        if (!seen.cut && tips()) { tell('hharness', 'The notebook hit its limit while the model was still writing. The harness stops the reply right there. Other apps might summarise and carry on, or ask you to start a new chat.'); await read(3500); seen.cut = true; }
+        hh.classList.remove('deny'); $('hcall').hidden = true; spot();
+      }
       await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot();
       H.mem.push(scene); scene = null; H.cur = null; tips() && (seen.first = true);
-    } catch (e) { if (e !== 0) throw e; }
+    } catch (e) { if (e !== 0) throw e; } finally { chips(); }
   }
 };
 $('hchips').innerHTML = MSGS.map(t => `<button type="button">${t}</button>`).join(''); $('hchips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
-resetPages([]);
+resetPages([]); syncSend();
 greet();
 // the server answers every unknown path with this page, so unknown paths get noindex (crawlers see a 200) and are tidied to the home URL
 if (canPush && !Object.values(ROUTES).includes(location.pathname.replace(/\/+$/, '') || '/')) { document.head.append(Object.assign(document.createElement('meta'), {name: 'robots', content: 'noindex'})); history.replaceState(null, '', '/'); }
