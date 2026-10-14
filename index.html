@@ -285,6 +285,7 @@ dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}
 dt{font-weight:700;color:var(--bt)}dd{margin:0}
 @media(max-width:560px){dl{grid-template-columns:1fr}.actor{font-size:.7rem}}
 </style>
+<script defer src="https://stats.peter-epp.dev/script.js" data-website-id="137c9f74-1ff9-4ad0-a445-389ea31f4ff3" data-domains="ai-for-dummies.info" data-exclude-hash="true"></script>
 </head>
 <body>
 <main>
@@ -1096,6 +1097,7 @@ const ROUTES = {chat: '/', parts: '/explore', news: '/headlines', faq: '/faq', r
   faq: ['AI FAQ: common questions about chatbots | How Does an AI Work?', 'Short, plain answers to the questions people ask most about AI chatbots: why they make things up, whether they remember you, why answers change and more.']};
 const canPush = location.protocol.startsWith('http'), pathView = () => { const p = location.pathname.replace(/\/+$/, '') || '/'; return Object.keys(ROUTES).find(k => ROUTES[k] === p) || 'chat'; };
 let curView = '';
+const track = (name, data) => window.umami?.track(name, data); // no-op when the tracker is blocked or off (local runs)
 // phones: slide the bar away when scrolling down, back on scroll up or keyboard focus
 let lastY = scrollY; addEventListener('scroll', () => { const y = scrollY; if (y > lastY + 8 && y > 120) $('viewbar').classList.add('away'); else if (y < lastY - 8 || y <= 120) $('viewbar').classList.remove('away'); lastY = y; }, {passive: true});
 $('viewbar').addEventListener('focusin', () => $('viewbar').classList.remove('away'));
@@ -1118,11 +1120,15 @@ function nav(v, id, push = true) { // go to a section (and optionally an item in
   if (changed) { const t = $('v-' + v).getBoundingClientRect().top + scrollY - $('viewbar').offsetHeight; if (scrollY > t) scrollTo(0, Math.max(0, t)); }
 }
 function goPart(id) { nav('parts', id); }
+document.addEventListener('click', e => { // outbound links aren't tracked by the tracker itself
+  const o = e.target.closest('a[href^=http]'); if (o && o.hostname !== location.hostname) track('outbound-click', {url: o.href});
+});
 document.addEventListener('click', e => {
   const a = e.target.closest('#viewbar a[data-view], .toc a'); if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+  a.closest('.toc') && track('toc-click', {page: curView, to: a.hash.slice(1)});
   e.preventDefault(); a.closest('.toc') ? nav(curView, a.hash.slice(1)) : nav(a.dataset.view);
 });
-addEventListener('popstate', () => nav(pathView(), decodeURIComponent(location.hash.slice(1)), false));
+addEventListener('popstate', () => { const v = pathView(); if (v !== curView) window.umami?.track(p => ({...p, url: location.pathname})); nav(v, decodeURIComponent(location.hash.slice(1)), false); }); // Back/Forward: the tracker only sees pushState, so report this pageview ourselves
 addEventListener('resize', setBar);
 // an "On this page" list at the top of each multi-item page
 function toc(view, items) { // each entry is an icon and a text span side by side, so wrapped text stays clear of the icon
@@ -1183,6 +1189,7 @@ let full = false; // once a message would not fit, the chat stays closed until i
 const used = () => tokenize(SYS).length + hist.reduce((n, h) => h.role === 'Thinking' ? n : n + tokenize(h.role === 'Tool' ? h.text.split('→ ').pop() : h.text).length, 0); // what the hood's notebook holds
 function send(text) {
   text = text.trim(); if (busy || !text) return;
+  track('message-sent', {where: isOpen ? 'hood' : 'chat', text});
   const q = plan(text.toLowerCase()), len = t => tokenize(t || '').length;
   if (full || used() + len(text) > FILL) { // the notebook is too full: no model run, the app just says so
     full = true; say('u', text); info(say('b', FULLMSG), 'limit'); setPick(''); syncSend(); count(); isOpen && H.run(text, {reject: true}); return;
@@ -1250,7 +1257,7 @@ function hood(on, instant) {
   if (!instant && on) { $('closebtn').focus({preventScroll: true}); fitHood(); }
   if (on) { closePick(); if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else { closeMenu(); if (H.cur) { H.queued = H.cur; scene = null; } H.stop(); } // closed mid-run: reopening replays that turn from the start (it is not in the history yet, so no duplicate)
 }
-$('flipbtn').onclick = () => hood(true); $('closebtn').onclick = () => hood(false);
+$('flipbtn').onclick = () => { track('hood-open'); hood(true); }; $('closebtn').onclick = () => hood(false);
 if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
 $('speedbtn').onclick = () => { speed = speed === 1 ? .4 : 1; $('speedbtn').setAttribute('aria-checked', speed !== 1); };
 $('hnext').onclick = () => { H.skip = true; }; // ends the demo bubble's countdown early

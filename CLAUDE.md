@@ -20,3 +20,7 @@ Single-file static site: everything is in `index.html` (HTML, CSS, JS). Serve wi
 ## Testing gotchas
 - `send()` and `resetChat()` silently return while `busy` (the chat's own typing) is true; wait for it to clear between steps.
 - Slow mode takes minutes; to test, scale `setTimeout` and `Element.prototype.animate` durations down, wrap `callout` to log bubble text, and poll results (long single Playwright calls get killed).
+
+## Analytics (Umami, stats.peter-epp.dev)
+- Tracker `<script>` is at the end of `<head>`; `data-domains="ai-for-dummies.info"` keeps local runs untracked, `data-exclude-hash` stops anchor jumps counting as pageviews. The tracker auto-reports `pushState`/`replaceState` (tab clicks) but not `popstate` (Back/Forward) or outbound links, so the page does both itself.
+- `track(name, data)` (near the router) wraps `umami.track` and is a no-op when blocked. Events: `message-sent` {where, text}, `hood-open`, `toc-click` {page, to}, `outbound-click` {url}.
