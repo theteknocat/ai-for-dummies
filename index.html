@@ -1048,6 +1048,7 @@ function closeTip(noRestore) {
 }
 function openTip(k, btn) {
   const y0 = cur ? cur.y0 : scrollY; closeTip(true);
+  track('info-open', {key: k, where: !btn ? 'link' : btn.closest('#engine') ? 'hood' : 'chat'});
   if (btn && btn.closest('#engine')) hoodHold();
   [hole, tip, arrow].forEach(e => e.classList.add('pre')); // start transparent, before anything is shown or measured
   const v = spots[k]; let hint = '';
@@ -1257,7 +1258,7 @@ function hood(on, instant) {
   if (!instant && on) { $('closebtn').focus({preventScroll: true}); fitHood(); }
   if (on) { closePick(); if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else { closeMenu(); if (H.cur) { H.queued = H.cur; scene = null; } H.stop(); } // closed mid-run: reopening replays that turn from the start (it is not in the history yet, so no duplicate)
 }
-$('flipbtn').onclick = () => { track('hood-open'); hood(true); }; $('closebtn').onclick = () => hood(false);
+$('flipbtn').onclick = () => { track('hood-open'); hood(true); }; $('closebtn').onclick = () => { track('hood-close'); hood(false); };
 if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
 $('speedbtn').onclick = () => { speed = speed === 1 ? .4 : 1; $('speedbtn').setAttribute('aria-checked', speed !== 1); };
 $('hnext').onclick = () => { H.skip = true; }; // ends the demo bubble's countdown early
