@@ -1060,7 +1060,7 @@ function openTip(k, btn) {
   const h = Object.assign(document.createElement('h3'), {textContent: v.label}), p = Object.assign(document.createElement('p'), {textContent: v.body}), ex = document.createElement('div');
   v.extra && v.extra(ex);
   const go = Object.assign(document.createElement('div'), {className: 'go'});
-  v.parts.forEach(([id, l]) => { const b = Object.assign(document.createElement('button'), {textContent: 'Learn: ' + l + ' →', type: 'button'}); b.onclick = () => { closeTip(true); goPart(id); }; go.append(b); });
+  v.parts.forEach(([id, l]) => { const b = Object.assign(document.createElement('button'), {textContent: 'Learn: ' + l + ' →', type: 'button'}); b.onclick = () => { track('info-learn', {from: k, to: id}); closeTip(true); goPart(id); }; go.append(b); });
   tip.append(x, h, p, ex);
   if (hint) tip.append(Object.assign(document.createElement('p'), {textContent: hint, className: 'note'}));
   tip.append(go);
@@ -1129,7 +1129,7 @@ document.addEventListener('click', e => {
   a.closest('.toc') && track('toc-click', {page: curView, to: a.hash.slice(1)});
   e.preventDefault(); a.closest('.toc') ? nav(curView, a.hash.slice(1)) : nav(a.dataset.view);
 });
-addEventListener('popstate', () => { const v = pathView(); if (v !== curView) window.umami?.track(p => ({...p, url: location.pathname})); nav(v, decodeURIComponent(location.hash.slice(1)), false); }); // Back/Forward: the tracker only sees pushState, so report this pageview ourselves
+addEventListener('popstate', () => { const v = pathView(); history.replaceState(history.state, '', location.href); nav(v, decodeURIComponent(location.hash.slice(1)), false); }); // Back/Forward: the tracker only watches pushState/replaceState, so replaying the URL through replaceState gets the pageview recorded (and keeps its idea of the current URL right)
 addEventListener('resize', setBar);
 // an "On this page" list at the top of each multi-item page
 function toc(view, items) { // each entry is an icon and a text span side by side, so wrapped text stays clear of the icon

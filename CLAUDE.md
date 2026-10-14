@@ -23,4 +23,4 @@ Single-file static site: everything is in `index.html` (HTML, CSS, JS). Serve wi
 
 ## Analytics (Umami, stats.peter-epp.dev)
 - Tracker `<script>` is at the end of `<head>`; `data-domains="ai-for-dummies.info"` keeps local runs untracked, `data-exclude-hash` stops anchor jumps counting as pageviews. The tracker auto-reports `pushState`/`replaceState` (tab clicks) but not `popstate` (Back/Forward) or outbound links, so the page does both itself.
-- `track(name, data)` (near the router) wraps `umami.track` and is a no-op when blocked. Events: `message-sent` {where, text}, `hood-open`, `toc-click` {page, to}, `outbound-click` {url}, `hood-close`, `info-open` {key, where: chat|hood|link}.
+- `track(name, data)` (near the router) wraps `umami.track` and is a no-op when blocked. Events: `message-sent` {where, text}, `hood-open`, `toc-click` {page, to}, `outbound-click` {url}, `hood-close`, `info-open` {key, where: chat|hood|link}, `info-learn` {from, to} (the modal's "Learn: …" buttons).
