@@ -8,7 +8,7 @@ A plain-English, no-jargon guide to how AI chatbots work, with things to click a
 
 - **Chat**: a pretend chatbot, plus a pop-the-hood view that animates what really happens when you press Send: the notebook, the model, the cache, tools and thinking.
 - **Explore**: each part of a chatbot explained piece by piece (tokens, the model, the context window, thinking, tools and agents).
-- **Headlines**: scary AI headlines taken apart one question at a time.
+- **In the News**: scary AI headlines taken apart one question at a time.
 - **FAQ**: the questions people ask most about chatbots.
 - **Resources**: where to go next.
 

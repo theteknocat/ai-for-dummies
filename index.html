@@ -301,7 +301,7 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
 <div class="viewbar" id="viewbar">
   <a href="/" data-view="chat" aria-current="page">💬 Chat</a>
   <a href="/explore" data-view="parts">🧩 Explore</a>
-  <a href="/headlines" data-view="news">🗞️ Headlines</a>
+  <a href="/headlines" data-view="news">🗞️ In the News</a>
   <a href="/faq" data-view="faq">❓ FAQ</a>
   <a href="/resources" data-view="resources">📚 Resources</a>
   <span class="brk" aria-hidden="true"></span>
@@ -802,7 +802,7 @@ Bot: ▍                                  ← model guesses from ALL of the abov
 </article>
 <article class="card" id="sources">
   <h3>🔗 Sources used on this site</h3>
-  <p>Every “Read more” link from the Headlines and FAQ pages, in one place.</p>
+  <p>Every “Read more” link from the In the News and FAQ pages, in one place.</p>
   <div id="srclist"></div>
 </article>
 </div>
@@ -1132,7 +1132,7 @@ function toc(view, items) { // each entry is an icon and a text span side by sid
 }
 { // collect every existing "Read more" link, grouped by the headline or question it supports
   const box = $("srclist");
-  [['v-news', 'Headlines'], ['v-faq', 'FAQ']].forEach(([id, label]) => {
+  [['v-news', 'In the News'], ['v-faq', 'FAQ']].forEach(([id, label]) => {
     const h = document.createElement('h4'); h.textContent = label; box.append(h);
     $(id).querySelectorAll('article[id]').forEach(a => {
       const links = [...a.querySelectorAll('.src a')]; if (!links.length) return;
