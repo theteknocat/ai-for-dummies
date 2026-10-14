@@ -57,6 +57,7 @@ input[type=text]{font:inherit;width:100%;padding:10px 14px;border-radius:12px;bo
 .brick{border-radius:8px;padding:4px 10px;text-align:center;color:#222;font-weight:700;animation:pop .35s backwards;border-bottom:4px solid rgba(0,0,0,.2)}
 .brick small{display:block;font:600 .75rem monospace;opacity:.7}
 .brick b{white-space:pre}
+@keyframes react{30%{transform:scale(1.6) rotate(-12deg)}60%{transform:scale(1.3) rotate(8deg)}}.you .sym.react{animation:react .7s ease-out}@media(prefers-reduced-motion:reduce){.you .sym.react{animation:none}}
 @keyframes pop{from{transform:scale(0) rotate(-8deg)}}
 
 /* dials */
@@ -98,7 +99,7 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 @media(min-width:721px){.viewbar a.coffee{font-size:.8rem;padding:3px 12px}}
 /* hover feedback, pointer devices only (so a tap on a phone doesn't leave a stuck hover): outlined things get an accent border, solid buttons get a touch brighter, text links a thicker underline */
 @media(hover:hover){
-  .viewbar a:not([aria-current=page]):hover,.chips button:hover,.engine .chips button:hover,#creset:hover,.toggles label:hover,#cform select:hover,#speedbtn:hover{border-color:var(--a)}
+  .viewbar a:not([aria-current=page]):hover,.chips button:hover,.engine #hpickbtn:hover,#creset:hover,.toggles label:hover,#cform select:hover,#speedbtn:hover{border-color:var(--a)}
   button:not(:disabled):hover{filter:brightness(1.12)}.call button:hover,#speedbtn:hover{filter:none}
   summary:hover{text-decoration:underline}
   main a:hover,footer a:hover{text-decoration-thickness:2px}
@@ -145,13 +146,14 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .engine{position:relative;z-index:1;visibility:hidden;max-height:var(--lidH);overflow:hidden;transition:visibility 0s .9s;background:#1d2333 linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/24px 24px;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);color:#e8ecf5;border:2px solid #3a4560;border-radius:20px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.35}
 .hoodwrap.open .engine{visibility:visible;max-height:none;overflow:visible;transition:none}
 .hoodwrap.instant>*{transition:none!important}
-.ebar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ebar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-bottom:14px}#speedbtn{justify-self:start}#hreset{justify-self:end}#hpick{position:relative}
 .handlebar.top{margin:-12px 0 0}.handle{white-space:nowrap}
 #speedbtn{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:0;background:#2a3350;border:2px solid #4b5a85;border-radius:99px;overflow:hidden;font-size:.85rem;color:#a9b4d6}
 #speedbtn span{position:relative;z-index:1;padding:3px 12px;white-space:nowrap;text-align:center;transition:color .25s}
 #speedbtn::before{content:'';position:absolute;top:0;bottom:0;left:0;width:50%;background:var(--c);border-radius:99px;transition:transform .25s}
 #speedbtn[aria-checked=true]::before{transform:translateX(100%)}
 #speedbtn span:first-child{color:#fff}#speedbtn[aria-checked=true] span:first-child{color:#a9b4d6}#speedbtn[aria-checked=true] span:last-child{color:#fff}.ebar button{padding:5px 14px;font-size:.85rem}
+@media(max-width:640px){.ebar{grid-template-columns:1fr 1fr}#hpick{grid-column:1/-1;grid-row:2}.engine #hpickbtn{width:100%}}
 @media(pointer:coarse){.ebar button{min-height:44px}#speedbtn span{padding:10px 12px}}
 .handlebar{display:flex;justify-content:center}
 .handle{background:var(--c);border-radius:0 0 18px 18px;padding:7px 28px;letter-spacing:.03em;box-shadow:0 3px 0 rgba(0,0,0,.18)}
@@ -191,13 +193,18 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 .call::after{content:'';position:absolute;left:var(--ax,50%);width:12px;height:12px;background:inherit;transform:translateX(-50%) rotate(45deg)}
 .call[data-dir=below]::after{top:-6px}.call[data-dir=above]::after{bottom:-6px}
 .call.pop{animation:callpop .35s}@keyframes callpop{from{opacity:0;transform:translateY(6px)}}
-.engine .chips{padding:0 0 14px}.engine .chips button{background:#2a3350;color:#e8ecf5;border-color:#4b5a85;display:flex;align-items:center;gap:8px}
-.engine .chips button::before{content:'▶';display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;font-size:.6rem;padding-left:2px}
-/* before the first press the machine looks switched off, and the play buttons pulse */
+.engine #hpickbtn{display:flex;align-items:center;gap:8px;width:300px;max-width:100%;padding:7px 14px;font-size:.9rem;font-weight:600;background:#2a3350;color:#e8ecf5;border:2px solid #4b5a85;text-align:left}
+#hpickbtn::before{content:'▶';display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;font-size:.6rem;padding-left:2px}
+#hpickbtn::after{content:'▾';margin-left:auto;transition:transform .15s}#hpickbtn[aria-expanded=true]::after{transform:rotate(180deg)}#hpickbtn.on::after{display:none}
+#hpicktxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hmenu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:10;display:flex;flex-direction:column;gap:2px;padding:4px;background:#232b46;border:2px solid #4b5a85;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .15s,transform .15s,visibility 0s .15s}
+.hmenu.open{opacity:1;visibility:visible;transform:none;transition:opacity .15s,transform .15s}
+.hmenu button{padding:8px 12px;font-size:.9rem;font-weight:600;text-align:left;background:transparent;color:#e8ecf5;border:0;border-radius:10px}.hmenu button:hover,.hmenu button:focus-visible{background:#34406a;filter:none}
+/* before the first press the machine looks switched off, and the play button pulses */
 #hbody{transition:opacity .6s,filter .6s}
-.engine .chips button.on:disabled{opacity:1;border-color:var(--a);box-shadow:0 0 0 3px var(--a);background-image:repeating-linear-gradient(135deg,#2a3350 0 8px,#323c5f 8px 16px);background-size:22.63px 22.63px;animation:chipflow 1s linear infinite}@keyframes chipflow{to{background-position:22.63px 0}} /* 22.63 = 16 * sqrt2: a square tile whose diagonal holds exactly two 16px stripe pairs, so it tiles and the loop has no seam */
-@media(prefers-reduced-motion:reduce){.engine .chips button.on:disabled{animation:none}}
-.engine.idle .chips button::before{animation:playpulse 1.4s infinite}
+.engine #hpickbtn.on:disabled{opacity:1;border-color:var(--a);box-shadow:0 0 0 3px var(--a);background-image:repeating-linear-gradient(135deg,#2a3350 0 8px,#323c5f 8px 16px);background-size:22.63px 22.63px;animation:chipflow 1s linear infinite}@keyframes chipflow{to{background-position:22.63px 0}} /* 22.63 = 16 * sqrt2: a square tile whose diagonal holds exactly two 16px stripe pairs, so it tiles and the loop has no seam */
+@media(prefers-reduced-motion:reduce){.engine #hpickbtn.on:disabled{animation:none}.hmenu,.hmenu.open,#hpickbtn::after{transition:none}}
+.engine.idle #hpickbtn::before{animation:playpulse 1.4s infinite}
 @keyframes playpulse{0%{box-shadow:0 0 0 0 rgba(47,182,124,.8)}100%{box-shadow:0 0 0 10px rgba(47,182,124,0)}}
 @media(min-width:641px){#htool,#hp3{margin-top:14px}#hharness{align-self:stretch;align-content:flex-start}}
 @media(max-width:640px){
@@ -304,10 +311,9 @@ dt{font-weight:700;color:var(--bt)}dd{margin:0}
   <div class="lidback" aria-hidden="true"></div>
   <div class="engine idle" id="engine" inert>
     <div class="handlebar top"><button type="button" class="handle" id="closebtn">⇩ Close the hood ⇩</button></div>
-    <div class="ebar"><button type="button" id="hreset" title="Clear the chat and start over">↺ Clear</button><button type="button" id="speedbtn" role="switch" aria-checked="false" aria-label="Animation speed: slow or fast"><span>🐢 Slow</span><span>🐇 Fast</span></button></div>
-    <div class="chips" id="hchips"></div>
+    <div class="ebar"><button type="button" id="speedbtn" role="switch" aria-checked="false" aria-label="Animation speed: slow or fast"><span>🐢 Slow</span><span>🐇 Fast</span></button><div id="hpick"><button type="button" id="hpickbtn" aria-haspopup="menu" aria-expanded="false"><span id="hpicktxt">Choose a message…</span></button><div class="hmenu" id="hchips" role="menu"></div></div><button type="button" id="hreset" title="Clear the chat and start over">↺ Clear</button></div>
     <div id="hbody">
-      <div class="unit you" id="hyou"><button type="button" class="hi" data-k="you" aria-label="What is You?">i</button><span class="sym">🙂</span><span class="lab"><b>You</b><small id="hyoutxt">Click a button above to run a demo</small></span></div>
+      <div class="unit you" id="hyou"><button type="button" class="hi" data-k="you" aria-label="What is You?">i</button><span class="sym">🙂</span><span class="lab"><b>You</b><small id="hyoutxt">Choose a message above to run a demo</small></span></div>
       <div class="pipe v" id="hp1"></div>
       <div class="unit harness" id="hharness"><button type="button" class="hi" data-k="app" aria-label="What is the harness?">i</button>
         <div class="top"><span class="sym">🧰</span><span class="lab"><b>Harness</b><small>the app around the model</small></span></div>
@@ -1155,11 +1161,11 @@ function think(thought, answer, cut) {
   });
 }
 const PLANS = [
-  [/bigger|larger|9\.11|9\.9/, {think: 'The question: which is bigger, 9.11 or 9.9? Careful. 11 is more than 9, but these are decimals, so I should not compare 11 and 9 directly. Compare the tenths place first: 9.11 has 1 tenth, 9.9 has 9 tenths. 9 tenths is more than 1 tenth. Double-check by writing 9.9 as 9.90: 90 hundredths against 11 hundredths. 90 is more than 11. So 9.9 is bigger.', answer: '9.9 is bigger. Written as 9.90 versus 9.11, that is 90 hundredths against 11 hundredths.'}],
-  [/weather|umbrella|rain|paris/, {tool: {call: 'weather("Paris")', result: 'Rain, 12°C'}, answer: 'Yes, take an umbrella! It is going to rain in Paris today, around 12°C.'}],
-  [/sky|blue/, {answer: 'The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'}],
-  [/joke/, {answer: 'Why did the computer go to the doctor? It had a virus!'}]];
-const plan = q => (PLANS.find(([re]) => re.test(q)) || [0, {answer: 'I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'}])[1];
+  [/bigger|larger|9\.11|9\.9/, {react: '🤓', think: 'The question: which is bigger, 9.11 or 9.9? Careful. 11 is more than 9, but these are decimals, so I should not compare 11 and 9 directly. Compare the tenths place first: 9.11 has 1 tenth, 9.9 has 9 tenths. 9 tenths is more than 1 tenth. Double-check by writing 9.9 as 9.90: 90 hundredths against 11 hundredths. 90 is more than 11. So 9.9 is bigger.', answer: '9.9 is bigger. Written as 9.90 versus 9.11, that is 90 hundredths against 11 hundredths.'}],
+  [/weather|umbrella|rain|paris/, {react: '😎', tool: {call: 'weather("Paris")', result: 'Rain, 12°C'}, answer: 'Yes, take an umbrella! It is going to rain in Paris today, around 12°C.'}],
+  [/sky|blue/, {react: '🤔', answer: 'The sky looks blue because air scatters blue light from the Sun more than the other colours. Blue bounces all around the sky, so it reaches your eyes from every direction.'}],
+  [/joke/, {react: '😂', answer: 'Why did the computer go to the doctor? It had a virus!'}]];
+const plan = q => (PLANS.find(([re]) => re.test(q)) || [0, {react: '😅', answer: 'I am only a pretend chatbot, so I know just a few tricks. Try one of the suggestions below the chat!'}])[1];
 const LIMIT = 200, FILL = Math.round(LIMIT * .8); // tiny on purpose so the demo hits it after a few turns (real context windows hold many thousands of tokens). FILL: the harness can't know how long a reply will be, so it refuses new messages once the notebook is this full, and cuts a reply off if it still reaches LIMIT
 const CUTMSG = '✂️ The context limit was reached while I was answering, so my reply stops here. Please clear the chat and start a new one.', FULLMSG = '⚠️ The context limit has been reached, so I can\'t help any more in this chat. Please clear it and start a new one.';
 let full = false; // once a message would not fit, the chat stays closed until it is cleared (the simplest way a chatbot can handle a full context)
@@ -1183,12 +1189,15 @@ function send(text) {
 const resetChat = () => { // start over: empty chat, empty notebook, and the narrated first-time tour comes back
   if (busy) return;
   H.stop(); H.cur = null; H.mem = []; H.queued = null; H.notice = ''; scene = null; Object.keys(seen).forEach(k => seen[k] = false); hist.length = 0; full = false; $('msgs').textContent = ''; greet(); resetPages([]);
-  $('hyoutxt').textContent = 'Click a button above to run a demo'; $('htok').textContent = '–'; $('htooltxt').textContent = 'idle'; $('engine').classList.add('idle'); $('cin').selectedIndex = 0; syncSend();
+  $('hyoutxt').textContent = 'Choose a message above to run a demo'; $('htok').textContent = '–'; $('htooltxt').textContent = 'idle'; $('engine').classList.add('idle'); $('cin').selectedIndex = 0; syncSend();
 };
 $('creset').onclick = $('hreset').onclick = resetChat;
 $('cform').addEventListener('submit', e => { e.preventDefault(); send($('cin').value); });
 const MSGS = ['Why is the sky blue?', 'Tell me a joke', 'Do I need an umbrella in Paris?', 'Which is bigger, 9.11 or 9.9?'];
-const chips = () => { const t = H.cur ? H.cur[0] : busy && hist.length ? hist[hist.length - 1].text : null; $('hchips').querySelectorAll('button').forEach(b => { b.disabled = t != null; b.classList.toggle('on', b.textContent === t); }); $('speedbtn').disabled = t != null; $('creset').disabled = $('hreset').disabled = t != null || !hist.length; }; // a demo is running: dim every chip except the one in progress, and lock the speed switch and Clear (nothing to clear until something has been sent)
+const chips = () => { // a demo is running: the picker shows the prompt, lit and animated, and everything that would interrupt it (picker, speed switch, Clear) is locked
+  const t = H.cur ? H.cur[0] : busy && hist.length ? hist[hist.length - 1].text : null, pb = $('hpickbtn'); pb.disabled = t != null; pb.classList.toggle('on', t != null); $('hpicktxt').textContent = t ?? 'Choose a message…'; t != null && closeMenu();
+  $('speedbtn').disabled = t != null; $('creset').disabled = $('hreset').disabled = t != null || !hist.length; // nothing to clear until something has been sent
+};
 const syncSend = () => { chips(); $('csend').disabled = busy || !$('cin').value;  };
 $('cin').append(...MSGS.map(t => new Option(t, t))); $('cin').onchange = syncSend;
 
@@ -1204,12 +1213,13 @@ function hood(on, instant) {
   if (anim) { const to = on ? e.scrollHeight : lidH; void e.offsetHeight; e.style.transition = 'max-height .4s ease' + (on ? '' : ', visibility 0s .9s'); e.style.maxHeight = to + 'px'; clearTimeout(hood.t); hood.t = setTimeout(() => ['maxHeight', 'overflow', 'transition'].forEach(q => e.style[q] = ''), on ? 450 : 1000); }
   $('chatface').inert = on; $('engine').inert = !on; $('flipbtn').hidden = on;
   if (!instant) (on ? $('closebtn') : $('flipbtn')).focus({preventScroll: true});
-  if (on) { if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else { if (H.cur) { H.queued = H.cur; scene = null; } H.stop(); } // closed mid-run: reopening replays that turn from the start (it is not in the history yet, so no duplicate)
+  if (on) { if (H.queued) { const [t, p] = H.queued; H.queued = null; H.run(t, p); } } else { closeMenu(); if (H.cur) { H.queued = H.cur; scene = null; } H.stop(); } // closed mid-run: reopening replays that turn from the start (it is not in the history yet, so no duplicate)
 }
 $('flipbtn').onclick = () => hood(true); $('closebtn').onclick = () => hood(false);
 if (/^en-(GB|AU|NZ|IE)\b/i.test(navigator.language)) [$('flipbtn'), $('closebtn')].forEach(e => e.textContent = e.textContent.replace('hood', 'bonnet')); // UK-style English says bonnet
 $('speedbtn').onclick = () => { speed = speed === 1 ? .4 : 1; $('speedbtn').setAttribute('aria-checked', speed !== 1); };
 $('hnext').onclick = () => { H.skip = true; }; // ends the demo bubble's countdown early
+const face = e => { const s = $('hyou').querySelector('.sym'); s.textContent = e; s.classList.remove('react'); void s.offsetWidth; clearTimeout(face.t); e !== '🙂' && (s.classList.add('react'), face.t = setTimeout(() => face('🙂'), 6000)); }; // back to the default face after a few idle seconds // the user's reaction to the reply
 const rel = el => { const a = $('hbody').getBoundingClientRect(), r = el.getBoundingClientRect(); return {x: r.left - a.left, y: r.top - a.top, w: r.width, h: r.height}; };
 function spot(id) { document.querySelectorAll('.unit.spot').forEach(u => u.classList.remove('spot')); id && $(id).classList.add('spot'); }
 function callout(id, text, demo) { // a speech bubble next to the part that is doing something
@@ -1266,7 +1276,7 @@ function sendNb(pipe, dur) { // a copy of the whole notebook shrinks into a pill
 }
 const H = {
   id: 0, mem: [], queued: null, notice: '', paused: false, anims: new Set(), lastId: '',
-  stop() { H.id++; H.paused = false; H.anims.forEach(x => x.cancel()); H.anims.clear(); hold = null; document.querySelectorAll('.pkt,.nbcopy').forEach(e => e.remove()); document.querySelectorAll('.pipe.on').forEach(e => e.classList.remove('on')); $('hcall').hidden = true; spot(); $('hyou').classList.remove('pulse'); $('hmodel').classList.remove('work'); $('hharness').classList.remove('deny'); },
+  stop() { H.id++; H.paused = false; H.anims.forEach(x => x.cancel()); H.anims.clear(); hold = null; document.querySelectorAll('.pkt,.nbcopy').forEach(e => e.remove()); document.querySelectorAll('.pipe.on').forEach(e => e.classList.remove('on')); $('hcall').hidden = true; spot(); $('hyou').classList.remove('pulse'); $('hmodel').classList.remove('work'); $('hharness').classList.remove('deny'); face('🙂'); },
   turn(text, p) { if (isOpen) H.run(text, p); else { if (H.queued) { if (scene) H.mem.push(scene); scene = {u: H.queued[0], a: H.queued[1].answer, t: H.queued[1].tool && H.queued[1].tool.result}; } H.queued = [text, p]; } }, // a turn skipped while closed still joins the notebook history; only the latest one is replayed on open // from the chat: play it now if the hood is open, else when it is next opened
   async run(user, p) {
     H.stop(); $('engine').classList.remove('idle'); const id = H.id; H.cur = [user, p]; chips(); if (scene) H.mem.push(scene); scene = p.reject ? null : {u: user, a: p.answer, t: p.tool && p.tool.result}; // reject: the harness refuses the message, so it never joins the notebook
@@ -1308,7 +1318,7 @@ const H = {
         hh.classList.add('deny'); const b = bounce('hharness', '✉️ your message'); await go(1500); await ok(b);
         if (!seen.reject && tips()) { tell('hharness', `The harness checks how full the notebook is before sending. It is past ${Math.round(FILL / LIMIT * 100)}% of its ${LIMIT}-token limit, so the message is refused and the model never sees it. Other apps may summarise old messages and carry on, or ask you to start a new chat.`); await read(3500); seen.reject = true; }
         H.notice || (addNotice(FULLMSG), H.notice = FULLMSG); await go(1200); hh.classList.remove('deny'); $('hcall').hidden = true; spot(); 
-        await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot(); H.cur = null; return;
+        await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); face('😤'); spot('hyou'); await go(1500); spot(); H.cur = null; return;
       }
       await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ', user); await go(900);
       await send('hp2'); sent = true;
@@ -1341,12 +1351,21 @@ const H = {
         if (!seen.cut && tips()) { tell('hharness', 'The notebook hit its limit while the model was still writing. The harness stops the reply right there. Other apps might summarise and carry on, or ask you to start a new chat.'); await read(3500); seen.cut = true; }
         hh.classList.remove('deny'); $('hcall').hidden = true; spot();
       }
-      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); spot('hyou'); await go(1500); spot();
+      await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); face(p.cut ? '😫' : p.react || '🙂'); spot('hyou'); await go(1500); spot();
       H.mem.push(scene); scene = null; H.cur = null; tips() && (seen.first = true);
     } catch (e) { if (e !== 0) throw e; } finally { chips(); }
   }
 };
-$('hchips').innerHTML = MSGS.map(t => `<button type="button">${t}</button>`).join(''); $('hchips').addEventListener('click', e => e.target.tagName === 'BUTTON' && send(e.target.textContent));
+$('hchips').innerHTML = MSGS.map(t => `<button type="button" role="menuitem">${t}</button>`).join('');
+const closeMenu = (back) => { $('hchips').classList.remove('open'); $('hpickbtn').setAttribute('aria-expanded', 'false'); back && $('hpickbtn').focus({preventScroll: true}); };
+$('hpickbtn').onclick = () => { const o = $('hchips').classList.toggle('open'); $('hpickbtn').setAttribute('aria-expanded', o); o && $('hchips').firstChild.focus({preventScroll: true}); };
+$('hchips').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { closeMenu(); send(b.textContent); } });
+document.addEventListener('click', e => e.target.closest('#hpick') || closeMenu());
+$('hpick').addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('hchips').classList.contains('open')) { e.stopPropagation(); return closeMenu(true); }
+  const k = {ArrowDown: 1, ArrowUp: -1}[e.key], items = [...$('hchips').children], i = items.indexOf(document.activeElement);
+  if (k && $('hchips').classList.contains('open')) { e.preventDefault(); items[(i + k + items.length) % items.length].focus({preventScroll: true}); }
+});
 resetPages([]); syncSend();
 greet();
 // the server answers every unknown path with this page, so unknown paths get noindex (crawlers see a 200) and are tidied to the home URL

@@ -3,11 +3,11 @@
 Single-file static site: everything is in `index.html` (HTML, CSS, JS). Serve with `python3 -m http.server`.
 
 ## "Under the hood" demo (JS near the bottom of index.html)
-- `PLANS` (regex → scripted reply, optional `think` / `tool`) defines each suggested prompt; `MSGS` lists the chips.
+- `PLANS` (regex → scripted reply, optional `think` / `tool`) defines each suggested prompt; `MSGS` lists the prompts, shown in the hood's custom dropdown (`#hpickbtn` + `#hchips` menu, not a `<select>`).
 - `send()` runs the chat; `H.run()` plays the hood animation for the same turn (`H.turn` queues it if the hood is closed).
 - `seen = {first, tool, think}`: what the viewer has already watched explained. First-time explanations play once; later turns skip them (`quick = seen.first`). `resetChat` clears every key automatically, so a new first-time explanation = add a key to `seen` + check it in `H.run`.
 - `LIMIT` (tokens, deliberately tiny) caps the context; `FILL` (80%) is the refuse threshold, since a harness can't know a reply's length. `send()` refuses (sets `full`, fixed "limit reached" chat message, hood plays `H.run(text, {reject: true})`: red pulsing harness, bounced message, tooltip) once `used()` + the message passes `FILL`, and refuses everything until `resetChat`. A turn that still hits `LIMIT` is clipped (`p.cut`): the chat ends with a cut-off notice and the hood pulses red. Both put one token-free floating `.pg.notice` in the notebook (`H.notice`, kept across `resetPages`). Both chat notices carry an `.ipin` (`spots.limit`). The hood's notebook count shows `N of LIMIT`.
-- While a turn runs (`H.cur` or `busy`), `chips()` disables the hood chips (the active one stays lit and animated), the speed switch and both Clear buttons: changing speed mid-turn is unsupported.
+- While a turn runs (`H.cur` or `busy`), `chips()` locks the picker (it shows the running prompt, lit and animated), the speed switch and both Clear buttons: changing speed mid-turn is unsupported.
 - Bubbles (`callout`) go below their box if they fit on screen, else above; demo bubbles focus their Next button so Enter skips.
 - The hood's orange "i" buttons (`.hi`, plus the notebook's `#hpin`) open the same `openTip` modal as the chat's `.ipin` pins; `data-k` is a key in `spots` (add one in `spots` for a new part). Opening one calls `hoodHold()` (pauses the demo, hides its bubble) and `closeTip` calls `hoodRelease()`. Demo bubbles (`tell()` → `callout(id, text, true)`) get a Next button with a countdown (`go(ms, true)`; `H.skip`). Nothing else in the hood is clickable.
 - `tell()`/`tips()`: bubbles are skipped in fast mode (set `window.tipsFast = true` to test them).
