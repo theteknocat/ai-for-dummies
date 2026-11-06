@@ -240,8 +240,9 @@ section[id]{scroll-margin-top:calc(var(--bar) - 48px)}
 @keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,122,89,.7)}70%,100%{box-shadow:0 0 0 10px rgba(255,122,89,0)}}
 html{scrollbar-gutter:stable}
 #hole,#tip,#arrow{transition:opacity .18s}
+#tip.live,#arrow.live{transition:opacity .18s,top .25s ease-out} /* glide when the page scrolls under it (live mode only: the opening placement must not animate) */
 #hole.pre,#tip.pre,#arrow.pre{opacity:0;pointer-events:none}
-#shade{position:fixed;inset:0;z-index:40;touch-action:none}
+#shade{position:fixed;inset:0;z-index:40}
 #hole{position:fixed;z-index:41;border-radius:16px;box-shadow:0 0 0 150vmax rgba(10,8,20,.65);pointer-events:none}
 #tip{position:fixed;z-index:42;width:max-content;min-width:min(340px,calc(100vw - 32px));max-width:min(560px,calc(100vw - 32px));overscroll-behavior:contain;background:var(--card);color:var(--ink);border:2px solid var(--a);border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.4);overflow:auto;font-size:.95rem;line-height:1.5}
 #c-avatar{position:relative;font-size:1.6rem}
@@ -1021,15 +1022,16 @@ function hoodRelease() { // resume the demo and bring its bubble back
 }
 function place() {
   if (!cur || !cur.ready) return;
-  const b0 = cur.t.getBoundingClientRect(), dy = cur.finalY - scrollY, r = {left: b0.left, width: b0.width, height: b0.height, top: b0.top - dy, bottom: b0.bottom - dy}, P = PAD, G = GAP, vw = innerWidth, vh = innerHeight, w = tip.offsetWidth;
+  const b0 = cur.t.getBoundingClientRect(), dy = cur.live ? 0 : cur.finalY - scrollY, r = {left: b0.left, width: b0.width, height: b0.height, top: b0.top - dy, bottom: b0.bottom - dy}, P = PAD, G = GAP, vw = innerWidth, vh = innerHeight, w = tip.offsetWidth;
   hole.style.cssText = `left:${r.left - P}px;top:${r.top - P}px;width:${r.width + 2 * P}px;height:${r.height + 2 * P}px`;
   const below = vh - r.bottom - P - G - EDGE, above = r.top - P - G - EDGE, down = cur.dir ? cur.dir === 'down' : below >= tip.scrollHeight || below >= above;
-  tip.style.maxHeight = Math.max(120, down ? below : above) + 'px';
-  const h = tip.offsetHeight, top = down ? r.bottom + P + G : r.top - P - G - h, mr = document.querySelector('main').getBoundingClientRect(), lo = Math.max(16, mr.left), hi = Math.min(vw - 16, mr.right) - w, c = r.left + r.width / 2 - w / 2,
+  if (!cur.frozen) tip.style.maxHeight = Math.min(vh - 2 * EDGE, Math.max(Math.min(tip.scrollHeight, vh * .6), down ? below : above)) + 'px';
+  const h = tip.offsetHeight, want = down ? r.bottom + P + G : r.top - P - G - h, top = Math.min(Math.max(want, EDGE), vh - h - EDGE), // clamp into view: a target taller than the screen would otherwise push the tip off it
+    mr = document.querySelector('main').getBoundingClientRect(), lo = Math.max(16, mr.left), hi = Math.min(vw - 16, mr.right) - w, c = r.left + r.width / 2 - w / 2,
     left = hi >= lo ? Math.min(Math.max(c, lo), hi) : Math.min(Math.max(16, c), vw - w - 16); // stay inside the content column when it fits
   const br = (cur.btn || cur.t).getBoundingClientRect(), ax = Math.min(Math.max(br.left + br.width / 2, left + 24), left + w - 24);
   tip.style.left = left + 'px'; tip.style.top = top + 'px';
-  arrow.className = down ? 'up' : 'dn'; arrow.style.left = ax - 8 + 'px'; arrow.style.top = (down ? top - 8 : top + h - 8) + 'px';
+  arrow.hidden = top !== want; arrow.className = down ? 'up' : 'dn'; arrow.style.left = ax - 8 + 'px'; arrow.style.top = (down ? top - 8 : top + h - 8) + 'px';
 }
 // own eased scroller: the browser's smooth-scroll duration can't be tuned
 let anim;
@@ -1041,7 +1043,7 @@ function scrollAnim(to, ms) {
 function closeTip(noRestore) {
   if (!cur) return;
   const {btn: o, y0} = cur; cur = null; hoodRelease();
-  [shade, hole, tip, arrow].forEach(e => e.hidden = true); document.documentElement.style.overflow = ''; $('viewbar').style.visibility = '';
+  [shade, hole, tip, arrow].forEach(e => e.hidden = true); [tip, arrow].forEach(e => e.classList.remove('live')); document.documentElement.style.overflow = ''; $('viewbar').style.visibility = '';
   if (noRestore) { cancelAnimationFrame(anim); document.body.style.paddingBottom = ''; }
   else scrollAnim(y0, 220).then(() => { if (!cur) document.body.style.paddingBottom = ''; }); // keep the spare room until the scroll-back lands, or the browser would clamp it
   o && o.isConnected && o.focus({preventScroll: true});
@@ -1083,11 +1085,11 @@ function openTip(k, btn) {
   const mine = cur, moving = Math.abs(mine.finalY - scrollY) > 1, MS = 260, fade = [hole, tip, arrow];
   // ease-out cubic is ~87% done at 50% of the time, so fade the tooltip in from there: it lands as the scroll settles
   setTimeout(() => mine === cur && fade.forEach(e => e.classList.remove('pre')), moving ? MS * 0.5 : 0);
-  scrollAnim(mine.finalY, MS); // overlay is already at its final spot; the target slides into it
+  scrollAnim(mine.finalY, MS).then(() => { if (mine !== cur) return; mine.live = mine.frozen = true; [tip, arrow].forEach(e => e.classList.add('live')); document.documentElement.style.overflow = ''; place(); }); // overlay is already at its final spot; the target slides into it. Then hand over to live positions so the page can scroll
 }
 shade.onclick = () => closeTip(); tip.addEventListener('click', e => e.target.classList.contains('x') && closeTip());
 document.addEventListener('keydown', e => e.key === 'Escape' && closeTip());
-addEventListener('resize', () => { if (cur) cur.dir = null; place(); }); addEventListener('scroll', place, true);
+addEventListener('resize', () => { if (cur) cur.dir = null, cur.frozen = false; place(); }); addEventListener('scroll', place, true);
 
 // ---- router: each main section has its own URL (/, /explore, /headlines, /faq); #hashes jump to an item
 const ROUTES = {chat: '/', parts: '/explore', news: '/headlines', faq: '/faq', resources: '/resources'}, SITE = 'https://ai-for-dummies.info', META = {
