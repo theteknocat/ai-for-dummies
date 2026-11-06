@@ -1244,7 +1244,7 @@ const syncSend = () => { chips(); $('csend').disabled = busy || !cval;  };
 // ---- under the hood: a slow, narrated machine that replays each chat turn ----
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches, wrap = $('hoodwrap');
 let isOpen = false, speed = 1, dwell = 0, shownAt = 0; // speed 1 = slow and clear
-const seen = {first: false, tool: false, think: false, reject: false, cut: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
+const seen = {first: false, tok: false, tool: false, think: false, reject: false, cut: false}; // what the viewer has already watched narrated; later turns skip the explaining and just rush through
 const lid = () => wrap.style.setProperty('--lidH', $('chatface').offsetHeight + 'px'); lid(); addEventListener('resize', lid);
 function fitHood() { // after opening: centre the hood in the space under the sticky bar, or, when it is taller than that (phones), put its top there since that is where interaction starts
   const r = wrap.getBoundingClientRect(), bar = $('viewbar').offsetHeight, room = innerHeight - bar, top = r.height + 16 <= room ? bar + (room - r.height) / 2 : bar + 8;
@@ -1366,7 +1366,12 @@ const H = {
         await ok(fly('hharness', 'hyou', '💬 reply', 'hp1')); face('😤'); spot('hyou'); await go(1500); spot(); H.cur = null; return;
       }
       await ok(fly('hyou', 'hnb', '✉️ your message', 'hp1')); spot(); addPg('u', 'You: ', user); await go(900);
-      await send('hp2'); sent = true;
+      if (!seen.tok && tips()) { // first time: pause at the model's door, where the text is turned into tokens, before anything lands in the cache
+        await ok(sendNb('hp2')); model.classList.add('work');
+        tell('hmodel', 'The notebook is text, and the model only works with numbers. So at its front door, a simple program called the tokenizer chops the text into tokens and swaps each for its part number. Only then does the model read them.'); await read(3200);
+        seen.tok = true; cacheFill();
+      } else await send('hp2');
+      sent = true;
       if (p.tool) {
         if (!seen.tool && tips()) { // the first time the viewer meets a tool, slow right down and explain it
           const keep = speed; if (quick) speed = 1;
